@@ -21,7 +21,7 @@ class RefreshController extends Controller
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Unable to refresh token',
+                'message' => 'Не удалось обновить токен',
             ], 401);
         }
     }

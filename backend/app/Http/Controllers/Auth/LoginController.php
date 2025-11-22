@@ -13,14 +13,14 @@ class LoginController extends Controller
         $credentials = $request->validated();
 
         if (! $token = Auth::guard('api')->attempt($credentials)) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
+            return response()->json(['message' => 'Неверные данные'], 401);
         }
 
         $user = Auth::guard('api')->user();
         if ($user->isBanned()) {
             Auth::guard('api')->logout();
 
-            return response()->json(['message' => 'Your account has been banned'], 403);
+            return response()->json(['message' => 'Ваш аккаунт был заблокирован'], 403);
         }
 
         return response()->json([
