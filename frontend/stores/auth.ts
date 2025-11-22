@@ -112,7 +112,7 @@ export const useAuthStore = defineStore('auth', {
 
             try {
                 const { $api } = useNuxtApp();
-                const { data } = await $api.get('/auth/me');
+                const { data } = await $api.get('/profile/me');
                 this.user = data.user;
                 return data.user as User;
             } catch (error: any) {
