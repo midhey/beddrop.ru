@@ -1,0 +1,11 @@
+@use "sass:math";
+@use "./vars" as *;
+@use "sass:string";
+
+/* rem / em относительно базового размера */
+@function rem($px, $base: $font-size-main) {
+  @return math.div($px, $base) * 1rem;
+}
+@function em($px, $base: $font-size-main) {
+  @return math.div($px, $base) * 1em;
+}

@@ -1,0 +1,71 @@
+@use "sass:math";
+@use "sass:color";
+@use "sass:meta";
+@use "./vars" as *;
+@use "./functions" as fn;
+
+/* Процентная line-height от заданного px */
+@mixin line-height($px, $base: $font-size-main) {
+  line-height: math.div($px, $base) * 100%;
+}
+
+@mixin fluid(
+  $property,
+  $min_px,
+  $max_px,
+  $minw: 320,
+  $maxw: 1200,
+  $base: $font-size-main
+) {
+  @if meta.type-of($minw) == number and not math.is-unitless($minw) {
+    $minw: math.div($minw, 1px);
+  }
+  @if meta.type-of($maxw) == number and not math.is-unitless($maxw) {
+    $maxw: math.div($maxw, 1px);
+  }
+
+  @if $maxw < $minw {
+    $temp: $minw;
+    $minw: $maxw;
+    $maxw: $temp;
+  }
+
+  @if $max_px < $min_px {
+    $temp: $min_px;
+    $min_px: $max_px;
+    $max_px: $temp;
+  }
+
+  $width-diff: $maxw - $minw;
+  @if $width-diff == 0 {
+    #{$property}: #{math.div($min_px, $base)}rem;
+  } @else {
+    $add-size: $max_px - $min_px;
+    $clamp-v: math.div(100 * $add-size, $width-diff);
+    $clamp-r: math.div(($minw * $max_px - $maxw * $min_px), ($minw - $maxw));
+
+    #{$property}: clamp(
+      #{math.div($min_px, $base)}rem,
+      calc(#{math.div($clamp-r, $base)}rem + #{$clamp-v}vw),
+      #{math.div($max_px, $base)}rem
+    );
+  }
+}
+
+@mixin text-fluid($min_px, $max_px, $minw: 320, $maxw: 768) {
+  @include fluid("font-size", $min_px, $max_px, $minw, $maxw);
+}
+
+@function darken-color($value, $amount) {
+  @if meta.type-of($value) == color {
+    @return color.scale($value, $lightness: -$amount);
+  }
+  @return color-mix(in oklab, #{$value} calc(100% - #{$amount}), black);
+}
+
+@function lighten-color($value, $amount) {
+  @if meta.type-of($value) == color {
+    @return color.scale($value, $lightness: $amount);
+  }
+  @return color-mix(in oklab, #{$value} calc(100% - #{$amount}), white);
+}

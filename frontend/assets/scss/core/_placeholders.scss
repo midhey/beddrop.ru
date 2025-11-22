@@ -1,0 +1,8 @@
+@use "./functions" as *;
+@use "./mixins" as *;
+
+%text {
+  @include text-fluid(16, 20);
+  font-weight: 400;
+  line-height: 1.2;
+}

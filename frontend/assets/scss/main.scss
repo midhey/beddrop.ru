@@ -1,0 +1,22 @@
+//Core
+@use "core/root-vars";
+
+//Base
+@use "base/fonts";
+@use "base/iconfont";
+@use "base/reset";
+@use "base/global";
+
+//Modules
+@use "modules/burger";
+@use "modules/dropdown";
+@use "modules/modal";
+
+//Blocks
+@use "blocks/header";
+@use "blocks/footer";
+@use "blocks/button";
+@use "blocks/form";
+
+//Utilities
+@use "base/utilities";

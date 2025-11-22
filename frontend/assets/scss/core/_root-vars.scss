@@ -1,0 +1,20 @@
+:root {
+  /* brand */
+  --color-primary: #7A3BFF;   // фирменный фиолетовый — заметный, яркий
+  --color-secondary: #FFB800; // желтый — контраст, "быстрая доставка"
+
+  /* neutrals */
+  --color-bg: #F4F2FF;
+  --color-bg-alt: #E6E0FF;
+  --color-text: #1F1B2D;
+  --color-text-muted: #6B6780;
+
+  /* states */
+  --color-success: #2ECC71;
+  --color-warning: #F1C40F;
+  --color-error:   #E74C3C;
+
+  /* fonts */
+  --font-family-main: OpenSans, sans-serif;
+  --font-family-secondary: Unbounded, sans-serif;
+}
