@@ -25,8 +25,7 @@ const onSubmit = async () => {
       password: password.value,
     });
     emit('success');
-  } catch (e) {
-    setTimeout(()=> {console.log(e)}, 6)
+  } catch {
   } finally {
     if (formRef.value) {
       $block?.remove('.modal');
