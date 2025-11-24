@@ -1,0 +1,63 @@
+@use "../core" as *;
+
+$dropdown-breakpoint: 768px !default;
+
+[data-dropdown] {
+  position: relative;
+}
+
+[data-dropdown-toggle] {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+[data-dropdown="open"] > [data-dropdown-toggle] {
+}
+
+[data-dropdown-menu] {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  transition: opacity .3s ease, transform .3s ease-in-out;
+}
+
+@media (min-width: #{$dropdown-breakpoint}) {
+  [data-dropdown-toggle] {
+    display: none;
+  }
+
+  [data-dropdown-menu] {
+    right: 0;
+    top: calc(100%);
+    pointer-events: none;
+    transform: translateX(5%);
+    transition: opacity .3s ease, transform .3s ease-in-out;
+
+    &::before {
+      height: rem(16);
+      content: '';
+      width: 100%;
+    }
+  }
+
+  [data-dropdown]:hover > [data-dropdown-menu] {
+    visibility: visible;
+    pointer-events: auto;
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: #{$dropdown-breakpoint}) {
+  [data-dropdown="open"] > [data-dropdown-menu] {
+    visibility: visible;
+    pointer-events: auto;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  [data-dropdown="open"] > [data-dropdown-menu] {
+
+  }
+}

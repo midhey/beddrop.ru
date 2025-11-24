@@ -1,0 +1,126 @@
+@use "../core" as *;
+
+$burger-breakpoint: 768px !default;
+
+[data-burger] {
+  position: relative;
+  z-index: 20;
+}
+
+[data-burger-button] {
+  inline-size: rem(40);
+  block-size: rem(40);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  position: relative;
+
+  @media (max-width: #{$burger-breakpoint}) {
+    display: inline-flex;
+  }
+}
+
+[data-burger-icon] {
+  position: relative;
+  display: block;
+  inline-size: rem(32);
+  block-size: rem(4);
+  background-color: $black;
+  border-radius: rem(4);
+  transition:
+    transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 0.25s ease,
+    background-color 0.2s ease;
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: $black;
+    border-radius: inherit;
+    transition: inherit;
+  }
+  &::before {
+    transform: translateY(rem(8));
+  }
+  &::after {
+    transform: translateY(rem(-8));
+  }
+}
+
+[data-burger="close"]:hover [data-burger-icon] {
+  &::before {
+    transform: translateY(rem(9));
+  }
+  &::after {
+    transform: translateY(rem(-9));
+  }
+}
+
+[data-burger="open"] [data-burger-icon] {
+  background-color: transparent;
+  &::before {
+    transform: rotate(45deg);
+  }
+  &::after {
+    transform: rotate(-45deg);
+  }
+}
+
+[data-burger-backdrop] {
+  position: fixed;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+}
+
+[data-burger="open"] + [data-burger-backdrop] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (max-width: #{$burger-breakpoint}) {
+  [data-burger-menu] {
+    visibility: hidden;
+    position: fixed;
+    inset-inline: 0;
+    inset-block-start: var(--header-h, 0);
+    block-size: calc(100dvb - var(--header-h, 0));
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+    padding: rem(16);
+
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 30;
+    background-color: $bg-main;
+    display: flex;
+    flex-direction: column;
+    gap: rem(34);
+  }
+
+  [data-burger="open"] [data-burger-menu] {
+    transform: translateX(0);
+    visibility: visible;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-burger-icon],
+  [data-burger-icon]::before,
+  [data-burger-icon]::after,
+  [data-burger-backdrop],
+  [data-burger-menu] {
+    transition: none !important;
+  }
+}
