@@ -91,7 +91,7 @@ export function useProfilePage() {
         fn: () => Promise<void>,
         loadingLabel = 'Отправка...'
     ) => {
-        const el = formRef.value;
+        const el = '.profile__block';
         if (el) {
             $block?.circle(el, loadingLabel);
         }
