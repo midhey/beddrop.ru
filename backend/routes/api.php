@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RefreshController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\MediaController;
 use App\Http\Controllers\Profile\PasswordController;
 use App\Http\Controllers\Profile\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -27,5 +28,10 @@ Route::prefix('/v1')->group(function () {
         Route::put('me', [ProfileController::class, 'update']);
         Route::put('password', PasswordController::class);
     } );
+
+    Route::middleware('auth:api')->group(function () {
+        Route::post('/media', [MediaController::class, 'store']);
+        Route::delete('/media/{media}', [MediaController::class, 'destroy']);
+    });
 
 });
