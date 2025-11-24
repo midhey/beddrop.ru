@@ -29,6 +29,18 @@ interface LoginPayload {
     password: string;
 }
 
+interface UpdateProfilePayload {
+    name?: string | null;
+    email?: string;
+    phone?: string;
+}
+
+interface ChangePasswordPayload {
+    current_password: string;
+    password: string;
+    password_confirmation: string;
+}
+
 export const useAuthStore = defineStore('auth', {
     state: (): AuthState => ({
         user: null,
@@ -66,6 +78,8 @@ export const useAuthStore = defineStore('auth', {
             this.error = null;
         },
 
+        // Авторизация
+
         async register(payload: RegisterPayload) {
             this.loading = true;
             this.clearError();
@@ -102,33 +116,6 @@ export const useAuthStore = defineStore('auth', {
             }
         },
 
-        async profile(silent = false) {
-            if (!this.accessToken) return null;
-
-            this.loading = true;
-            if (!silent) {
-                this.clearError();
-            }
-
-            try {
-                const { $api } = useNuxtApp();
-                const { data } = await $api.get('/profile/me');
-                this.user = data.user;
-                return data.user as User;
-            } catch (error: any) {
-                if (!silent) {
-                    this.handleError(error);
-                }
-                this.clearAuth();
-                if (!silent) {
-                    throw error;
-                }
-                return null;
-            } finally {
-                this.loading = false;
-            }
-        },
-
         async logout() {
             if (!this.accessToken) return null;
             this.loading = true;
@@ -160,6 +147,71 @@ export const useAuthStore = defineStore('auth', {
                 $notify?.info?.('Ваша сессия истекла. Повторите авторизацию');
                 this.clearAuth();
                 throw error;
+            }
+        },
+
+        // Работа с профилем
+
+        async profile(silent = false) {
+            if (!this.accessToken) return null;
+
+            this.loading = true;
+            if (!silent) {
+                this.clearError();
+            }
+
+            try {
+                const { $api } = useNuxtApp();
+                const { data } = await $api.get('/profile/me');
+                this.user = data.user;
+                return data.user as User;
+            } catch (error: any) {
+                if (!silent) {
+                    this.handleError(error);
+                }
+                this.clearAuth();
+                if (!silent) {
+                    throw error;
+                }
+                return null;
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async updateProfile(payload: UpdateProfilePayload) {
+            this.loading = true;
+            this.clearError();
+
+            try {
+                const { $api, $notify } = useNuxtApp();
+                const { data } = await $api.put('/profile/me', payload);
+
+                this.user = data.user;
+                $notify?.success?.('Профиль обновлён');
+                return data.user as User;
+            } catch (error: any) {
+                this.handleError(error);
+                throw error;
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async changePassword(payload: ChangePasswordPayload) {
+            this.loading = true;
+            this.clearError();
+
+            try {
+                const { $api, $notify } = useNuxtApp();
+                await $api.put('/profile/password', payload);
+                $notify?.success?.('Пароль успешно изменён');
+                return true;
+            } catch (error: any) {
+                this.handleError(error);
+                throw error;
+            } finally {
+                this.loading = false;
             }
         },
 
