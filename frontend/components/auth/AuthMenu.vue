@@ -4,9 +4,16 @@ import LoginForm from "~/components/auth/LoginForm.vue";
 import RegisterForm from "~/components/auth/RegisterForm.vue";
 
 const authStore = useAuthStore();
+const router = useRouter();
+
 const isLoginOpen = ref(false);
 const isRegisterOpen = ref(false);
 const isUserMenuOpen = ref(false);
+
+const emit = defineEmits<{
+  (e: 'navigate'): void;
+  (e: 'logout-done'): void;
+}>();
 
 const openLogin = () => {
   isRegisterOpen.value = false;
@@ -39,9 +46,16 @@ const closeUserMenu = () => {
   isUserMenuOpen.value = false;
 };
 
+const handleNavigate = () => {
+  closeUserMenu();
+  emit('navigate');
+};
+
 const logout = async () => {
   await authStore.logout();
   isUserMenuOpen.value = false;
+  emit('logout-done');
+  await router.push('/');
 };
 
 const userName = computed(() => {
@@ -89,7 +103,7 @@ const userInitial = computed(() => {
             <NuxtLink
                 to="/profile"
                 class="header__dropdown-item"
-                @click="closeUserMenu"
+                @click="handleNavigate"
             >
               <span class="header__username">
                 {{ userName }}
@@ -101,7 +115,7 @@ const userInitial = computed(() => {
             <NuxtLink
                 to="/orders"
                 class="header__dropdown-item"
-                @click="closeUserMenu"
+                @click="handleNavigate"
             >
               Мои заказы
             </NuxtLink>
@@ -117,11 +131,11 @@ const userInitial = computed(() => {
       </template>
 
       <BaseModal v-model="isLoginOpen" title="Вход в аккаунт">
-        <LoginForm @success="closeLogin" @open-register="switchToRegister"  />
+        <LoginForm @success="closeLogin(); closeBurger();" @open-register="switchToRegister"  />
       </BaseModal>
 
       <BaseModal v-model="isRegisterOpen" title="Регистрация">
-        <RegisterForm @success="closeRegister" />
+        <RegisterForm @success="closeRegister(); closeBurger();" />
       </BaseModal>
     </ClientOnly>
   </div>

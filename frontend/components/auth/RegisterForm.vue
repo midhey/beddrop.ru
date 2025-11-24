@@ -46,7 +46,7 @@ const onSubmit = async () => {
     console.error('[RegisterForm] submit error', e);
   } finally {
     if (formRef.value) {
-      $block?.remove(formRef.value);
+      $block?.remove('.modal');
     }
   }
 }

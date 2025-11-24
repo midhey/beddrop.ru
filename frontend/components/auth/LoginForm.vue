@@ -25,10 +25,11 @@ const onSubmit = async () => {
       password: password.value,
     });
     emit('success');
-  } catch {
+  } catch (e) {
+    setTimeout(()=> {console.log(e)}, 6)
   } finally {
     if (formRef.value) {
-      $block?.remove(formRef.value);
+      $block?.remove('.modal');
     }
   }
 };

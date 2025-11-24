@@ -20,7 +20,7 @@ const {
         :data-burger="isOpen ? 'open' : 'close'"
     >
       <div class="header__block">
-        <NuxtLink to="/" class="header__logo title-1">
+        <NuxtLink to="/" @click="closeBurger" class="header__logo title-1">
           <svg width="260" height="80" viewBox="0 0 260 80" xmlns="http://www.w3.org/2000/svg">
             <g transform="translate(0, 0)">
               <circle cx="40" cy="40" r="32" fill="#7A3BFF" />
@@ -54,7 +54,10 @@ const {
           data-burger-menu
           ref="menuRef"
       >
-        <AuthMenu />
+        <AuthMenu
+          @navigate="closeBurger"
+          @logout-done="closeBurger"
+        />
       </div>
     </div>
 
