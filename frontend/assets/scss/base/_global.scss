@@ -70,7 +70,7 @@ body {
 }
 
 :is(h1, h2, h3, h4, h5):not([class]) {
-  margin: em(16) 0;
+  margin: em(8) 0;
   font-family: $font-secondary;
 }
 
@@ -79,7 +79,7 @@ body {
 }
 
 h1:not([class]) {
-  @include text-fluid(34, 64);
+  @include text-fluid(34, 56);
   font-weight: 500;
 }
 
