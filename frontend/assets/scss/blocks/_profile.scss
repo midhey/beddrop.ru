@@ -1,0 +1,132 @@
+@use '../core' as *;
+
+.profile {
+
+  @include fluid('padding-top', 36, 16, $tablet-l);
+  @include fluid('padding-bottom', 36, 16, $tablet-l);
+
+  &__container {
+
+  }
+
+  &__block {
+    display: flex;
+    flex-direction: column;
+    gap: rem(24);
+    background-color: $white;
+    padding: rem(24);
+    border-radius: $border-radius-main;
+  }
+
+  &__title {
+  }
+
+  &__card {
+    display: flex;
+    flex-direction: row;
+    gap: rem(64);
+
+    &--password {
+      display: none;
+    }
+    
+    @media (max-width: $tablet) {
+      flex-direction: column;
+    }
+  }
+
+  &__column {
+    display: flex;
+    flex-direction: column;
+    gap: rem(24);
+
+    &--full-width {
+      flex-grow: 1;
+    }
+
+    @media (max-width: $tablet) {
+      &--avatar {
+        align-items: center;
+      }
+    }
+  }
+
+  &__row {
+    display: flex;
+    flex-direction: row;
+  }
+
+  &__field {
+    display: flex;
+    width: 100%;
+  }
+
+  &__avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: $secondary;
+    width: rem(160);
+    height: rem(160);
+    font-size: rem(64);
+    //@include fluid('height', 160, 120, $tablet);
+    //@include fluid('width', 160, 120, $mobile);
+    //@include fluid('font-size', 64, 32, $tablet);
+    font-weight: 700;
+    border-radius: 50%;
+    border: 6px solid $primary;
+  }
+
+  &__box {
+    display: flex;
+    flex-direction: column;
+    gap: rem(8);
+    width: 100%;
+  }
+
+  &__label {
+    font-size: rem(24);
+    font-weight: 600;
+  }
+
+  &__value {
+  }
+
+  &__edit-btn {
+    padding: rem(16);
+    cursor: pointer;
+    transition: opacity .3s ease;
+    border: none;
+
+    @media (min-width: $tablet) {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+
+  &__field:hover > &__edit-btn {
+    @media (min-width: $tablet) {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
+  &__subtitle {
+  }
+
+  &__actions {
+    &--password {
+    }
+  }
+
+  &__empty {
+  }
+
+  .form {
+    &__inline-actions {
+      display: flex;
+      flex-direction: row;
+      gap: rem(16);
+    }
+  }
+}
