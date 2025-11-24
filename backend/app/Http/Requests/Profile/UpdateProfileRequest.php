@@ -12,6 +12,15 @@ class UpdateProfileRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('phone')) {
+            $this->merge([
+                'phone' => preg_replace('/\D+/', '', $this->input('phone')),
+            ]);
+        }
+    }
+
     public function rules(): array
     {
         $userId = $this->user()->id;
@@ -27,7 +36,7 @@ class UpdateProfileRequest extends FormRequest
             'phone' => [
                 'sometimes',
                 'string',
-                'max:32',
+                'digits:11',
                 'unique:users,phone,' . $userId
             ]
         ];
