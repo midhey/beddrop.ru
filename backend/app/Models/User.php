@@ -30,6 +30,32 @@ class User extends Authenticatable implements JWTSubject
         'is_banned' => 'boolean',
     ];
 
+    public function addresses()
+    {
+        return $this->hasMany(Address::class);
+    }
+
+    public function courierProfile()
+    {
+        return $this->hasOne(CourierProfile::class);
+    }
+
+    public function restaurants()
+    {
+        return $this->belongsToMany(Restaurant::class)
+            ->withPivot('role');
+    }
+
+    public function carts()
+    {
+        return $this->hasMany(Cart::class);
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
     public function isAdmin(): bool {
         return $this->is_admin;
     }
@@ -38,12 +64,12 @@ class User extends Authenticatable implements JWTSubject
         return $this->is_banned;
     }
 
-		//JWT
-		public function getJWTIdentifier() {
-			return $this->getKey();
-		}
+    //JWT
+    public function getJWTIdentifier() {
+        return $this->getKey();
+    }
 
-		public function getJWTCustomClaims() {
-			return [];
-		}
+    public function getJWTCustomClaims() {
+        return [];
+    }
 }
