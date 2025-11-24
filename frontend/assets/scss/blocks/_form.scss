@@ -1,0 +1,55 @@
+@use '../core' as *;
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: rem(20);
+
+  &__description {
+    font-size: rem(16);
+  }
+
+  &__field {
+  }
+
+  &__label {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  &__label-text {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%) scale(1.1);
+    font-size: rem(16);
+    left: rem(16);
+    padding: rem(4);
+    transition: transform .3s ease;
+    color: $gray-dark;
+    font-weight: 500;
+  }
+
+  &__input {
+    border: 2px solid $gray;
+
+    &::placeholder {
+      color: transparent;
+    }
+
+    &:focus,
+    &:active {
+      outline: none;
+    }
+
+    &:not(:placeholder-shown) + .form__label-text,
+    &:focus + .form__label-text {
+      background-color: $white;
+      transform: translateY(-150%);
+    }
+  }
+
+  &__button {
+    margin-top: rem(16);
+  }
+}
