@@ -7,7 +7,6 @@ use App\Http\Requests\Restaurant\UpdateRestaurantRequest;
 use App\Models\Address;
 use App\Models\Restaurant;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Support\Str;
 
 class RestaurantController extends Controller
 {
@@ -56,7 +55,7 @@ class RestaurantController extends Controller
 
         $restaurant = Restaurant::create([
             'name' => $data['name'],
-            'slug' => $data['slug'] ?? Str::slug($data['name']) . '-' . uniqid(),
+            'slug' => $data['slug'] ?? null,
             'phone' => $data['phone'] ?? null,
             'is_active' => $data['is_active'] ?? true,
             'prep_time_min' => $data['prep_time_min'] ?? null,
@@ -129,17 +128,17 @@ class RestaurantController extends Controller
             ->get()
             ->map(function ($user) {
                 return [
-                    'id'    => $user->id,
+                    'id' => $user->id,
                     'email' => $user->email,
-                    'name'  => $user->name,
+                    'name' => $user->name,
                     'phone' => $user->phone,
-                    'role'  => $user->pivot->role,
+                    'role' => $user->pivot->role,
                 ];
             });
 
         return response()->json([
             'restaurant_id' => $restaurant->id,
-            'users'         => $users,
+            'users' => $users,
         ]);
     }
 
