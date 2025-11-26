@@ -23,7 +23,7 @@ class RestaurantPolicy
 
     public function create(User $user): bool
     {
-        return ! $user->is_banned;
+        return !$user->is_banned;
     }
 
     public function update(User $user, Restaurant $restaurant): bool
@@ -42,5 +42,11 @@ class RestaurantPolicy
     {
         return $user->is_admin
             || $user->hasRestaurantRole($restaurant, ['OWNER', 'MANAGER']);
+    }
+
+    public function manageOrders(User $user, Restaurant $restaurant): bool
+    {
+        return $user->is_admin
+            || $user->isStaffOf($restaurant);
     }
 }
