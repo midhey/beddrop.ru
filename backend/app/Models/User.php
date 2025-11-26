@@ -38,7 +38,12 @@ class User extends Authenticatable implements JWTSubject
 
     public function courierProfile()
     {
-        return $this->hasOne(CourierProfile::class);
+        return $this->hasOne(CourierProfile::class, 'user_id');
+    }
+
+    public function courierShifts()
+    {
+        return $this->hasMany(CourierShift::class, 'courier_user_id', 'id');
     }
 
     public function restaurants(): BelongsToMany
