@@ -13,6 +13,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Product\ProductCategoryController;
 use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\Product\ProductImageController;
+use App\Http\Controllers\Profile\AddressController;
 use App\Http\Controllers\Profile\PasswordController;
 use App\Http\Controllers\Profile\ProfileController;
 use App\Http\Controllers\Restaurant\RestaurantController;
@@ -123,6 +124,13 @@ Route::prefix('/v1')->group(function () {
         Route::post('/orders/{order}/assign', [CourierOrderController::class, 'assign']);
         Route::post('/orders/{order}/picked-up', [CourierOrderController::class, 'pickedUp']);
         Route::post('/orders/{order}/delivered', [CourierOrderController::class, 'delivered']);
+    });
+
+    Route::middleware('auth:api')->prefix('/addresses')->group(function () {
+        Route::get('/', [AddressController::class, 'index']);
+        Route::post('/', [AddressController::class, 'store']);
+        Route::put('/{address}', [AddressController::class, 'update']);
+        Route::delete('/{address}', [AddressController::class, 'destroy']);
     });
 
     Route::middleware('auth:api')->prefix('/media')->group(function () {
