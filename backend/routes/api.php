@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RefreshController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ProductController;
@@ -79,6 +80,14 @@ Route::prefix('/v1')->group(function () {
             Route::put('/{category}', [ProductCategoryController::class, 'update']);
             Route::delete('/{category}', [ProductCategoryController::class, 'destroy']);
         });
+    });
+
+    Route::middleware('auth:api')->prefix('/cart')->group(function () {
+        Route::get('/', [CartController::class, 'show']);
+        Route::post('/items', [CartController::class, 'addItem']);
+        Route::put('/items/{item}', [CartController::class, 'updateItem']);
+        Route::delete('/items/{item}', [CartController::class, 'removeItem']);
+        Route::delete('/', [CartController::class, 'clear']);
     });
 
     Route::middleware('auth:api')->prefix('/media')->group(function () {
