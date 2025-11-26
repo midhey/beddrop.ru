@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\RefreshController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\MediaController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductImageController;
@@ -88,6 +89,12 @@ Route::prefix('/v1')->group(function () {
         Route::put('/items/{item}', [CartController::class, 'updateItem']);
         Route::delete('/items/{item}', [CartController::class, 'removeItem']);
         Route::delete('/', [CartController::class, 'clear']);
+    });
+
+    Route::middleware('auth:api')->prefix('/orders')->group(function () {
+        Route::get('/', [OrderController::class, 'index']);
+        Route::get('/{order}', [OrderController::class, 'show']);
+        Route::post('/', [OrderController::class, 'store']);
     });
 
     Route::middleware('auth:api')->prefix('/media')->group(function () {
