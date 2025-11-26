@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Address;
+use App\Models\Media;
 use App\Models\Restaurant;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -17,8 +18,21 @@ class RestaurantSeeder extends Seeder
         $staff = User::where('email', 'staff@mail.com')->first();
 
         if(!$owner) {
-            throw new \RuntimeException('Admin user not found. Run UserSeeder first.');
+            throw new \RuntimeException('Owner user not found. Run UserSeeder first.');
         }
+
+        $logoPaths = [
+            'Пицца на районе' => 'media/restaurants/pizza_na_rayone_logo_1.png',
+            'Суши & Роллы' => 'media/restaurants/sushi_rolls_logo_1.png',
+            'Бургерная «Двор»' => 'media/restaurants/burger_dvor_logo_1.png',
+            'Шаурма Street' => 'media/restaurants/shaurma_street_logo_1.png',
+            'Тесто & Соус' => 'media/restaurants/testo_sous_logo_1.png',
+            'Пельменная #1' => 'media/restaurants/pelmeni_one_logo_1.png',
+            'Чебуречная Братцы' => 'media/restaurants/chebureki_bratcy_logo_1.png',
+            'Лапша wok wok' => 'media/restaurants/wok_wok_logo_1.png',
+            'Гриль & Мангал' => 'media/restaurants/grill_mangal_logo_1.png',
+            'Домашняя Кухня' => 'media/restaurants/home_cooking_logo_1.png',
+        ];
 
         $items = [
             ['name' => 'Пицца на районе', 'phone' => '+79991111111', 'prep_time_min' => 25, 'prep_time_max' => 40],
@@ -34,15 +48,6 @@ class RestaurantSeeder extends Seeder
         ];
 
         foreach ($items as $index => $item) {
-            $slugBase = Str::slug($item['name']);
-            $slug = $slugBase;
-            $i = 1;
-
-            while (Restaurant::where('slug', $slug)->exists()) {
-                $slug = $slugBase . '-' . $i;
-                $i++;
-            }
-
             $address = Address::create([
                 'user_id' => $owner->id,
                 'label' => 'Основной адрес ресторана',
@@ -54,19 +59,41 @@ class RestaurantSeeder extends Seeder
                 'lng' => null,
             ]);
 
+            $logoMediaId = null;
+
+            if(isset($logoPaths[$item['name']])) {
+                $media = Media::where('path', $logoPaths[$item['name']])->first();
+
+                if($media) {
+                    $logoMediaId = $media->id;
+                } else {
+                    $this->command?->warn(
+                        "Logo media not found for [{$item['name']}] path [{$logoPaths[$item['name']]}]"
+                    );
+                }
+            }
+
+            $baseSlug = Str::slug($item['name']) ?: 'restaurant';
+            $slug = $baseSlug;
+            $counter = 2;
+
+            while (Restaurant::where('slug', $slug)->exists()) {
+                $slug = $baseSlug . '-' . $counter;
+                $counter++;
+            }
+
             $restaurant = Restaurant::create([
-                'name' => $item['name'],
-                'slug' => $slug,
-                'phone' => $item['phone'],
-                'is_active' => true,
+                'name'          => $item['name'],
+                'phone'         => $item['phone'],
+                'slug'          => $slug,
+                'is_active'     => true,
                 'prep_time_min' => $item['prep_time_min'],
                 'prep_time_max' => $item['prep_time_max'],
-                'address_id' => $address->id,
-                'logo_media_id' => null,
+                'address_id'    => $address->id,
+                'logo_media_id' => $logoMediaId,
             ]);
 
             $attachData = [];
-
             $attachData[$owner->id] = ['role' => 'OWNER'];
 
             if($manager) {
