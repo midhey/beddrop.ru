@@ -14,6 +14,7 @@ class Order extends Model
         'payment_status',
         'payment_method',
         'total_price',
+        'courier_fee',
         'comment',
         'delivery_address_id',
         'delivery_lat',
@@ -21,9 +22,10 @@ class Order extends Model
     ];
 
     protected $casts = [
-        'total_price'      => 'decimal:2',
-        'delivery_lat'     => 'float',
-        'delivery_lng'     => 'float',
+        'total_price' => 'decimal:2',
+        'courier_fee' => 'decimal:2',
+        'delivery_lat' => 'float',
+        'delivery_lng' => 'float',
     ];
 
     public function user()
