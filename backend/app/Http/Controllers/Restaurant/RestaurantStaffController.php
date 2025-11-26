@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Restaurant;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Restaurant\AddStaffRequest;
 use App\Http\Requests\Restaurant\UpdateStaffRoleRequest;
 use App\Models\Restaurant;

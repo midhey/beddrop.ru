@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Product;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Product\StoreProductImageRequest;
 use App\Http\Requests\Product\UpdateProductImageRequest;
 use App\Http\Resources\ProductImageResource;

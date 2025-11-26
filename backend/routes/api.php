@@ -7,13 +7,13 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\OrderController;
-use App\Http\Controllers\ProductCategoryController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\ProductImageController;
+use App\Http\Controllers\Product\ProductCategoryController;
+use App\Http\Controllers\Product\ProductController;
+use App\Http\Controllers\Product\ProductImageController;
 use App\Http\Controllers\Profile\PasswordController;
 use App\Http\Controllers\Profile\ProfileController;
-use App\Http\Controllers\RestaurantController;
-use App\Http\Controllers\RestaurantStaffController;
+use App\Http\Controllers\Restaurant\RestaurantController;
+use App\Http\Controllers\Restaurant\RestaurantStaffController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/ping', fn() => ['message' => 'pong']);
