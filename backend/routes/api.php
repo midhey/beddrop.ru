@@ -5,6 +5,9 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RefreshController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\Courier\CourierProfileController;
+use App\Http\Controllers\Courier\CourierShiftController;
+use App\Http\Controllers\Courier\CourierOrderController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Product\ProductCategoryController;
@@ -13,6 +16,7 @@ use App\Http\Controllers\Product\ProductImageController;
 use App\Http\Controllers\Profile\PasswordController;
 use App\Http\Controllers\Profile\ProfileController;
 use App\Http\Controllers\Restaurant\RestaurantController;
+use App\Http\Controllers\Restaurant\RestaurantOrderController;
 use App\Http\Controllers\Restaurant\RestaurantStaffController;
 use Illuminate\Support\Facades\Route;
 
@@ -64,6 +68,13 @@ Route::prefix('/v1')->group(function () {
                     Route::delete('/{product}/images/{image}', [ProductImageController::class, 'destroy']);
                 });
             });
+
+            Route::middleware('auth:api')->prefix('/orders')->group(function () {
+                Route::get('/', [RestaurantOrderController::class, 'index']);
+                Route::get('/{order}', [RestaurantOrderController::class, 'show']);
+                Route::post('/{order}/accept', [RestaurantOrderController::class, 'accept']);
+                Route::post('/{order}/cancel', [RestaurantOrderController::class, 'cancel']);
+            });
         });
 
         Route::middleware('auth:api')->group(function () {
@@ -71,6 +82,7 @@ Route::prefix('/v1')->group(function () {
             Route::put('/{restaurant}', [RestaurantController::class, 'update']);
             Route::delete('/{restaurant}', [RestaurantController::class, 'destroy']);
         });
+
     });
 
     Route::prefix('/product-categories')->group(function () {
@@ -95,6 +107,22 @@ Route::prefix('/v1')->group(function () {
         Route::get('/', [OrderController::class, 'index']);
         Route::get('/{order}', [OrderController::class, 'show']);
         Route::post('/', [OrderController::class, 'store']);
+    });
+
+    Route::middleware('auth:api')->prefix('/courier')->group(function () {
+        Route::get('/profile', [CourierProfileController::class, 'show']);
+        Route::post('/profile', [CourierProfileController::class, 'upsert']);
+
+        Route::post('/shifts/start', [CourierShiftController::class, 'start']);
+        Route::post('/shifts/end', [CourierShiftController::class, 'end']);
+
+        Route::get('/orders/available', [CourierOrderController::class, 'available']);
+        Route::get('/orders/active', [CourierOrderController::class, 'active']);
+        Route::get('/orders/history', [CourierOrderController::class, 'history']);
+
+        Route::post('/orders/{order}/assign', [CourierOrderController::class, 'assign']);
+        Route::post('/orders/{order}/picked-up', [CourierOrderController::class, 'pickedUp']);
+        Route::post('/orders/{order}/delivered', [CourierOrderController::class, 'delivered']);
     });
 
     Route::middleware('auth:api')->prefix('/media')->group(function () {
