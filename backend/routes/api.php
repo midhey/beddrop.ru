@@ -116,6 +116,7 @@ Route::prefix('/v1')->group(function () {
 
         Route::post('/shifts/start', [CourierShiftController::class, 'start']);
         Route::post('/shifts/end', [CourierShiftController::class, 'end']);
+        Route::get('/shifts/current', [CourierShiftController::class, 'current']);
 
         Route::get('/orders/available', [CourierOrderController::class, 'available']);
         Route::get('/orders/active', [CourierOrderController::class, 'active']);

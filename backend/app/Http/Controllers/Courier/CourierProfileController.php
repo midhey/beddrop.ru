@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Courier;
 
+use App\Enums\CourierProfileStatus;
+use App\Enums\CourierVehicle;
 use App\Models\CourierProfile;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Validation\Rule;
 
 class CourierProfileController extends Controller
 {
@@ -34,12 +37,12 @@ class CourierProfileController extends Controller
         $user = $request->user();
 
         $data = $request->validate([
-            'vehicle' => ['nullable', 'in:FOOT,BIKE,SCOOTER,CAR'],
+            'vehicle' => ['nullable', Rule::enum(CourierVehicle::class)],
         ]);
 
         $profile = CourierProfile::updateOrCreate(
             ['user_id' => $user->id],
-            array_merge($data, ['status' => 'ACTIVE'])
+            array_merge($data, ['status' => CourierProfileStatus::ACTIVE->value])
         );
 
         return response()->json([

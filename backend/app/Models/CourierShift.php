@@ -2,7 +2,10 @@
 
 namespace App\Models;
 
+use App\Enums\CourierShiftStatus;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CourierShift extends Model
 {
@@ -20,13 +23,13 @@ class CourierShift extends Model
         'ended_at' => 'datetime',
     ];
 
-    public function courier()
+    public function courier(): BelongsTo
     {
         return $this->belongsTo(CourierProfile::class, 'courier_user_id', 'user_id');
     }
 
-    public function scopeOpen($query)
+    public function scopeOpen(Builder $query): Builder
     {
-        return $query->where('status', 'OPEN');
+        return $query->where('status', CourierShiftStatus::OPEN->value);
     }
 }

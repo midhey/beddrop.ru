@@ -2,23 +2,42 @@
 
 namespace App\Http\Controllers\Courier;
 
+use App\Actions\Courier\AssignCourierOrder;
+use App\Actions\Courier\MarkOrderDelivered;
+use App\Actions\Courier\MarkOrderPickedUp;
+use App\Enums\CourierProfileStatus;
+use App\Enums\CourierShiftStatus;
+use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\OrderResource;
+use App\Models\CourierShift;
 use App\Models\Order;
-use App\Models\OrderEvent;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class CourierOrderController extends Controller
 {
-    private const BASE_COURIER_FEE = 150.00;
-
     private function ensureCourier(Request $request)
     {
         $profile = $request->user()->courierProfile;
 
-        if(!$profile || $profile->status !== 'ACTIVE') {
+        if (!$profile || $profile->status !== CourierProfileStatus::ACTIVE->value) {
             abort(403, 'Профиль курьера не найден или отключён.');
+        }
+
+        return $profile;
+    }
+
+    private function ensureOpenShift(Request $request)
+    {
+        $profile = $this->ensureCourier($request);
+
+        $hasOpenShift = CourierShift::query()
+            ->where('courier_user_id', $profile->user_id)
+            ->where('status', CourierShiftStatus::OPEN->value)
+            ->exists();
+
+        if (! $hasOpenShift) {
+            abort(422, 'У вас нет открытой смены.');
         }
 
         return $profile;
@@ -26,12 +45,16 @@ class CourierOrderController extends Controller
 
     public function available(Request $request)
     {
-        $this->ensureCourier($request);
+        $this->ensureOpenShift($request);
 
         $orders = Order::query()
-            ->where('status', 'ACCEPTED_BY_RESTAURANT')
+            ->where('status', OrderStatus::ACCEPTED_BY_RESTAURANT->value)
             ->whereNull('courier_id')
-            ->with(['restaurant', 'items.product'])
+            ->with([
+                'restaurant.address',
+                'items.product',
+                'deliveryAddress',
+            ])
             ->orderBy('created_at')
             ->paginate(20);
 
@@ -40,12 +63,19 @@ class CourierOrderController extends Controller
 
     public function active(Request $request)
     {
-        $profile = $this->ensureCourier($request);
+        $profile = $this->ensureOpenShift($request);
 
         $orders = Order::query()
             ->where('courier_id', $profile->user_id)
-            ->whereIn('status', ['COURIER_ASSIGNED', 'PICKED_UP'])
-            ->with(['restaurant', 'items.product'])
+            ->whereIn('status', [
+                OrderStatus::COURIER_ASSIGNED->value,
+                OrderStatus::PICKED_UP->value,
+            ])
+            ->with([
+                'restaurant.address',
+                'items.product',
+                'deliveryAddress',
+            ])
             ->orderBy('created_at')
             ->paginate(20);
 
@@ -58,106 +88,30 @@ class CourierOrderController extends Controller
 
         $orders = Order::query()
             ->where('courier_id', $profile->user_id)
-            ->where('status', 'DELIVERED')
-            ->with(['restaurant', 'items.product'])
+            ->where('status', OrderStatus::DELIVERED->value)
+            ->with([
+                'restaurant.address',
+                'items.product',
+                'deliveryAddress',
+            ])
             ->orderByDesc('created_at')
             ->paginate(20);
 
         return OrderResource::collection($orders);
     }
 
-    public function assign(Request $request, Order $order)
+    public function assign(Request $request, Order $order, AssignCourierOrder $assignCourierOrder)
     {
-        $profile = $this->ensureCourier($request);
-
-        if($order->status !== 'ACCEPTED_BY_RESTAURANT' || $order->courier_id !== null) {
-            return response()->json([
-                'message' => 'Этот заказ нельзя взять в работу',
-            ], 422);
-        }
-
-        return DB::transaction(function () use ($order, $profile) {
-            $order->courier_id = $profile->user_id;
-            $order->status = 'COURIER_ASSIGNED';
-            $order->save();
-
-            OrderEvent::create([
-                'order_id' => $order->id,
-                'event' => 'COURIER_ASSIGNED',
-                'payload' => [
-                    'courier_user_id' => $profile->user_id,
-                ],
-            ]);
-
-            $order->load(['restaurant', 'items.product']);
-
-            return new OrderResource($order);
-        });
+        return new OrderResource($assignCourierOrder($request->user(), $order));
     }
 
-    public function pickedUp(Request $request, Order $order)
+    public function pickedUp(Request $request, Order $order, MarkOrderPickedUp $markOrderPickedUp)
     {
-        $profile = $this->ensureCourier($request);
-
-        if($order->courier_id !== $profile->user_id) {
-            abort(403, 'Вы не назначены на этот заказ.');
-        }
-
-        if(!in_array($order->status, ['COURIER_ASSIGNED'], true)) {
-            return response()->json([
-                'message' => 'Нельзя перевести заказ в статус PICKED_UP',
-            ], 422);
-        }
-
-        return DB::transaction(function () use ($order, $profile) {
-            $order->status = 'PICKED_UP';
-            $order->save();
-
-            OrderEvent::create([
-                'order_id' => $order->id,
-                'event' => 'PICKED_UP',
-                'payload' => [
-                    'courier_user_id' => $profile->user_id,
-                ],
-            ]);
-
-            $order->load(['restaurant', 'items.product']);
-
-            return new OrderResource($order);
-        });
+        return new OrderResource($markOrderPickedUp($request->user(), $order));
     }
 
-    public function delivered(Request $request, Order $order)
+    public function delivered(Request $request, Order $order, MarkOrderDelivered $markOrderDelivered)
     {
-        $profile = $this->ensureCourier($request);
-
-        if($order->courier_id !== $profile->user_id) {
-            abort(403, 'Вы не назначены на этот заказ.');
-        }
-
-        if(!in_array($order->status, ['PICKED_UP'], true)) {
-            return response()->json([
-                'message' => 'Нельзя перевести заказ в статус DELIVERED',
-            ], 422);
-        }
-
-        return DB::transaction(function () use ($order, $profile) {
-            $order->status = 'DELIVERED';
-            $order->courier_fee = self::BASE_COURIER_FEE;
-            $order->save();
-
-            OrderEvent::create([
-                'order_id' => $order->id,
-                'event' => 'DELIVERED',
-                'payload' => [
-                    'courier_user_id' => $profile->user_id,
-                    'courier_fee' => $order->courier_fee,
-                ],
-            ]);
-
-            $order->load(['restaurant', 'items.product', 'events']);
-
-            return new OrderResource($order);
-        });
+        return new OrderResource($markOrderDelivered($request->user(), $order));
     }
 }
