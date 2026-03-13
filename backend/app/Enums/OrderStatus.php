@@ -1,0 +1,14 @@
+<?php
+
+namespace App\Enums;
+
+enum OrderStatus: string
+{
+    case CREATED = 'CREATED';
+    case ACCEPTED_BY_RESTAURANT = 'ACCEPTED_BY_RESTAURANT';
+    case COURIER_ASSIGNED = 'COURIER_ASSIGNED';
+    case PICKED_UP = 'PICKED_UP';
+    case DELIVERED = 'DELIVERED';
+    case CANCELED_BY_USER = 'CANCELED_BY_USER';
+    case CANCELED_BY_RESTAURANT = 'CANCELED_BY_RESTAURANT';
+}
