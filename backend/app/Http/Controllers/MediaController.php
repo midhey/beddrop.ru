@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Media;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Storage;
 
 class MediaController extends Controller
 {
+    use AuthorizesRequests;
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -37,6 +40,8 @@ class MediaController extends Controller
 
     public function destroy(Media $media)
     {
+        $this->authorize('delete', $media);
+
         Storage::disk($media->disk ?? 'public')->delete($media->path);
         $media->delete();
 
