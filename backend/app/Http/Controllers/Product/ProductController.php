@@ -8,6 +8,7 @@ use App\Http\Requests\Product\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use App\Models\Restaurant;
+use App\Models\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
@@ -17,20 +18,31 @@ class ProductController extends Controller
 
     public function index(Restaurant $restaurant, Request $request)
     {
+        $this->authorize('view', $restaurant);
+
         $perPage = min($request->integer('per_page', 20), 100);
 
         $query = $restaurant->products()
-            ->with(['category', 'images.media'])
-            ->where('is_active', true);
+            ->with(['category', 'images.media']);
+
+        if (! $this->canPreviewHiddenProducts($request->user(), $restaurant)) {
+            $query->where('is_active', true);
+        }
 
         $products = $query->paginate($perPage);
 
         return ProductResource::collection($products);
     }
 
-    public function show(Restaurant $restaurant, Product $product)
+    public function show(Request $request, Restaurant $restaurant, Product $product)
     {
+        $this->authorize('view', $restaurant);
+
         if ($product->restaurant_id !== $restaurant->id) {
+            abort(404);
+        }
+
+        if (! $product->is_active && ! $this->canPreviewHiddenProducts($request->user(), $restaurant)) {
             abort(404);
         }
 
@@ -91,5 +103,11 @@ class ProductController extends Controller
         return response()->json([
             'message' => 'Продукт удалён',
         ]);
+    }
+
+    private function canPreviewHiddenProducts(?User $user, Restaurant $restaurant): bool
+    {
+        return $user !== null
+            && ($user->isAdmin() || $user->isStaffOf($restaurant));
     }
 }
