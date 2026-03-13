@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Order;
 
+use App\Enums\PaymentMethod;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreOrderRequest extends FormRequest
 {
@@ -14,9 +16,13 @@ class StoreOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'delivery_address_id' => ['nullable', 'integer', 'exists:addresses,id'],
+            'delivery_address_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('addresses', 'id')->where(fn ($query) => $query->where('user_id', $this->user()->id)),
+            ],
             'comment' => ['nullable', 'string', 'max:500'],
-            'payment_method' => ['required', 'string', 'in:CASH,CARD,ONLINE'],
+            'payment_method' => ['required', Rule::enum(PaymentMethod::class)],
         ];
     }
 }

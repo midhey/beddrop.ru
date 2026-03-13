@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Cart\AddCartItem;
+use App\Actions\Cart\ClearCart;
+use App\Actions\Cart\RemoveCartItem;
+use App\Actions\Cart\UpdateCartItem;
+use App\Enums\CartStatus;
 use App\Http\Requests\Cart\AddCartItemRequest;
 use App\Http\Requests\Cart\UpdateCartItemRequest;
 use App\Http\Resources\CartResource;
 use App\Models\Cart;
 use App\Models\CartItem;
-use App\Models\Product;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
@@ -18,6 +22,7 @@ class CartController extends Controller
 
         $cart = Cart::query()
             ->where('user_id', $user->id)
+            ->where('status', CartStatus::ACTIVE->value)
             ->where('is_active', true)
             ->with([
                 'restaurant',
@@ -36,68 +41,21 @@ class CartController extends Controller
         ]);
     }
 
-    public function addItem(AddCartItemRequest $request)
+    public function addItem(AddCartItemRequest $request, AddCartItem $addCartItem)
     {
-        $user = $request->user();
         $data = $request->validated();
-
-        $quantity = $data['quantity'] ?? 1;
-
-        $product = Product::query()
-            ->with('restaurant')
-            ->where('id', $data['product_id'])
-            ->where('is_active', true)
-            ->firstOrFail();
-
-        $cart = Cart::query()
-            ->where('user_id', $user->id)
-            ->where('is_active', true)
-            ->first();
-
-        if(!$cart) {
-            $cart = Cart::create([
-                'user_id' => $user->id,
-                'restaurant_id' => $product->restaurant_id,
-                'status' => 'ACTIVE',
-                'is_active' => true,
-            ]);
-        } else {
-            if($cart->restaurant_id && $cart->restaurant_id !== $product->restaurant_id) {
-                return response()->json([
-                    'message' => 'В корзине уже есть товары из другого ресторана. Очистите корзину, чтобы сменить ресторан.',
-                ], 422);
-            }
-
-            if(!$cart->restaurant_id) {
-                $cart->restaurant_id = $product->restaurant_id;
-                $cart->save();
-            }
-        }
-
-        $item = $cart->items()
-            ->where('product_id', $product->id)
-            ->first();
-
-        if($item) {
-            $item->quantity += $quantity;
-            $item->unit_price_snapshot = $product->price;
-            $item->save();
-        } else {
-            $item = $cart->items()->create([
-                'product_id' => $product->id,
-                'quantity' => $quantity,
-                'unit_price_snapshot' => $product->price,
-            ]);
-        }
-
-        $cart->load(['restaurant', 'items.product.images.media']);
+        $cart = $addCartItem($request->user(), $data);
 
         return response()->json([
             'cart' => new CartResource($cart),
         ], 201);
     }
 
-    public function updateItem(UpdateCartItemRequest $request, CartItem $item)
+    public function updateItem(
+        UpdateCartItemRequest $request,
+        CartItem $item,
+        UpdateCartItem $updateCartItem
+    )
     {
         $user = $request->user();
         $data = $request->validated();
@@ -108,28 +66,14 @@ class CartController extends Controller
             abort(404);
         }
 
-        $quantity = (int)$data['quantity'];
-
-        if($quantity <= 0) {
-            $item->delete();
-        } else {
-            $item->quantity = $quantity;
-            $item->save();
-        }
-
-        $cart->load(['restaurant', 'items.product.images.media']);
-
-        if($cart->items()->count() === 0) {
-            $cart->restaurant_id = null;
-            $cart->save();
-        }
+        $cart = $updateCartItem($item, (int) $data['quantity']);
 
         return response()->json([
             'cart' => new CartResource($cart),
         ]);
     }
 
-    public function removeItem(Request $request, CartItem $item)
+    public function removeItem(Request $request, CartItem $item, RemoveCartItem $removeCartItem)
     {
         $user = $request->user();
 
@@ -139,21 +83,20 @@ class CartController extends Controller
             abort(404);
         }
 
-        $item->delete();
-
-        $cart->load(['restaurant', 'items.product.images.media']);
+        $cart = $removeCartItem($item);
 
         return response()->json([
             'cart' => new CartResource($cart),
         ]);
     }
 
-    public function clear(Request $request)
+    public function clear(Request $request, ClearCart $clearCart)
     {
         $user = $request->user();
 
         $cart = Cart::query()
             ->where('user_id', $user->id)
+            ->where('status', CartStatus::ACTIVE->value)
             ->where('is_active', true)
             ->first();
 
@@ -161,10 +104,7 @@ class CartController extends Controller
             return response()->noContent();
         }
 
-        $cart->items()->delete();
-        $cart->status = 'ABANDONED';
-        $cart->is_active = false;
-        $cart->save();
+        $clearCart($cart);
 
         return response()->noContent();
     }
