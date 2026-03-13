@@ -3,13 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Facades\Auth;
-use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Http\JsonResponse;
 
 class RefreshController extends Controller
 {
-    public function __invoke()
+    public function __invoke(): JsonResponse
     {
         try {
             $newToken = auth('api')->refresh();

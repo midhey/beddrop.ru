@@ -39,7 +39,6 @@ class ProductImageController extends Controller
 
         $data = $request->validated();
 
-        // если is_cover = true — сбросим остальные
         if (!empty($data['is_cover'])) {
             ProductImage::where('product_id', $product->id)
                 ->update(['is_cover' => false]);

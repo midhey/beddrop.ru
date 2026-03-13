@@ -6,11 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Profile\StoreAddressRequest;
 use App\Http\Requests\Profile\UpdateAddressRequest;
 use App\Models\Address;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class AddressController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $user = $request->user();
 
@@ -24,7 +26,7 @@ class AddressController extends Controller
         ]);
     }
 
-    public function store(StoreAddressRequest $request)
+    public function store(StoreAddressRequest $request): JsonResponse
     {
         $user = $request->user();
         $data = $request->validated();
@@ -45,7 +47,7 @@ class AddressController extends Controller
         ], 201);
     }
 
-    public function update(UpdateAddressRequest $request, Address $address)
+    public function update(UpdateAddressRequest $request, Address $address): JsonResponse
     {
         $user = $request->user();
 
@@ -72,7 +74,7 @@ class AddressController extends Controller
         ]);
     }
 
-    public function destroy(Request $request, Address $address)
+    public function destroy(Request $request, Address $address): Response
     {
         $user = $request->user();
 

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\RestaurantStaffRole;
 use App\Models\Address;
 use App\Models\Media;
 use App\Models\Restaurant;
@@ -94,14 +95,14 @@ class RestaurantSeeder extends Seeder
             ]);
 
             $attachData = [];
-            $attachData[$owner->id] = ['role' => 'OWNER'];
+            $attachData[$owner->id] = ['role' => RestaurantStaffRole::OWNER->value];
 
             if($manager) {
-                $attachData[$manager->id] = ['role' => 'MANAGER'];
+                $attachData[$manager->id] = ['role' => RestaurantStaffRole::MANAGER->value];
             }
 
             if($staff) {
-                $attachData[$staff->id] = ['role' => 'STAFF'];
+                $attachData[$staff->id] = ['role' => RestaurantStaffRole::STAFF->value];
             }
 
             $restaurant->users()->attach($attachData);

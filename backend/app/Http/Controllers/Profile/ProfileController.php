@@ -3,20 +3,21 @@
 namespace App\Http\Controllers\Profile;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\Profile\UpdateProfileRequest;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ProfileController extends Controller
 {
-
-    public function show(Request $request) {
+    public function show(Request $request): JsonResponse
+    {
         return response()->json([
-            'user'=>$request->user(),
+            'user' => $request->user(),
         ]);
-
     }
-    public function update(UpdateProfileRequest $request) {
+
+    public function update(UpdateProfileRequest $request): JsonResponse
+    {
         $user = $request->user();
         $data = $request->validated();
 
@@ -27,7 +28,7 @@ class ProfileController extends Controller
         $user->save();
 
         return response()->json([
-            'user'=>$user,
+            'user' => $user,
         ]);
     }
 }
