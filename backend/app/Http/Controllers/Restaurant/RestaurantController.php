@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Restaurant;
 
+use App\Enums\RestaurantStaffRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Restaurant\StoreRestaurantRequest;
 use App\Http\Requests\Restaurant\UpdateRestaurantRequest;
 use App\Models\Address;
 use App\Models\Restaurant;
+use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class RestaurantController extends Controller
@@ -25,6 +27,8 @@ class RestaurantController extends Controller
 
     public function show(Restaurant $restaurant)
     {
+        $this->authorize('view', $restaurant);
+
         $restaurant->load(['address', 'logo']);
 
         return response()->json([
@@ -68,7 +72,7 @@ class RestaurantController extends Controller
         $ownerId = $data['owner_id'] ?? $request->user()->id;
 
         $restaurant->users()->attach($ownerId, [
-            'role' => 'OWNER',
+            'role' => RestaurantStaffRole::OWNER->value,
         ]);
 
         return response()->json([
@@ -119,30 +123,6 @@ class RestaurantController extends Controller
         ]);
     }
 
-    public function users(Restaurant $restaurant)
-    {
-        $this->authorize('update', $restaurant);
-
-        $users = $restaurant->users()
-            ->select('users.id', 'users.email', 'users.name', 'users.phone')
-            ->withPivot('role')
-            ->get()
-            ->map(function ($user) {
-                return [
-                    'id' => $user->id,
-                    'email' => $user->email,
-                    'name' => $user->name,
-                    'phone' => $user->phone,
-                    'role' => $user->pivot->role,
-                ];
-            });
-
-        return response()->json([
-            'restaurant_id' => $restaurant->id,
-            'users' => $users,
-        ]);
-    }
-
     public function destroy(Restaurant $restaurant)
     {
         $this->authorize('delete', $restaurant);
@@ -151,6 +131,22 @@ class RestaurantController extends Controller
 
         return response()->json([
             'message' => 'Ресторан удалён',
+        ]);
+    }
+
+    public function my(Request $request)
+    {
+        $user = $request->user();
+
+        $restaurants = Restaurant::query()
+            ->whereHas('users', function ($query) use ($user) {
+                $query->where('users.id', $user->id);
+            })
+            ->with(['address', 'logo'])
+            ->get();
+
+        return response()->json([
+            'restaurants' => $restaurants,
         ]);
     }
 }

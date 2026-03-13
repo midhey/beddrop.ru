@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Enums\RestaurantStaffRole;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -31,17 +34,17 @@ class User extends Authenticatable implements JWTSubject
         'is_banned' => 'boolean',
     ];
 
-    public function addresses()
+    public function addresses(): HasMany
     {
         return $this->hasMany(Address::class);
     }
 
-    public function courierProfile()
+    public function courierProfile(): HasOne
     {
         return $this->hasOne(CourierProfile::class, 'user_id');
     }
 
-    public function courierShifts()
+    public function courierShifts(): HasMany
     {
         return $this->hasMany(CourierShift::class, 'courier_user_id', 'id');
     }
@@ -54,35 +57,47 @@ class User extends Authenticatable implements JWTSubject
 
     public function hasRestaurantRole(Restaurant $restaurant, array $roles): bool
     {
+        $roleValues = array_map(
+            static fn (RestaurantStaffRole|string $role): string => $role instanceof RestaurantStaffRole ? $role->value : $role,
+            $roles
+        );
+
         if(!$this->relationLoaded('restaurants')) {
             $this->load('restaurants');
         }
 
-        $rel = $this->restaurants->firstWhere('id', $restaurant->id);
+        $restaurantMembership = $this->restaurants->firstWhere('id', $restaurant->id);
 
-        if(!$rel) {
+        if(!$restaurantMembership) {
             return false;
         }
 
-        return in_array($rel->pivot->role, $roles, true);
+        return in_array($restaurantMembership->pivot->role, $roleValues, true);
     }
 
     public function isStaffOf(Restaurant $restaurant): bool
     {
-        return $this->hasRestaurantRole($restaurant, ['OWNER', 'MANAGER', 'STAFF']);
+        return $this->hasRestaurantRole($restaurant, [
+            RestaurantStaffRole::OWNER,
+            RestaurantStaffRole::MANAGER,
+            RestaurantStaffRole::STAFF,
+        ]);
     }
 
     public function isManagerOrOwnerOf(Restaurant $restaurant): bool
     {
-        return $this->hasRestaurantRole($restaurant, ['OWNER', 'MANAGER']);
+        return $this->hasRestaurantRole($restaurant, [
+            RestaurantStaffRole::OWNER,
+            RestaurantStaffRole::MANAGER,
+        ]);
     }
 
-    public function carts()
+    public function carts(): HasMany
     {
         return $this->hasMany(Cart::class);
     }
 
-    public function orders()
+    public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
     }
@@ -97,7 +112,6 @@ class User extends Authenticatable implements JWTSubject
         return $this->is_banned;
     }
 
-    //JWT
     public function getJWTIdentifier()
     {
         return $this->getKey();

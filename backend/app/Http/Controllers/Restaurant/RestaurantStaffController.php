@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers\Restaurant;
 
+use App\Actions\Restaurant\AddRestaurantStaff;
+use App\Actions\Restaurant\RemoveRestaurantStaff;
+use App\Actions\Restaurant\UpdateRestaurantStaffRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Restaurant\AddStaffRequest;
 use App\Http\Requests\Restaurant\UpdateStaffRoleRequest;
 use App\Models\Restaurant;
 use App\Models\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Request;
 
 class RestaurantStaffController extends Controller
 {
@@ -15,10 +19,10 @@ class RestaurantStaffController extends Controller
 
     public function index(Restaurant $restaurant)
     {
-        $this->authorize('view', $restaurant);
+        $this->authorize('manageStaff', $restaurant);
 
-        $restaurant->load(['users' => function ($q) {
-            $q->select('users.id', 'users.name', 'users.email', 'users.phone')
+        $restaurant->load(['users' => function ($query) {
+            $query->select('users.id', 'users.name', 'users.email', 'users.phone')
                 ->orderBy('users.name');
         }]);
 
@@ -35,69 +39,48 @@ class RestaurantStaffController extends Controller
         ]);
     }
 
-    public function store(AddStaffRequest $request, Restaurant $restaurant)
+    public function store(
+        AddStaffRequest $request,
+        Restaurant $restaurant,
+        AddRestaurantStaff $addRestaurantStaff
+    )
     {
         $this->authorize('manageStaff', $restaurant);
 
         $data = $request->validated();
-
-        $user = User::findOrFail($data['user_id']);
-
-        // нельзя добавить владельца, который уже есть
-        if ($restaurant->users()->where('users.id', $user->id)->exists()) {
-            return response()->json([
-                'message' => 'Пользователь уже привязан к этому ресторану',
-            ], 422);
-        }
-
-        $restaurant->users()->attach($user->id, [
-            'role' => $data['role'],
-        ]);
+        $addRestaurantStaff($restaurant, $data);
 
         return response()->json([
             'message' => 'Сотрудник добавлен',
         ], 201);
     }
 
-    public function update(UpdateStaffRoleRequest $request, Restaurant $restaurant, User $user)
+    public function update(
+        UpdateStaffRoleRequest $request,
+        Restaurant $restaurant,
+        User $user,
+        UpdateRestaurantStaffRole $updateRestaurantStaffRole
+    )
     {
         $this->authorize('manageStaff', $restaurant);
 
-        if (! $restaurant->users()->where('users.id', $user->id)->exists()) {
-            return response()->json([
-                'message' => 'Пользователь не является сотрудником этого ресторана',
-            ], 404);
-        }
-
         $data = $request->validated();
-
-        $restaurant->users()->updateExistingPivot($user->id, [
-            'role' => $data['role'],
-        ]);
+        $updateRestaurantStaffRole($restaurant, $user, $data);
 
         return response()->json([
             'message' => 'Роль сотрудника обновлена',
         ]);
     }
 
-    public function destroy(Restaurant $restaurant, User $user)
+    public function destroy(
+        Request $request,
+        Restaurant $restaurant,
+        User $user,
+        RemoveRestaurantStaff $removeRestaurantStaff
+    )
     {
         $this->authorize('manageStaff', $restaurant);
-
-        if (! $restaurant->users()->where('users.id', $user->id)->exists()) {
-            return response()->json([
-                'message' => 'Пользователь не является сотрудником этого ресторана',
-            ], 404);
-        }
-
-        // не даём удалить себя как OWNER (чтобы ресторан не остался без владельца)
-        if (auth('api')->id() === $user->id) {
-            return response()->json([
-                'message' => 'Нельзя удалить самого себя из ресторана',
-            ], 422);
-        }
-
-        $restaurant->users()->detach($user->id);
+        $removeRestaurantStaff($request->user(), $restaurant, $user);
 
         return response()->json([
             'message' => 'Сотрудник удалён',

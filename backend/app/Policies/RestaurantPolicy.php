@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\RestaurantStaffRole;
 use App\Models\Restaurant;
 use App\Models\User;
 
@@ -18,7 +19,11 @@ class RestaurantPolicy
         }
 
         return $user->is_admin
-            || $user->hasRestaurantRole($restaurant, ['OWNER', 'MANAGER', 'STAFF']);
+            || $user->hasRestaurantRole($restaurant, [
+                RestaurantStaffRole::OWNER,
+                RestaurantStaffRole::MANAGER,
+                RestaurantStaffRole::STAFF,
+            ]);
     }
 
     public function create(User $user): bool
@@ -29,19 +34,25 @@ class RestaurantPolicy
     public function update(User $user, Restaurant $restaurant): bool
     {
         return $user->is_admin
-            || $user->hasRestaurantRole($restaurant, ['OWNER', 'MANAGER']);
+            || $user->hasRestaurantRole($restaurant, [
+                RestaurantStaffRole::OWNER,
+                RestaurantStaffRole::MANAGER,
+            ]);
     }
 
     public function delete(User $user, Restaurant $restaurant): bool
     {
         return $user->is_admin
-            || $user->hasRestaurantRole($restaurant, ['OWNER']);
+            || $user->hasRestaurantRole($restaurant, [RestaurantStaffRole::OWNER]);
     }
 
     public function manageStaff(User $user, Restaurant $restaurant): bool
     {
         return $user->is_admin
-            || $user->hasRestaurantRole($restaurant, ['OWNER', 'MANAGER']);
+            || $user->hasRestaurantRole($restaurant, [
+                RestaurantStaffRole::OWNER,
+                RestaurantStaffRole::MANAGER,
+            ]);
     }
 
     public function manageOrders(User $user, Restaurant $restaurant): bool

@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Restaurant;
 
+use App\Enums\RestaurantStaffRole;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class AddStaffRequest extends FormRequest
 {
@@ -15,7 +17,7 @@ class AddStaffRequest extends FormRequest
     {
         return [
             'user_id' => ['required', 'integer', 'exists:users,id'],
-            'role'    => ['required', 'string', 'in:OWNER,MANAGER,STAFF'],
+            'role'    => ['required', Rule::enum(RestaurantStaffRole::class)],
         ];
     }
 
