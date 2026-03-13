@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Order extends Model
 {
@@ -28,27 +30,32 @@ class Order extends Model
         'delivery_lng' => 'float',
     ];
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function restaurant()
+    public function restaurant(): BelongsTo
     {
         return $this->belongsTo(Restaurant::class);
     }
 
-    public function courier()
+    public function courier(): BelongsTo
     {
         return $this->belongsTo(CourierProfile::class, 'courier_id', 'user_id');
     }
 
-    public function items()
+    public function deliveryAddress(): BelongsTo
+    {
+        return $this->belongsTo(Address::class, 'delivery_address_id');
+    }
+
+    public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);
     }
 
-    public function events()
+    public function events(): HasMany
     {
         return $this->hasMany(OrderEvent::class);
     }

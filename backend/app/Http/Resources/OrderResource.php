@@ -32,6 +32,10 @@ class OrderResource extends JsonResource
             'delivery_lat' => $this->delivery_lat,
             'delivery_lng' => $this->delivery_lng,
 
+            'delivery_address' => new AddressResource(
+                $this->whenLoaded('deliveryAddress')
+            ),
+
             'restaurant' => new RestaurantResource($this->whenLoaded('restaurant')),
             'items' => $items,
             'events' => OrderEventResource::collection($this->whenLoaded('events')),
