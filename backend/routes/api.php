@@ -43,10 +43,16 @@ Route::prefix('/v1')->group(function () {
     Route::prefix('/restaurants')->group(function () {
         Route::get('/', [RestaurantController::class, 'index']);
 
+        Route::middleware('auth:api')->group(function () {
+            Route::get('/my', [RestaurantController::class, 'my']);
+            Route::post('/', [RestaurantController::class, 'store']);
+            Route::put('/{restaurant}', [RestaurantController::class, 'update']);
+            Route::delete('/{restaurant}', [RestaurantController::class, 'destroy']);
+        });
+
         Route::prefix('/{restaurant:slug}')->group(function () {
             Route::get('/', [RestaurantController::class, 'show']);
 
-            // Руты работы с персоналом
             Route::middleware('auth:api')->prefix('/users')->group(function () {
                 Route::get('/', [RestaurantStaffController::class, 'index']);
                 Route::post('/', [RestaurantStaffController::class, 'store']);
@@ -54,7 +60,6 @@ Route::prefix('/v1')->group(function () {
                 Route::delete('/{user}', [RestaurantStaffController::class, 'destroy']);
             });
 
-            // Руты работы с продуктами
             Route::prefix('/products')->group(function () {
                 Route::get('/', [ProductController::class, 'index']);
                 Route::get('/{product}', [ProductController::class, 'show']);
@@ -77,13 +82,6 @@ Route::prefix('/v1')->group(function () {
                 Route::post('/{order}/cancel', [RestaurantOrderController::class, 'cancel']);
             });
         });
-
-        Route::middleware('auth:api')->group(function () {
-            Route::post('/', [RestaurantController::class, 'store']);
-            Route::put('/{restaurant}', [RestaurantController::class, 'update']);
-            Route::delete('/{restaurant}', [RestaurantController::class, 'destroy']);
-        });
-
     });
 
     Route::prefix('/product-categories')->group(function () {
