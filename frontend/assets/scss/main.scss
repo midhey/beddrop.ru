@@ -28,8 +28,9 @@
 @use "blocks/orders-page";
 @use "blocks/order-details-page";
 @use "blocks/checkout-page";
-@use "blocks/cart";
 @use "blocks/courier-page";
+@use "blocks/cart";
+@use "blocks/active-order-banner";
 @use "blocks/addresses-page";
 
 //Utilities
