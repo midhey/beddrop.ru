@@ -14,6 +14,7 @@
     "axios": "^1.13.2",
     "hystmodal": "^1.0.1",
     "imask": "^7.6.1",
+    "lucide-vue-next": "^0.577.0",
     "notiflix": "^3.2.8",
     "nuxt": "^4.2.1",
     "pinia": "^3.0.4",

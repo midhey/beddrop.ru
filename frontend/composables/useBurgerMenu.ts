@@ -17,13 +17,14 @@ export function useBurgerMenu(options: UseBurgerMenuOptions = {}) {
         if (typeof window === 'undefined') return;
         const burgerEl = burgerRef.value;
         const menuEl = menuRef.value;
-        const backdropEl = menuRef.value;
         if (!burgerEl || !menuEl) return;
 
         if (window.innerWidth <= breakpoint - 0.2) {
-            const h = burgerEl.offsetHeight;
+            const h = Math.round(burgerEl.getBoundingClientRect().height);
+            burgerEl.style.setProperty('--header-h', `${h}px`);
             menuEl.style.setProperty('--header-h', `${h}px`);
         } else {
+            burgerEl.style.removeProperty('--header-h');
             menuEl.style.removeProperty('--header-h');
         }
     };

@@ -1,6 +1,6 @@
 @use "../core" as *;
 
-$dropdown-breakpoint: 768px !default;
+$dropdown-breakpoint: $tablet-l !default;
 
 [data-dropdown] {
   position: relative;
@@ -12,52 +12,63 @@ $dropdown-breakpoint: 768px !default;
   cursor: pointer;
 }
 
-[data-dropdown="open"] > [data-dropdown-toggle] {
-}
-
 [data-dropdown-menu] {
   visibility: hidden;
   opacity: 0;
-  position: absolute;
-  transition: opacity .3s ease, transform .3s ease-in-out;
+  pointer-events: none;
 }
 
 @media (min-width: #{$dropdown-breakpoint}) {
-  [data-dropdown-toggle] {
-    display: none;
+  [data-dropdown]::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 100%;
+    height: rem(14);
+    pointer-events: auto;
   }
 
   [data-dropdown-menu] {
+    position: absolute;
+    top: calc(100% + #{rem(12)});
     right: 0;
-    top: calc(100%);
-    pointer-events: none;
-    transform: translateX(5%);
-    transition: opacity .3s ease, transform .3s ease-in-out;
-
-    &::before {
-      height: rem(16);
-      content: '';
-      width: 100%;
-    }
+    transform: translateY(rem(10)) scale(0.98);
+    transform-origin: top right;
+    transition:
+      opacity .22s ease,
+      transform .22s ease,
+      visibility .22s ease;
   }
 
-  [data-dropdown]:hover > [data-dropdown-menu] {
+  [data-dropdown="open"] > [data-dropdown-menu],
+  [data-dropdown]:hover > [data-dropdown-menu],
+  [data-dropdown]:focus-within > [data-dropdown-menu] {
     visibility: visible;
-    pointer-events: auto;
     opacity: 1;
-    transform: translateX(0);
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
   }
 }
 
 @media (max-width: #{$dropdown-breakpoint}) {
-  [data-dropdown="open"] > [data-dropdown-menu] {
-    visibility: visible;
-    pointer-events: auto;
-    opacity: 1;
-    transform: translateY(0);
+  [data-dropdown-menu] {
+    position: static;
+    max-height: 0;
+    overflow: hidden;
+    transform: none;
+    transition:
+      max-height .28s ease,
+      opacity .2s ease,
+      margin-top .2s ease,
+      visibility .2s ease;
   }
 
   [data-dropdown="open"] > [data-dropdown-menu] {
-
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    max-height: 80vh;
+    margin-top: rem(12);
   }
 }

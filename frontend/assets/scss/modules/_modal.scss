@@ -22,6 +22,9 @@
   }
 
   &__close-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     background-color: transparent;
     cursor: pointer;
     color: $black;

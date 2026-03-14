@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { watch, onBeforeUnmount } from 'vue';
+import { X } from 'lucide-vue-next';
 import { lockScroll, unlockScroll } from '@/assets/utils/dom';
 
 const props = defineProps<{
@@ -49,10 +50,12 @@ onBeforeUnmount(() => {
         <header class="modal__header">
           <h3 v-if="title">{{ title }}</h3>
           <button
-              class="modal__close-btn icon-cross"
+              class="modal__close-btn"
               type="button"
+              aria-label="Закрыть"
               @click="close"
           >
+            <X class="ui-icon" :size="18" :stroke-width="1.9" aria-hidden="true" />
           </button>
         </header>
         <div class="modal__body">
