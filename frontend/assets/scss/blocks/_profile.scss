@@ -27,7 +27,12 @@
     gap: rem(64);
 
     &--password {
-      display: none;
+      flex-direction: column;
+      gap: rem(20);
+      padding: rem(20);
+      border: 1px solid $gray;
+      border-radius: rem(16);
+      background-color: #f8fafc;
     }
     
     @media (max-width: $tablet) {
@@ -93,6 +98,9 @@
   }
 
   &__edit-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     padding: rem(16);
     cursor: pointer;
     transition: opacity .3s ease;
@@ -112,14 +120,47 @@
   }
 
   &__subtitle {
+    margin: 0;
+    font-size: rem(24);
+    font-weight: 600;
   }
 
   &__actions {
     &--password {
+      display: flex;
+      gap: rem(16);
+      flex-wrap: wrap;
     }
   }
 
   &__empty {
+  }
+
+  &__security-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: rem(24);
+
+    @media (max-width: $tablet) {
+      flex-direction: column;
+    }
+  }
+
+  &__security-copy {
+    display: flex;
+    flex-direction: column;
+    gap: rem(8);
+  }
+
+  &__hint {
+    margin: 0;
+    max-width: rem(560);
+    color: $gray-dark;
+  }
+
+  &__password-form {
+    width: 100%;
   }
 
   .form {

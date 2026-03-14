@@ -1,12 +1,18 @@
 import { ref, reactive, computed, onMounted } from 'vue';
-import { navigateTo, useNuxtApp } from '#app';
+import { navigateTo } from '#app';
+import { useFeedback } from '~/composables/useFeedback';
 import { useAuthStore } from '~/stores/auth';
+import {
+    formatPhoneForDisplay,
+    normalizePhoneInput,
+    PHONE_MASK_OPTIONS,
+} from '~/utils/phone';
 
 type EditableField = 'name' | 'email' | 'phone';
 
 export function useProfilePage() {
     const authStore = useAuthStore();
-    const { $notify, $block } = useNuxtApp();
+    const feedback = useFeedback();
 
     const user = computed(() => authStore.user);
     const isLoading = computed(() => authStore.loading);
@@ -28,16 +34,23 @@ export function useProfilePage() {
     const emailInput = ref('');
     const phoneInput = ref('');
 
-    // refs на формы (для $block)
+    // refs на формы для template bindings
     const nameFormRef = ref<HTMLFormElement | null>(null);
     const emailFormRef = ref<HTMLFormElement | null>(null);
     const phoneFormRef = ref<HTMLFormElement | null>(null);
 
     // Смена пароля
+    const isPasswordFormVisible = ref(false);
     const passwordFormRef = ref<HTMLFormElement | null>(null);
     const currentPassword = ref('');
     const newPassword = ref('');
     const newPasswordConfirmation = ref('');
+
+    const resetPasswordForm = () => {
+        currentPassword.value = '';
+        newPassword.value = '';
+        newPasswordConfirmation.value = '';
+    };
 
     const init = async () => {
         if (authStore.accessToken && !authStore.user) {
@@ -48,7 +61,7 @@ export function useProfilePage() {
         }
 
         if (!authStore.accessToken) {
-            $notify?.info?.('Авторизуйтесь, чтобы просмотреть профиль');
+            feedback.info('Авторизуйтесь, чтобы просмотреть профиль');
             await navigateTo('/');
         }
     };
@@ -77,7 +90,7 @@ export function useProfilePage() {
         }
 
         if (field === 'phone') {
-            phoneInput.value = user.value.phone;
+            phoneInput.value = formatPhoneForDisplay(user.value.phone, '');
             isEditing.phone = true;
         }
     };
@@ -87,28 +100,24 @@ export function useProfilePage() {
     };
 
     const withBlock = async (
-        formRef: typeof nameFormRef,
         fn: () => Promise<void>,
-        loadingLabel = 'Отправка...'
-    ) => {
-        const el = '.profile__block';
-        if (el) {
-            $block?.circle(el, loadingLabel);
-        }
+        loadingLabel = 'Отправка...',
+    ) => feedback.withBlock('.profile__block', fn, loadingLabel);
 
-        try {
-            await fn();
-        } finally {
-            if (el) {
-                $block?.remove(el);
-            }
-        }
+    const openPasswordForm = () => {
+        resetPasswordForm();
+        isPasswordFormVisible.value = true;
+    };
+
+    const closePasswordForm = () => {
+        resetPasswordForm();
+        isPasswordFormVisible.value = false;
     };
 
     const submitName = async () => {
         if (!user.value) return;
 
-        await withBlock(nameFormRef, async () => {
+        await withBlock(async () => {
             await authStore.updateProfile({ name: nameInput.value || null });
             isEditing.name = false;
         }, 'Сохраняем...');
@@ -117,28 +126,22 @@ export function useProfilePage() {
     const submitEmail = async () => {
         if (!user.value) return;
 
-        await withBlock(emailFormRef, async () => {
+        await withBlock(async () => {
             await authStore.updateProfile({ email: emailInput.value });
             isEditing.email = false;
         }, 'Сохраняем...');
     };
 
     const formatPhone = (value: string | null) => {
-        if (!value) return 'Не указано';
-
-        const digits = value.replace(/\D/g, '');
-
-        if (digits.length !== 11) return value;
-
-        return `+7 ${digits.slice(1,4)}-${digits.slice(4,7)}-${digits.slice(7,9)}-${digits.slice(9,11)}`;
+        return formatPhoneForDisplay(value);
     };
 
     const submitPhone = async () => {
         if (!user.value) return;
 
-        await withBlock(phoneFormRef, async () => {
+        await withBlock(async () => {
             await authStore.updateProfile({
-                phone: phoneInput.value.replace(/\D/g, ''),
+                phone: normalizePhoneInput(phoneInput.value),
             });
             isEditing.phone = false;
         }, 'Сохраняем...');
@@ -147,23 +150,15 @@ export function useProfilePage() {
     const submitPassword = async () => {
         if (!user.value) return;
 
-        await withBlock(passwordFormRef, async () => {
+        await withBlock(async () => {
             await authStore.changePassword({
                 current_password: currentPassword.value,
                 password: newPassword.value,
                 password_confirmation: newPasswordConfirmation.value,
             });
 
-            currentPassword.value = '';
-            newPassword.value = '';
-            newPasswordConfirmation.value = '';
+            closePasswordForm();
         }, 'Сохраняем...');
-    };
-
-    const phoneMask = {
-        mask: '+{7} 000 000-00-00',
-        lazy: false,
-        overwrite: true,
     };
 
     return {
@@ -184,13 +179,14 @@ export function useProfilePage() {
         phoneFormRef,
 
         // password block
+        isPasswordFormVisible,
         passwordFormRef,
         currentPassword,
         newPassword,
         newPasswordConfirmation,
 
         //mask
-        phoneMask,
+        phoneMask: PHONE_MASK_OPTIONS,
         formatPhone,
 
         // actions
@@ -200,5 +196,7 @@ export function useProfilePage() {
         submitEmail,
         submitPhone,
         submitPassword,
+        openPasswordForm,
+        closePasswordForm,
     };
 }

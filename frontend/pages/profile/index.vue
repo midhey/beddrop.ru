@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Pencil } from 'lucide-vue-next';
+
 const {
   user,
   isLoading,
@@ -11,6 +13,7 @@ const {
   emailFormRef,
   phoneFormRef,
   passwordFormRef,
+  isPasswordFormVisible,
   currentPassword,
   newPassword,
   newPasswordConfirmation,
@@ -22,6 +25,8 @@ const {
   submitEmail,
   submitPhone,
   submitPassword,
+  openPasswordForm,
+  closePasswordForm,
 } = useProfilePage();
 </script>
 
@@ -55,9 +60,10 @@ const {
                     <button
                         type="button"
                         class="profile__edit-btn button"
+                        aria-label="Редактировать имя"
                         @click="startEdit('name')"
                     >
-                      ✎
+                      <Pencil class="ui-icon" :size="18" :stroke-width="1.9" aria-hidden="true" />
                     </button>
                   </div>
                 </template>
@@ -113,9 +119,10 @@ const {
                     <button
                         type="button"
                         class="profile__edit-btn button"
+                        aria-label="Редактировать email"
                         @click="startEdit('email')"
                     >
-                      ✎
+                      <Pencil class="ui-icon" :size="18" :stroke-width="1.9" aria-hidden="true" />
                     </button>
                   </div>
                 </template>
@@ -172,9 +179,10 @@ const {
                     <button
                         type="button"
                         class="profile__edit-btn button"
+                        aria-label="Редактировать телефон"
                         @click="startEdit('phone')"
                     >
-                      ✎
+                      <Pencil class="ui-icon" :size="18" :stroke-width="1.9" aria-hidden="true" />
                     </button>
                   </div>
                 </template>
@@ -221,15 +229,48 @@ const {
             </div>
           </div>
 
+
+          <NuxtLink
+              to="/profile/addresses"
+              class="button button--outline"
+          >
+            Управление адресами
+          </NuxtLink>
           <div
               v-if="user"
               class="profile__card profile__card--password"
           >
-            <h2 class="profile__subtitle">Смена пароля</h2>
+            <div class="profile__security-head">
+              <div class="profile__security-copy">
+                <h2 class="profile__subtitle">Безопасность</h2>
+                <p class="profile__hint">
+                  Для защиты аккаунта пароль меняется только вручную по отдельной кнопке.
+                </p>
+              </div>
+
+              <button
+                  v-if="!isPasswordFormVisible"
+                  type="button"
+                  class="button button--outline"
+                  @click="openPasswordForm"
+              >
+                Сменить пароль
+              </button>
+
+              <button
+                  v-else
+                  type="button"
+                  class="button button--text"
+                  @click="closePasswordForm"
+              >
+                Скрыть
+              </button>
+            </div>
 
             <form
+                v-if="isPasswordFormVisible"
                 ref="passwordFormRef"
-                class="form form--password"
+                class="form form--password profile__password-form"
                 @submit.prevent="submitPassword"
             >
               <div class="form__field">
@@ -281,6 +322,13 @@ const {
                     :disabled="isLoading"
                 >
                   {{ isLoading ? 'Сохраняем...' : 'Изменить пароль' }}
+                </button>
+                <button
+                    type="button"
+                    class="button button--ghost"
+                    @click="closePasswordForm"
+                >
+                  Отмена
                 </button>
               </div>
             </form>
