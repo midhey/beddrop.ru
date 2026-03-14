@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import { useFeedback } from '~/composables/useFeedback';
+
 const authStore = useAuthStore();
+const feedback = useFeedback();
 
 const email = ref('');
 const password = ref('');
 const isLoading = computed(() => authStore.loading);
-
-const formRef = ref<HTMLFormElement | null>(null);
 
 const emit = defineEmits<{
   (e: 'success'): void;
@@ -13,23 +14,15 @@ const emit = defineEmits<{
 }>();
 
 const onSubmit = async () => {
-  const { $block } = useNuxtApp();
-
-  if (formRef.value) {
-    $block?.circle('.modal', 'Отправка...');
-  }
-
   try {
-    await authStore.login({
-      email: email.value,
-      password: password.value,
+    await feedback.withBlock('.modal', async () => {
+      await authStore.login({
+        email: email.value,
+        password: password.value,
+      });
     });
     emit('success');
   } catch {
-  } finally {
-    if (formRef.value) {
-      $block?.remove('.modal');
-    }
   }
 };
 
@@ -40,7 +33,6 @@ const onOpenRegister = () => {
 
 <template>
   <form
-      ref="formRef"
       class="form"
       @submit.prevent="onSubmit"
   >

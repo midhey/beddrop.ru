@@ -1,6 +1,13 @@
 <script setup lang="ts">
+import { useFeedback } from '~/composables/useFeedback';
+import {
+  isCompletePhoneInput,
+  normalizePhoneInput,
+  PHONE_MASK_OPTIONS,
+} from '~/utils/phone';
 
 const authStore = useAuthStore();
+const feedback = useFeedback();
 
 const email = ref('');
 const phone = ref('');
@@ -9,53 +16,43 @@ const passwordConfirmation = ref('');
 const name = ref('');
 const isLoading = computed(() => authStore.loading);
 
-const phoneMask = {
-  mask: '+{7} 000 000-00-00',
-  lazy: false,
-  overwrite: true,
-};
-
-const formRef = ref<HTMLFormElement | null>(null);
-
 const emit = defineEmits<{
   (e: 'success'): void;
 }>();
 
 const onSubmit = async () => {
-  const { $block, $notify } = useNuxtApp();
-
   if (password.value !== passwordConfirmation.value) {
-    $notify?.failure?.('Пароли не совпадают');
+    feedback.failure('Пароли не совпадают');
     return;
   }
 
-  if (formRef.value) {
-    $block?.circle('.modal', 'Отправка...');
+  const rawPhone = normalizePhoneInput(phone.value);
+
+  if (!isCompletePhoneInput(phone.value)) {
+    feedback.failure('Введите номер телефона полностью');
+    return;
   }
 
   try {
-    await authStore.register({
-      email: email.value,
-      phone: phone.value,
-      password: password.value,
-      password_confirmation: passwordConfirmation.value,
-      name: name.value || null,
+    await feedback.withBlock('.modal', async () => {
+      await authStore.register({
+        email: email.value,
+        phone: rawPhone,
+        password: password.value,
+        password_confirmation: passwordConfirmation.value,
+        name: name.value || null,
+      });
     });
+
     emit('success');
-  } catch (e) {
-    console.error('[RegisterForm] submit error', e);
-  } finally {
-    if (formRef.value) {
-      $block?.remove('.modal');
-    }
+  } catch {
   }
-}
+};
 
 </script>
 
 <template>
   <form
-      ref="formRef"
       class="form"
       @submit.prevent="onSubmit"
   >
@@ -91,7 +88,7 @@ const onSubmit = async () => {
       <label class="form__label">
         <input
             v-model="phone"
-            v-imask="phoneMask"
+            v-imask="PHONE_MASK_OPTIONS"
             type="tel"
             class="form__input"
             placeholder="Телефон"

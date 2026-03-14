@@ -1,4 +1,5 @@
 import {defineStore} from "pinia";
+import { useFeedback } from '~/composables/useFeedback';
 
 interface User {
     id: number;
@@ -85,10 +86,11 @@ export const useAuthStore = defineStore('auth', {
             this.clearError();
 
             try {
-                const { $api, $notify } = useNuxtApp();
+                const { $api } = useNuxtApp();
+                const feedback = useFeedback();
                 const { data } = await $api.post('/auth/register', payload);
                 this.setAuth(data.user, data.access_token);
-                $notify?.success?.('Вы успешно зарегистрированы');
+                feedback.success('Вы успешно зарегистрированы');
                 return data;
             } catch (error: any) {
                 this.handleError(error);
@@ -103,10 +105,11 @@ export const useAuthStore = defineStore('auth', {
             this.clearError();
 
             try {
-                const { $api, $notify } = useNuxtApp();
+                const { $api } = useNuxtApp();
+                const feedback = useFeedback();
                 const { data } = await $api.post('/auth/login', payload);
                 this.setAuth(data.user, data.access_token);
-                $notify?.success?.('Вы успешно вошли');
+                feedback.success('Вы успешно вошли');
                 return data;
             } catch (error: any) {
                 this.handleError(error);
@@ -122,9 +125,10 @@ export const useAuthStore = defineStore('auth', {
             this.clearError();
 
             try {
-                const { $api, $notify } = useNuxtApp();
+                const { $api } = useNuxtApp();
+                const feedback = useFeedback();
                 await $api.post('/auth/logout');
-                $notify?.info?.('Вы вышли из аккаунта');
+                feedback.info('Вы вышли из аккаунта');
                 return true;
             } catch (error: any) {
                 this.handleError(error);
@@ -139,12 +143,13 @@ export const useAuthStore = defineStore('auth', {
             if (!this.accessToken) return null;
 
             try {
-                const { $api, $notify } = useNuxtApp();
+                const { $api } = useNuxtApp();
+                const feedback = useFeedback();
                 const { data } = await $api.post('/auth/refresh');
                 this.accessToken = data.access_token;
                 return true;
             } catch (error: any) {
-                $notify?.info?.('Ваша сессия истекла. Повторите авторизацию');
+                feedback.info('Ваша сессия истекла. Повторите авторизацию');
                 this.clearAuth();
                 throw error;
             }
@@ -184,11 +189,12 @@ export const useAuthStore = defineStore('auth', {
             this.clearError();
 
             try {
-                const { $api, $notify } = useNuxtApp();
+                const { $api } = useNuxtApp();
+                const feedback = useFeedback();
                 const { data } = await $api.put('/profile/me', payload);
 
                 this.user = data.user;
-                $notify?.success?.('Профиль обновлён');
+                feedback.success('Профиль обновлён');
                 return data.user as User;
             } catch (error: any) {
                 this.handleError(error);
@@ -203,9 +209,10 @@ export const useAuthStore = defineStore('auth', {
             this.clearError();
 
             try {
-                const { $api, $notify } = useNuxtApp();
+                const { $api } = useNuxtApp();
+                const feedback = useFeedback();
                 await $api.put('/profile/password', payload);
-                $notify?.success?.('Пароль успешно изменён');
+                feedback.success('Пароль успешно изменён');
                 return true;
             } catch (error: any) {
                 this.handleError(error);
@@ -216,7 +223,7 @@ export const useAuthStore = defineStore('auth', {
         },
 
         handleError(error: any) {
-            const { $notify } = useNuxtApp();
+            const feedback = useFeedback();
 
             let message = 'Произошла неизвестная ошибка. Обратитесь в поддержку сервиса';
 
@@ -233,8 +240,7 @@ export const useAuthStore = defineStore('auth', {
             }
 
             this.error = message;
-            $notify?.failure?.(message);
-            console.error('[AuthStore] error:', message, error);
+            feedback.failure(message);
         }
     }
 })
