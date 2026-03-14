@@ -14,6 +14,33 @@
   --color-warning: #F1C40F;
   --color-error:   #E74C3C;
 
+  /* neutral primitives */
+  --radius-10: 10px;
+  --radius-12: 12px;
+  --radius-16: 16px;
+  --radius-pill: 999px;
+
+  --color-surface: #FFFFFF;
+  --color-surface-soft: #F9FAFB;
+  --color-border-neutral: #E5E7EB;
+  --color-text-strong: #111827;
+  --color-text-subtle: #4B5563;
+  --color-text-soft: #9CA3AF;
+
+  --shadow-soft-card:
+    0 1px 2px rgba(15, 23, 42, 0.05),
+    0 0 0 1px #E5E7EB;
+
+  --color-status-muted-bg: #F3F4F6;
+  --color-status-muted-text: #4B5563;
+  --color-status-info-bg: #EFF6FF;
+  --color-status-info-text: #1D4ED8;
+  --color-status-success-bg: #ECFDF3;
+  --color-status-success-text: #15803D;
+  --color-status-danger-bg: #FEF2F2;
+  --color-status-danger-text: #B91C1C;
+  --color-status-danger-border: #FECACA;
+
   /* fonts */
   --font-family-main: OpenSans, sans-serif;
   --font-family-secondary: Unbounded, sans-serif;
