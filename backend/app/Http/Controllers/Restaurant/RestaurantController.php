@@ -15,12 +15,25 @@ class RestaurantController extends Controller
 {
     use AuthorizesRequests;
 
-    public function index()
+    public function index(Request $request)
     {
+        $validated = $request->validate([
+            'category_id' => ['nullable', 'integer', 'exists:product_categories,id'],
+        ]);
+
         $restaurants = Restaurant::query()
             ->where('is_active', true)
-            ->with(['address', 'logo'])
-            ->paginate(20);
+            ->with(['address', 'logo']);
+
+        if (array_key_exists('category_id', $validated) && $validated['category_id'] !== null) {
+            $restaurants->whereHas('products', function ($query) use ($validated) {
+                $query
+                    ->where('category_id', $validated['category_id'])
+                    ->where('is_active', true);
+            });
+        }
+
+        $restaurants = $restaurants->paginate(20);
 
         return response()->json($restaurants);
     }
