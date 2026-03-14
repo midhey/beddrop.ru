@@ -1,0 +1,143 @@
+@use '../core' as *;
+
+.restaurants-manage {
+  padding: rem(24);
+
+  &__container {
+  }
+
+  &__back {
+    border: none;
+    background: none;
+    padding: 0;
+    margin-bottom: 16px;
+    font-size: 14px;
+    cursor: pointer;
+    color: #6b7280;
+  }
+
+  &__back:hover {
+    color: #374151;
+  }
+
+  &__title {
+    margin: 0 0 4px;
+    font-size: 26px;
+    font-weight: 700;
+  }
+
+  &__subtitle {
+    margin: 0 0 16px;
+    font-size: 14px;
+    color: #6b7280;
+  }
+
+  &__loading,
+  &__error,
+  &__empty {
+    padding: 24px 0;
+    font-size: 15px;
+  }
+
+  &__error {
+    color: #b91c1c;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  &__card {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow:
+            0 1px 2px rgba(15, 23, 42, 0.05),
+            0 0 0 1px #e5e7eb;
+  }
+
+  &__card-main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__card-title {
+    margin: 0 0 4px;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  &__card-address {
+    margin: 0 0 6px;
+    font-size: 13px;
+    color: #6b7280;
+  }
+
+  &__card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 12px;
+  }
+
+  &__status {
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #f3f4f6;
+    color: #4b5563;
+  }
+
+  &__status[data-status='active'] {
+    background: #ecfdf3;
+    color: #15803d;
+  }
+
+  &__status[data-status='inactive'] {
+    background: #fef2f2;
+    color: #b91c1c;
+  }
+
+  &__prep {
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #1d4ed8;
+  }
+
+  &__card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-end;
+  }
+
+  &__btn {
+    padding-inline: 14px;
+  }
+
+  &__link {
+    border: none;
+    background: none;
+    padding: 0;
+    font-size: 13px;
+    color: var(--color-primary, #00bcf0);
+    cursor: pointer;
+  }
+
+  @media (max-width: 640px) {
+    &__card {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    &__card-actions {
+      align-items: flex-start;
+    }
+  }
+}
+

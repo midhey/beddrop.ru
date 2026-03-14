@@ -1,0 +1,348 @@
+.restaurant-dashboard {
+  &__header {
+    margin-bottom: 12px;
+  }
+
+  &__title {
+    font-size: 24px;
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  &__address {
+    margin-top: 6px;
+    font-size: 13px;
+  }
+
+  &__tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 16px 0 12px;
+  }
+
+  &__tab {
+    border-radius: 999px;
+    border: 1px solid #e5e7eb;
+    background: #ffffff;
+    padding: 6px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    color: #4b5563;
+  }
+
+  &__tab--active {
+    border-color: var(--color-primary, #00bcf0);
+    background: rgba(0, 188, 240, 0.08);
+    color: var(--color-primary, #00bcf0);
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  &__section-header {
+    margin-bottom: 8px;
+  }
+
+  &__section-title {
+    font-size: 18px;
+  }
+
+  &__section-empty {
+    margin: 6px 0 0;
+    padding: 0;
+  }
+
+  &__action-btn {
+    border-radius: 999px;
+    border: 1px solid #e5e7eb;
+    background: #ffffff;
+    padding: 6px 12px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  &__form-row {
+    margin-bottom: 8px;
+  }
+
+  &__form-row--inline {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__form-label {
+    font-size: 12px;
+    color: #6b7280;
+  }
+
+  &__form-input,
+  &__form-textarea,
+  &__staff-role {
+    font-size: 13px;
+  }
+
+  &__form-textarea {
+    min-height: 60px;
+  }
+
+  &__form-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+  }
+
+  &__form-actions {
+    margin-top: 4px;
+  }
+
+  &__create-product,
+  &__create-staff {
+    margin-bottom: 12px;
+  }
+
+  &__products,
+  &__orders,
+  &__staff-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__products {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    gap: 8px;
+  }
+
+  &__product {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  &__product:last-child,
+  &__order:last-child,
+  &__staff-item:last-child {
+    border-bottom: none;
+  }
+
+  &__product-main,
+  &__order-main,
+  &__staff-main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__product-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 2px;
+  }
+
+  &__product-name,
+  &__staff-name {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  &__product-price {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  &__product-desc {
+    margin: 0 0 4px;
+    font-size: 13px;
+    color: #4b5563;
+  }
+
+  &__product-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 12px;
+    color: #6b7280;
+  }
+
+  &__product-category {
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #f3f4f6;
+  }
+
+  &__product-actions,
+  &__staff-right {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  &__orders {
+    gap: 10px;
+  }
+
+  &__order {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 10px 0;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  &__order-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  &__order-number {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  &__order-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 2px;
+    font-size: 12px;
+    color: #6b7280;
+  }
+
+  &__order-pay {
+    margin-bottom: 4px;
+    font-size: 12px;
+    color: #6b7280;
+  }
+
+  &__order-comment {
+    margin: 0;
+    font-size: 13px;
+    color: #4b5563;
+  }
+
+  &__order-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  &__order-total {
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  &__order-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  &__order-btn {
+    border-radius: 999px;
+    border: 1px solid #e5e7eb;
+    background: #ffffff;
+    padding: 4px 10px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  &__order-btn--danger {
+    border-color: #fecaca;
+    color: #b91c1c;
+    background: #fef2f2;
+  }
+
+  &__order-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  &__staff-list {
+    margin: 8px 0 0;
+    padding: 0;
+    list-style: none;
+    gap: 8px;
+  }
+
+  &__staff-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  &__staff-top {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 2px;
+  }
+
+  &__staff-email,
+  &__staff-meta {
+    color: #6b7280;
+  }
+
+  &__staff-email {
+    font-size: 13px;
+  }
+
+  &__staff-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+  }
+
+  &__staff-meta > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  &__staff-right {
+    align-items: flex-end;
+  }
+
+  &__staff-role {
+    min-width: 120px;
+  }
+}
+
+@media (max-width: 640px) {
+  .restaurant-dashboard__header,
+  .restaurant-dashboard__product,
+  .restaurant-dashboard__order,
+  .restaurant-dashboard__staff-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .restaurant-dashboard__product-actions {
+    flex-direction: row;
+  }
+
+  .restaurant-dashboard__order-right,
+  .restaurant-dashboard__staff-right {
+    align-items: flex-start;
+  }
+}
