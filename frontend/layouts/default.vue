@@ -1,11 +1,9 @@
 <template>
   <div class="app wrapper">
-    <AppHeader />
-      <main class="main">
-        <ClientOnly>
-          <NuxtPage/>
-        </ClientOnly>
-      </main>
+    <AppHeader/>
+    <main class="main">
+      <slot />
+    </main>
   </div>
 </template>
 

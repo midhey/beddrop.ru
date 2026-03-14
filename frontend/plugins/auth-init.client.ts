@@ -1,8 +1,29 @@
-export default defineNuxtPlugin(() => {
-    const auth = useAuthStore();
+import { watch } from 'vue';
 
-    if (auth.accessToken && !auth.user) {
-        auth.profile(true).catch(() => {
+export default defineNuxtPlugin(() => {
+    const authStore = useAuthStore();
+    const appShellStore = useAppShellStore();
+
+    const syncBootstrap = async (isAuthenticated: boolean, force = false) => {
+        if (!isAuthenticated) {
+            appShellStore.resetForGuest();
+            return;
+        }
+
+        await appShellStore.ensureBootstrapped(force).catch(() => {
         });
-    }
+    };
+
+    syncBootstrap(authStore.isAuthenticated);
+
+    watch(
+        () => authStore.isAuthenticated,
+        (isAuthenticated, wasAuthenticated) => {
+            if (isAuthenticated === wasAuthenticated) {
+                return;
+            }
+
+            syncBootstrap(isAuthenticated, true);
+        },
+    );
 });
