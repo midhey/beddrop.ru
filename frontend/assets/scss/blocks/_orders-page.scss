@@ -1,0 +1,95 @@
+.orders {
+  &__loading,
+  &__error,
+  &__empty {
+    font-size: 15px;
+  }
+
+  &__empty-actions {
+    margin-top: 12px;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  &__item {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    text-decoration: none;
+    color: inherit;
+    transition:
+      transform 0.08s ease-out,
+      box-shadow 0.08s ease-out;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow:
+        0 10px 15px -3px rgba(15, 23, 42, 0.15),
+        0 4px 6px -4px rgba(15, 23, 42, 0.12);
+    }
+  }
+
+  &__item-main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__item-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  &__item-number {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  &__item-restaurant {
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  &__item-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 13px;
+    color: #6b7280;
+  }
+
+  &__item-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  &__item-total {
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  &__item-pay {
+    font-size: 12px;
+    color: #6b7280;
+  }
+}
+
+@media (max-width: 640px) {
+  .orders__item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .orders__item-right {
+    align-items: flex-start;
+  }
+}

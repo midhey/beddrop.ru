@@ -25,6 +25,10 @@
 @use "blocks/restaurant-card";
 @use "blocks/restaurants-manage";
 @use "blocks/restaurant-manage-dashboard";
+@use "blocks/orders-page";
+@use "blocks/order-details-page";
+@use "blocks/checkout-page";
+@use "blocks/cart";
 
 //Utilities
 @use "base/utilities";
