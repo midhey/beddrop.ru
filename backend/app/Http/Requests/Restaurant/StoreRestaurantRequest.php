@@ -15,12 +15,14 @@ class StoreRestaurantRequest extends FormRequest
     {
         return [
             'name'          => ['required', 'string', 'max:255'],
+            'description'   => ['nullable', 'string'],
             'slug'          => ['nullable', 'string', 'max:255', 'unique:restaurants,slug'],
             'phone'         => ['nullable', 'string', 'max:32'],
             'is_active'     => ['sometimes', 'boolean'],
             'prep_time_min' => ['nullable', 'integer', 'min:0'],
             'prep_time_max' => ['nullable', 'integer', 'min:0'],
             'logo_media_id' => ['nullable', 'integer', 'exists:media,id'],
+            'address.label'       => ['nullable', 'string', 'max:255'],
             'address.line1'       => ['required', 'string', 'max:255'],
             'address.line2'       => ['nullable', 'string', 'max:255'],
             'address.city'        => ['nullable', 'string', 'max:255'],

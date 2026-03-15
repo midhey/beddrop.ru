@@ -75,6 +75,7 @@ class RestaurantController extends Controller
 
         $restaurant = Restaurant::create([
             'name' => $data['name'],
+            'description' => $data['description'] ?? null,
             'slug' => $data['slug'] ?? null,
             'phone' => $data['phone'] ?? null,
             'is_active' => $data['is_active'] ?? true,
@@ -91,7 +92,10 @@ class RestaurantController extends Controller
         ]);
 
         return response()->json([
-            'restaurant' => $restaurant->load(['address']),
+            'restaurant' => $this->serializeRestaurant(
+                $restaurant->load(['address', 'logo']),
+                $request->user(),
+            ),
         ], 201);
     }
 
@@ -103,6 +107,7 @@ class RestaurantController extends Controller
 
         $restaurant->fill([
             'name' => $data['name'] ?? $restaurant->name,
+            'description' => array_key_exists('description', $data) ? $data['description'] : $restaurant->description,
             'phone' => $data['phone'] ?? $restaurant->phone,
             'is_active' => $data['is_active'] ?? $restaurant->is_active,
             'prep_time_min' => $data['prep_time_min'] ?? $restaurant->prep_time_min,
@@ -134,7 +139,10 @@ class RestaurantController extends Controller
         }
 
         return response()->json([
-            'restaurant' => $restaurant->load('address'),
+            'restaurant' => $this->serializeRestaurant(
+                $restaurant->load(['address', 'logo']),
+                $request->user(),
+            ),
         ]);
     }
 
@@ -178,6 +186,7 @@ class RestaurantController extends Controller
         return [
             'id' => $restaurant->id,
             'name' => $restaurant->name,
+            'description' => $restaurant->description,
             'slug' => $restaurant->slug,
             'phone' => $restaurant->phone,
             'is_active' => (bool) $restaurant->is_active,
@@ -188,6 +197,7 @@ class RestaurantController extends Controller
             'current_user_role' => $currentUserRole,
             'address' => $restaurant->address ? [
                 'id' => $restaurant->address->id,
+                'label' => $restaurant->address->label,
                 'line1' => $restaurant->address->line1,
                 'line2' => $restaurant->address->line2,
                 'city' => $restaurant->address->city,
