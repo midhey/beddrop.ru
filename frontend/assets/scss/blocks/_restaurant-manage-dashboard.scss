@@ -196,6 +196,10 @@
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(250, 252, 255, 0.98) 100%);
   }
 
+  &__section--settings {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 252, 255, 0.98) 100%);
+  }
+
   &__section-header {
     margin-bottom: rem(14);
   }
@@ -255,6 +259,14 @@
     align-items: center;
     gap: rem(8);
     font-size: rem(14);
+  }
+
+  &__form-checkbox-label--boxed {
+    min-height: rem(48);
+    padding: rem(12) rem(14);
+    border: 1px solid #dbe5f0;
+    border-radius: rem(16);
+    background: #ffffff;
   }
 
   &__form-actions {
@@ -371,6 +383,63 @@
     margin-bottom: rem(16);
   }
 
+  &__settings-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.45fr) minmax(rem(280), 0.9fr);
+    gap: rem(16);
+  }
+
+  &__settings-main,
+  &__settings-aside {
+    display: grid;
+    gap: rem(16);
+    align-content: start;
+  }
+
+  &__settings-card {
+    padding: rem(18);
+    border-radius: rem(22);
+    border: 1px solid #e7eef7;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  }
+
+  &__settings-card-head {
+    display: grid;
+    gap: rem(6);
+    margin-bottom: rem(14);
+  }
+
+  &__settings-card-title {
+    margin: 0;
+    font-size: rem(18);
+    color: #111827;
+  }
+
+  &__settings-card-text {
+    margin: 0;
+    font-size: rem(14);
+    line-height: 1.6;
+    color: #667085;
+  }
+
+  &__settings-checklist {
+    display: grid;
+    gap: rem(10);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__settings-checklist-item {
+    padding: rem(12) rem(14);
+    border-radius: rem(18);
+    border: 1px solid #dbe5f0;
+    background: #ffffff;
+    font-size: rem(14);
+    line-height: 1.55;
+    color: #475467;
+  }
+
   &__menu-stat {
     display: grid;
     gap: rem(4);
@@ -430,6 +499,10 @@
     border-radius: rem(20);
     border: 1px solid #dbe5f0;
     background: #f8fbff;
+  }
+
+  &__product-upload-preview--landscape {
+    aspect-ratio: 16 / 10;
   }
 
   &__product-upload-preview-image {
@@ -834,7 +907,8 @@
     &__create-product-columns,
     &__menu-summary,
     &__staff-summary,
-    &__create-staff-grid {
+    &__create-staff-grid,
+    &__settings-layout {
       grid-template-columns: 1fr;
     }
 

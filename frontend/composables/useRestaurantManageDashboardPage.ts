@@ -34,7 +34,7 @@ import {
 } from '~/domains/restaurants/presentation';
 import { formatDateTime, formatPrice } from '~/utils/formatting';
 
-type TabKey = 'orders' | 'menu' | 'staff';
+type TabKey = 'orders' | 'menu' | 'staff' | 'settings';
 
 export function useRestaurantManageDashboardPage() {
     const route = useRoute();
@@ -45,6 +45,7 @@ export function useRestaurantManageDashboardPage() {
 
     const {
         fetchRestaurant,
+        updateRestaurant,
         errorMessage: restaurantError,
         loading: restaurantLoading,
     } = useRestaurants();
@@ -94,10 +95,12 @@ export function useRestaurantManageDashboardPage() {
     const canViewOrdersTab = computed(() => ['OWNER', 'MANAGER', 'STAFF'].includes(currentUserRole.value ?? ''));
     const canViewMenuTab = computed(() => ['OWNER', 'MANAGER'].includes(currentUserRole.value ?? ''));
     const canViewStaffTab = computed(() => currentUserRole.value === 'OWNER');
+    const canViewSettingsTab = computed(() => ['OWNER', 'MANAGER'].includes(currentUserRole.value ?? ''));
     const availableTabs = computed<TabKey[]>(() => {
         return ([
             canViewOrdersTab.value ? 'orders' : null,
             canViewMenuTab.value ? 'menu' : null,
+            canViewSettingsTab.value ? 'settings' : null,
             canViewStaffTab.value ? 'staff' : null,
         ].filter(Boolean) as TabKey[]);
     });
@@ -125,6 +128,7 @@ export function useRestaurantManageDashboardPage() {
 
     const fullAddress = computed(() => formatRestaurantAddress(restaurant.value));
     const prepTimeText = computed(() => formatRestaurantPrepTime(restaurant.value));
+    const hasRestaurantLogo = computed(() => Boolean(settingsForm.value.logo_preview_url || restaurant.value?.logo?.url));
 
     const hasProducts = computed(() => products.value.length > 0);
     const hasOrders = computed(() => restaurantOrders.value.length > 0);
@@ -141,6 +145,118 @@ export function useRestaurantManageDashboardPage() {
     });
 
     const actionOrderId = ref<number | null>(null);
+    const savingSettings = ref(false);
+    const settingsUploadInputKey = ref(0);
+    const settingsLogoFile = ref<File | null>(null);
+    const settingsForm = ref({
+        name: '',
+        description: '',
+        phone: '',
+        prep_time_min: '',
+        prep_time_max: '',
+        is_active: true,
+        logo_media_id: null as number | null,
+        logo_preview_url: '',
+        address: {
+            label: 'Ресторан',
+            line1: '',
+            line2: '',
+            city: '',
+            postal_code: '',
+        },
+    });
+
+    const syncSettingsForm = (source: Restaurant | null) => {
+        settingsLogoFile.value = null;
+        settingsUploadInputKey.value += 1;
+        settingsForm.value = {
+            name: source?.name ?? '',
+            description: source?.description ?? '',
+            phone: source?.phone ?? '',
+            prep_time_min: source?.prep_time_min != null ? String(source.prep_time_min) : '',
+            prep_time_max: source?.prep_time_max != null ? String(source.prep_time_max) : '',
+            is_active: source?.is_active ?? true,
+            logo_media_id: source?.logo_media_id ?? null,
+            logo_preview_url: source?.logo?.url ?? '',
+            address: {
+                label: source?.address?.label ?? 'Ресторан',
+                line1: source?.address?.line1 ?? '',
+                line2: source?.address?.line2 ?? '',
+                city: source?.address?.city ?? '',
+                postal_code: source?.address?.postal_code ?? '',
+            },
+        };
+    };
+
+    const handleSettingsLogoChange = (event: Event) => {
+        const input = event.target as HTMLInputElement | null;
+        const file = input?.files?.[0] ?? null;
+
+        settingsLogoFile.value = file;
+
+        if (file) {
+            settingsForm.value.logo_preview_url = URL.createObjectURL(file);
+        } else {
+            settingsForm.value.logo_preview_url = restaurant.value?.logo?.url ?? '';
+        }
+    };
+
+    const handleSaveSettings = async () => {
+        if (!restaurant.value || savingSettings.value) return;
+
+        const name = settingsForm.value.name.trim();
+        const addressLine1 = settingsForm.value.address.line1.trim();
+        const prepTimeMin = settingsForm.value.prep_time_min.trim();
+        const prepTimeMax = settingsForm.value.prep_time_max.trim();
+
+        if (!name || !addressLine1) {
+            feedback.failure('Заполните название ресторана и основной адрес');
+            return;
+        }
+
+        if ((prepTimeMin && Number(prepTimeMin) < 0) || (prepTimeMax && Number(prepTimeMax) < 0)) {
+            feedback.failure('Время приготовления не может быть отрицательным');
+            return;
+        }
+
+        savingSettings.value = true;
+
+        try {
+            let logoMediaId = settingsForm.value.logo_media_id;
+
+            if (settingsLogoFile.value) {
+                const media = await uploadMedia(settingsLogoFile.value);
+                logoMediaId = media.id;
+                settingsForm.value.logo_preview_url = media.url;
+            }
+
+            const updatedRestaurant = await updateRestaurant(restaurant.value.id, {
+                name,
+                description: settingsForm.value.description.trim() || null,
+                phone: settingsForm.value.phone.trim() || null,
+                is_active: settingsForm.value.is_active,
+                prep_time_min: prepTimeMin ? Number(prepTimeMin) : null,
+                prep_time_max: prepTimeMax ? Number(prepTimeMax) : null,
+                logo_media_id: logoMediaId,
+                address: {
+                    label: settingsForm.value.address.label.trim() || null,
+                    line1: addressLine1,
+                    line2: settingsForm.value.address.line2.trim() || null,
+                    city: settingsForm.value.address.city.trim() || null,
+                    postal_code: settingsForm.value.address.postal_code.trim() || null,
+                    lat: restaurant.value.address?.lat ? Number(restaurant.value.address.lat) : null,
+                    lng: restaurant.value.address?.lng ? Number(restaurant.value.address.lng) : null,
+                },
+            });
+
+            restaurant.value = updatedRestaurant;
+            syncSettingsForm(updatedRestaurant);
+            feedback.success('Настройки ресторана сохранены');
+        } catch {
+        } finally {
+            savingSettings.value = false;
+        }
+    };
 
     const handleAccept = async (order: Order) => {
         if (!canRestaurantAcceptOrder(order) || actionOrderId.value) return;
@@ -407,6 +523,7 @@ export function useRestaurantManageDashboardPage() {
 
         try {
             restaurant.value = await fetchRestaurant(slug.value);
+            syncSettingsForm(restaurant.value);
         } catch (error: any) {
             if (error?.response?.status === 404) {
                 await router.push('/restaurants/manage');
@@ -454,11 +571,13 @@ export function useRestaurantManageDashboardPage() {
         canViewOrdersTab,
         canViewMenuTab,
         canViewStaffTab,
+        canViewSettingsTab,
         availableTabs,
         baseLoading,
         errorMessage,
         fullAddress,
         prepTimeText,
+        hasRestaurantLogo,
         hasProducts,
         hasOrders,
         products,
@@ -482,8 +601,13 @@ export function useRestaurantManageDashboardPage() {
         staffActionUserId,
         actionOrderId,
         invitesLoading,
+        settingsForm,
+        settingsUploadInputKey,
+        savingSettings,
         handleAccept,
         handleCancel,
+        handleSettingsLogoChange,
+        handleSaveSettings,
         handleCreateProduct,
         handleCreateProductImageChange,
         toggleProductActive,

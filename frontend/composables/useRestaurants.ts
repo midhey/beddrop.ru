@@ -13,6 +13,7 @@ import type { PaginationMeta } from '~/utils/api/pagination';
 export interface Restaurant {
     id: number;
     name: string;
+    description: string | null;
     slug: string;
     phone: string | null;
     is_active: boolean;
@@ -25,6 +26,7 @@ export interface Restaurant {
     updated_at: string;
     address?: {
         id: number;
+        label: string | null;
         line1: string;
         line2: string | null;
         city: string | null;
@@ -40,6 +42,7 @@ export interface Restaurant {
 
 export interface RestaurantPayload {
     name: string;
+    description?: string | null;
     slug?: string | null;
     phone?: string | null;
     is_active?: boolean;
