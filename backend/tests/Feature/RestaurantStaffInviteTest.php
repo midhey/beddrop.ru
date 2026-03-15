@@ -14,7 +14,24 @@ class RestaurantStaffInviteTest extends TestCase
     use CreatesApiData;
     use RefreshDatabase;
 
-    public function test_manager_can_create_staff_invite(): void
+    public function test_owner_can_create_staff_invite(): void
+    {
+        $owner = $this->createUser();
+        $restaurant = $this->createRestaurant($owner);
+
+        $this->actingAs($owner, 'api')
+            ->postJson("/api/v1/restaurants/{$restaurant->slug}/staff-invites", [
+                'role' => RestaurantStaffRole::STAFF->value,
+                'expires_in_minutes' => 5,
+            ])
+            ->assertCreated()
+            ->assertJsonPath('invite.role', RestaurantStaffRole::STAFF->value)
+            ->assertJsonPath('invite.restaurant.slug', $restaurant->slug);
+
+        $this->assertDatabaseCount('restaurant_staff_invites', 1);
+    }
+
+    public function test_manager_cannot_create_staff_invite(): void
     {
         $owner = $this->createUser();
         $manager = $this->createUser();
@@ -26,11 +43,7 @@ class RestaurantStaffInviteTest extends TestCase
                 'role' => RestaurantStaffRole::STAFF->value,
                 'expires_in_minutes' => 5,
             ])
-            ->assertCreated()
-            ->assertJsonPath('invite.role', RestaurantStaffRole::STAFF->value)
-            ->assertJsonPath('invite.restaurant.slug', $restaurant->slug);
-
-        $this->assertDatabaseCount('restaurant_staff_invites', 1);
+            ->assertForbidden();
     }
 
     public function test_owner_can_accept_valid_invite(): void

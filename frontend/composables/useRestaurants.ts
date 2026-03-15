@@ -20,6 +20,7 @@ export interface Restaurant {
     prep_time_max: number | null;
     address_id: number | null;
     logo_media_id?: number | null;
+    current_user_role?: 'OWNER' | 'MANAGER' | 'STAFF' | null;
     created_at: string;
     updated_at: string;
     address?: {

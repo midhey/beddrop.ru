@@ -8,6 +8,11 @@ import placeholderImg from '~/assets/images/placeholder.png';
 const {
   restaurant,
   activeTab,
+  currentUserRole,
+  canViewOrdersTab,
+  canViewMenuTab,
+  canViewStaffTab,
+  availableTabs,
   baseLoading,
   errorMessage,
   fullAddress,
@@ -202,6 +207,7 @@ const copyInviteLink = async () => {
       <!-- табы -->
       <div class="restaurant-dashboard__tabs">
         <button
+            v-if="canViewOrdersTab"
             type="button"
             class="restaurant-dashboard__tab"
             :class="{ 'restaurant-dashboard__tab--active': activeTab === 'orders' }"
@@ -211,6 +217,7 @@ const copyInviteLink = async () => {
           <span class="restaurant-dashboard__tab-count">{{ restaurantOrders.length }}</span>
         </button>
         <button
+            v-if="canViewMenuTab"
             type="button"
             class="restaurant-dashboard__tab"
             :class="{ 'restaurant-dashboard__tab--active': activeTab === 'menu' }"
@@ -220,6 +227,7 @@ const copyInviteLink = async () => {
           <span class="restaurant-dashboard__tab-count">{{ products.length }}</span>
         </button>
         <button
+            v-if="canViewStaffTab"
             type="button"
             class="restaurant-dashboard__tab"
             :class="{ 'restaurant-dashboard__tab--active': activeTab === 'staff' }"
@@ -257,9 +265,16 @@ const copyInviteLink = async () => {
           v-else
           class="restaurant-dashboard__content"
       >
+        <div
+            v-if="!availableTabs.length"
+            class="restaurant-dashboard__section-empty state-message state-message--empty"
+        >
+          Для вашей роли в этом ресторане пока нет доступных разделов.
+        </div>
+
         <!-- ВКЛАДКА: ЗАКАЗЫ -->
         <div
-            v-if="activeTab === 'orders'"
+            v-else-if="activeTab === 'orders' && canViewOrdersTab"
             class="restaurant-dashboard__section restaurant-dashboard__section--orders surface-card"
         >
           <div class="restaurant-dashboard__section-header section-head">
@@ -433,7 +448,7 @@ const copyInviteLink = async () => {
 
         <!-- ВКЛАДКА: МЕНЮ -->
         <div
-            v-else-if="activeTab === 'menu'"
+            v-else-if="activeTab === 'menu' && canViewMenuTab"
             class="restaurant-dashboard__section restaurant-dashboard__section--menu surface-card"
         >
           <div class="restaurant-dashboard__section-header section-head">
@@ -694,7 +709,7 @@ const copyInviteLink = async () => {
 
         <!-- ВКЛАДКА: ПЕРСОНАЛ -->
         <div
-            v-else-if="activeTab === 'staff'"
+            v-else-if="activeTab === 'staff' && canViewStaffTab"
             class="restaurant-dashboard__section restaurant-dashboard__section--staff surface-card"
         >
           <div class="restaurant-dashboard__section-header section-head">

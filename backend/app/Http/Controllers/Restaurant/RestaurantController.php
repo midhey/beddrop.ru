@@ -8,6 +8,7 @@ use App\Http\Requests\Restaurant\StoreRestaurantRequest;
 use App\Http\Requests\Restaurant\UpdateRestaurantRequest;
 use App\Models\Address;
 use App\Models\Restaurant;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
@@ -38,14 +39,15 @@ class RestaurantController extends Controller
         return response()->json($restaurants);
     }
 
-    public function show(Restaurant $restaurant)
+    public function show(Request $request, Restaurant $restaurant)
     {
         $this->authorize('view', $restaurant);
+        $user = $request->user('api');
 
         $restaurant->load(['address', 'logo']);
 
         return response()->json([
-            'restaurant' => $restaurant,
+            'restaurant' => $this->serializeRestaurant($restaurant, $user),
         ]);
     }
 
@@ -159,7 +161,46 @@ class RestaurantController extends Controller
             ->get();
 
         return response()->json([
-            'restaurants' => $restaurants,
+            'restaurants' => $restaurants->map(fn (Restaurant $restaurant) => $this->serializeRestaurant($restaurant, $user)),
         ]);
+    }
+
+    private function serializeRestaurant(Restaurant $restaurant, ?User $user): array
+    {
+        $currentUserRole = null;
+
+        if ($user) {
+            $restaurant->loadMissing(['users' => fn ($query) => $query->select('users.id')]);
+            $membership = $restaurant->users->firstWhere('id', $user->id);
+            $currentUserRole = $membership?->pivot?->role;
+        }
+
+        return [
+            'id' => $restaurant->id,
+            'name' => $restaurant->name,
+            'slug' => $restaurant->slug,
+            'phone' => $restaurant->phone,
+            'is_active' => (bool) $restaurant->is_active,
+            'prep_time_min' => $restaurant->prep_time_min,
+            'prep_time_max' => $restaurant->prep_time_max,
+            'address_id' => $restaurant->address_id,
+            'logo_media_id' => $restaurant->logo_media_id,
+            'current_user_role' => $currentUserRole,
+            'address' => $restaurant->address ? [
+                'id' => $restaurant->address->id,
+                'line1' => $restaurant->address->line1,
+                'line2' => $restaurant->address->line2,
+                'city' => $restaurant->address->city,
+                'postal_code' => $restaurant->address->postal_code,
+                'lat' => $restaurant->address->lat,
+                'lng' => $restaurant->address->lng,
+            ] : null,
+            'logo' => $restaurant->logo ? [
+                'id' => $restaurant->logo->id,
+                'url' => $restaurant->logo->url,
+            ] : null,
+            'created_at' => $restaurant->created_at,
+            'updated_at' => $restaurant->updated_at,
+        ];
     }
 }

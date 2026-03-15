@@ -51,7 +51,6 @@ class RestaurantPolicy
         return $user->is_admin
             || $user->hasRestaurantRole($restaurant, [
                 RestaurantStaffRole::OWNER,
-                RestaurantStaffRole::MANAGER,
             ]);
     }
 

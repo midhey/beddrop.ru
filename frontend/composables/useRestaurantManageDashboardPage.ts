@@ -89,7 +89,18 @@ export function useRestaurantManageDashboardPage() {
         invitesLoading,
     } = useRestaurantStaff();
 
-    const activeTab = ref<TabKey>('menu');
+    const activeTab = ref<TabKey>('orders');
+    const currentUserRole = computed(() => restaurant.value?.current_user_role ?? null);
+    const canViewOrdersTab = computed(() => ['OWNER', 'MANAGER', 'STAFF'].includes(currentUserRole.value ?? ''));
+    const canViewMenuTab = computed(() => ['OWNER', 'MANAGER'].includes(currentUserRole.value ?? ''));
+    const canViewStaffTab = computed(() => currentUserRole.value === 'OWNER');
+    const availableTabs = computed<TabKey[]>(() => {
+        return ([
+            canViewOrdersTab.value ? 'orders' : null,
+            canViewMenuTab.value ? 'menu' : null,
+            canViewStaffTab.value ? 'staff' : null,
+        ].filter(Boolean) as TabKey[]);
+    });
 
     const baseLoading = computed(
         () =>
@@ -403,24 +414,34 @@ export function useRestaurantManageDashboardPage() {
             }
         }
 
-        try {
-            await fetchProducts(slug.value);
-        } catch {
+        if (canViewMenuTab.value) {
+            try {
+                await fetchProducts(slug.value);
+            } catch {
+            }
+
+            try {
+                await fetchCategories();
+            } catch {
+            }
         }
 
-        try {
-            await fetchCategories();
-        } catch {
+        if (canViewOrdersTab.value) {
+            try {
+                await fetchRestaurantOrders(slug.value);
+            } catch {
+            }
         }
 
-        try {
-            await fetchRestaurantOrders(slug.value);
-        } catch {
+        if (canViewStaffTab.value) {
+            try {
+                await fetchStaff(slug.value);
+            } catch {
+            }
         }
 
-        try {
-            await fetchStaff(slug.value);
-        } catch {
+        if (availableTabs.value.length && !availableTabs.value.includes(activeTab.value)) {
+            activeTab.value = availableTabs.value[0];
         }
     };
 
@@ -429,6 +450,11 @@ export function useRestaurantManageDashboardPage() {
     return {
         restaurant,
         activeTab,
+        currentUserRole,
+        canViewOrdersTab,
+        canViewMenuTab,
+        canViewStaffTab,
+        availableTabs,
         baseLoading,
         errorMessage,
         fullAddress,
