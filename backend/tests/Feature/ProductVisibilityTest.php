@@ -41,6 +41,22 @@ class ProductVisibilityTest extends TestCase
             ->assertJsonFragment(['id' => $inactiveProduct->id]);
     }
 
+    public function test_owner_can_list_inactive_products_inside_active_restaurant(): void
+    {
+        $owner = $this->createUser();
+        $restaurant = $this->createRestaurant($owner);
+        $activeProduct = $this->createProduct($restaurant);
+        $inactiveProduct = $this->createProduct($restaurant, null, [
+            'is_active' => false,
+        ]);
+
+        $this->actingAs($owner, 'api')
+            ->getJson("/api/v1/restaurants/{$restaurant->slug}/products")
+            ->assertOk()
+            ->assertJsonFragment(['id' => $activeProduct->id])
+            ->assertJsonFragment(['id' => $inactiveProduct->id]);
+    }
+
     public function test_guest_cannot_view_inactive_product_directly(): void
     {
         $owner = $this->createUser();

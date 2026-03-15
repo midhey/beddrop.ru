@@ -11,6 +11,7 @@ use App\Models\Restaurant;
 use App\Models\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class ProductController extends Controller
 {
@@ -18,14 +19,16 @@ class ProductController extends Controller
 
     public function index(Restaurant $restaurant, Request $request)
     {
-        $this->authorize('view', $restaurant);
+        $user = $request->user('api');
+
+        Gate::forUser($user)->authorize('view', $restaurant);
 
         $perPage = min($request->integer('per_page', 20), 100);
 
         $query = $restaurant->products()
             ->with(['category', 'images.media']);
 
-        if (! $this->canPreviewHiddenProducts($request->user(), $restaurant)) {
+        if (! $this->canPreviewHiddenProducts($user, $restaurant)) {
             $query->where('is_active', true);
         }
 
@@ -36,13 +39,15 @@ class ProductController extends Controller
 
     public function show(Request $request, Restaurant $restaurant, Product $product)
     {
-        $this->authorize('view', $restaurant);
+        $user = $request->user('api');
+
+        Gate::forUser($user)->authorize('view', $restaurant);
 
         if ($product->restaurant_id !== $restaurant->id) {
             abort(404);
         }
 
-        if (! $product->is_active && ! $this->canPreviewHiddenProducts($request->user(), $restaurant)) {
+        if (! $product->is_active && ! $this->canPreviewHiddenProducts($user, $restaurant)) {
             abort(404);
         }
 
