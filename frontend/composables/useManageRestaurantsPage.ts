@@ -18,6 +18,8 @@ export function useManageRestaurantsPage() {
     });
 
     const hasRestaurants = computed(() => items.value.length > 0);
+    const activeCount = computed(() => items.value.filter((item) => item.is_active).length);
+    const inactiveCount = computed(() => Math.max(items.value.length - activeCount.value, 0));
 
     const loadRestaurants = async () => {
         try {
@@ -34,6 +36,24 @@ export function useManageRestaurantsPage() {
         router.push(`/restaurants/${slug}`);
     };
 
+    const getRestaurantInitial = (name: string) => {
+        return name.trim().charAt(0).toUpperCase() || 'R';
+    };
+
+    const formatCreatedDate = (value: string) => {
+        const parsed = new Date(value);
+
+        if (Number.isNaN(parsed.getTime())) {
+            return null;
+        }
+
+        return new Intl.DateTimeFormat('ru-RU', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+        }).format(parsed);
+    };
+
     onMounted(loadRestaurants);
 
     return {
@@ -41,8 +61,12 @@ export function useManageRestaurantsPage() {
         loading,
         errorMessage,
         hasRestaurants,
+        activeCount,
+        inactiveCount,
         goToDashboard,
         goToPublic,
+        getRestaurantInitial,
+        formatCreatedDate,
         formatRestaurantAddress,
         formatRestaurantPrepTime,
         getRestaurantActivityLabel,

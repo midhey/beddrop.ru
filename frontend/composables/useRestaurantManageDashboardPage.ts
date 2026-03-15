@@ -3,6 +3,8 @@ import { useRoute, useRouter } from '#app';
 import { useSeoMeta } from '#imports';
 import { useFeedback } from '~/composables/useFeedback';
 import { useRestaurants, type Restaurant } from '~/composables/useRestaurants';
+import { useProductCategories } from '~/composables/useProductCategories';
+import { useMediaUpload } from '~/composables/useMediaUpload';
 import {
     useRestaurantProducts,
     type Product,
@@ -55,7 +57,16 @@ export function useRestaurantManageDashboardPage() {
         createProduct,
         updateProduct,
         deleteProduct,
+        addProductImage,
     } = useRestaurantProducts();
+
+    const {
+        items: productCategories,
+        loading: categoriesLoading,
+        fetchCategories,
+    } = useProductCategories();
+
+    const { uploadMedia, uploading: imageUploading } = useMediaUpload();
 
     const {
         items: restaurantOrders,
@@ -104,6 +115,17 @@ export function useRestaurantManageDashboardPage() {
 
     const hasProducts = computed(() => products.value.length > 0);
     const hasOrders = computed(() => restaurantOrders.value.length > 0);
+    const activeProductsCount = computed(() => products.value.filter((product) => product.is_active).length);
+    const hiddenProductsCount = computed(() => products.value.filter((product) => !product.is_active).length);
+    const menuProducts = computed(() => {
+        return [...products.value].sort((left, right) => {
+            if (left.is_active !== right.is_active) {
+                return Number(right.is_active) - Number(left.is_active);
+            }
+
+            return right.id - left.id;
+        });
+    });
 
     const actionOrderId = ref<number | null>(null);
 
@@ -148,6 +170,8 @@ export function useRestaurantManageDashboardPage() {
         description: '',
         is_active: true,
     });
+    const createProductImageFile = ref<File | null>(null);
+    const createProductImagePreview = ref<string | null>(null);
 
     const creatingProduct = ref(false);
     const productActionId = ref<number | null>(null);
@@ -160,6 +184,29 @@ export function useRestaurantManageDashboardPage() {
             description: '',
             is_active: true,
         };
+        createProductImageFile.value = null;
+
+        if (createProductImagePreview.value) {
+            URL.revokeObjectURL(createProductImagePreview.value);
+        }
+
+        createProductImagePreview.value = null;
+    };
+
+    const handleCreateProductImageChange = (event: Event) => {
+        const input = event.target as HTMLInputElement | null;
+        const file = input?.files?.[0] ?? null;
+
+        createProductImageFile.value = file;
+
+        if (createProductImagePreview.value) {
+            URL.revokeObjectURL(createProductImagePreview.value);
+            createProductImagePreview.value = null;
+        }
+
+        if (file) {
+            createProductImagePreview.value = URL.createObjectURL(file);
+        }
     };
 
     const handleCreateProduct = async () => {
@@ -186,7 +233,24 @@ export function useRestaurantManageDashboardPage() {
 
         try {
             const newProduct = await createProduct(slug.value, payload);
-            products.value = [newProduct, ...products.value];
+
+            let nextProduct = newProduct;
+
+            if (createProductImageFile.value) {
+                const media = await uploadMedia(createProductImageFile.value);
+                const image = await addProductImage(slug.value, newProduct.id, {
+                    media_id: media.id,
+                    is_cover: true,
+                    sort_order: 0,
+                });
+
+                nextProduct = {
+                    ...newProduct,
+                    images: [image],
+                };
+            }
+
+            products.value = [nextProduct, ...products.value];
             feedback.success('Блюдо добавлено');
             resetCreateForm();
             showCreateProductForm.value = false;
@@ -200,14 +264,41 @@ export function useRestaurantManageDashboardPage() {
         if (productActionId.value) return;
 
         productActionId.value = product.id;
+        const nextActive = !product.is_active;
+
+        products.value = products.value.map((item) =>
+            item.id === product.id
+                ? {
+                    ...item,
+                    is_active: nextActive,
+                }
+                : item,
+        );
+
         try {
             const updated = await updateProduct(slug.value, product.id, {
-                is_active: !product.is_active,
+                is_active: nextActive,
             });
+
             products.value = products.value.map((item) =>
-                item.id === updated.id ? updated : item,
+                item.id === updated.id
+                    ? {
+                        ...item,
+                        ...updated,
+                        category: updated.category ?? item.category,
+                        images: updated.images?.length ? updated.images : item.images,
+                    }
+                    : item,
             );
         } catch {
+            products.value = products.value.map((item) =>
+                item.id === product.id
+                    ? {
+                        ...item,
+                        is_active: product.is_active,
+                    }
+                    : item,
+            );
         } finally {
             productActionId.value = null;
         }
@@ -321,6 +412,11 @@ export function useRestaurantManageDashboardPage() {
         }
 
         try {
+            await fetchCategories();
+        } catch {
+        }
+
+        try {
             await fetchRestaurantOrders(slug.value);
         } catch {
         }
@@ -343,11 +439,18 @@ export function useRestaurantManageDashboardPage() {
         hasProducts,
         hasOrders,
         products,
+        menuProducts,
+        productCategories,
+        categoriesLoading,
+        activeProductsCount,
+        hiddenProductsCount,
         restaurantOrders,
         staff,
         ordersLoading,
         showCreateProductForm,
         createForm,
+        createProductImagePreview,
+        imageUploading,
         creatingProduct,
         productActionId,
         newStaffUserId,
@@ -357,6 +460,7 @@ export function useRestaurantManageDashboardPage() {
         handleAccept,
         handleCancel,
         handleCreateProduct,
+        handleCreateProductImageChange,
         toggleProductActive,
         handleDeleteProduct,
         handleAddStaff,
