@@ -1,0 +1,37 @@
+@use "../core" as *;
+
+[data-accordion-root] {
+  display: block;
+  min-width: 0;
+}
+
+[data-accordion-panel] {
+  display: grid;
+  grid-template-rows: 0fr;
+  margin-top: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    grid-template-rows .28s ease,
+    opacity .2s ease,
+    margin-top .2s ease,
+    visibility .2s ease;
+}
+
+[data-accordion-panel-inner] {
+  min-height: 0;
+  overflow: hidden;
+}
+
+[data-accordion-root][data-state="open"] [data-accordion-panel] {
+  grid-template-rows: 1fr;
+  margin-top: rem(12);
+  opacity: 1;
+  visibility: visible;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-accordion-panel] {
+    transition: none;
+  }
+}
