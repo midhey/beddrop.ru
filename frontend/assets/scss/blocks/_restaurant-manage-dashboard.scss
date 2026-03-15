@@ -270,6 +270,77 @@
     background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
   }
 
+  &__create-staff-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(rem(260), 0.95fr);
+    gap: rem(16);
+    align-items: start;
+  }
+
+  &__create-staff-main {
+    display: grid;
+    gap: rem(12);
+  }
+
+  &__create-staff-title {
+    margin: 0;
+    font-size: rem(18);
+    color: #111827;
+  }
+
+  &__create-staff-text,
+  &__staff-note {
+    margin: 0;
+    font-size: rem(14);
+    line-height: 1.6;
+    color: #667085;
+  }
+
+  &__staff-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: rem(10);
+    margin-bottom: rem(16);
+  }
+
+  &__invite-card {
+    display: grid;
+    gap: rem(10);
+    padding: rem(16);
+    border-radius: rem(22);
+    border: 1px solid #dbeafe;
+    background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+  }
+
+  &__invite-card-label {
+    font-size: rem(12);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #667085;
+  }
+
+  &__invite-card-role {
+    font-size: rem(18);
+    color: #111827;
+  }
+
+  &__invite-card-meta {
+    font-size: rem(13);
+    color: #667085;
+  }
+
+  &__invite-card-link {
+    padding: rem(12) rem(14);
+    border-radius: rem(18);
+    background: #ffffff;
+    border: 1px solid #dbe5f0;
+    font-size: rem(13);
+    line-height: 1.5;
+    color: #344054;
+    word-break: break-word;
+  }
+
   &__create-product-grid {
     display: grid;
     grid-template-columns: minmax(0, 1.5fr) minmax(rem(240), 0.9fr);
@@ -761,7 +832,9 @@
   .restaurant-dashboard {
     &__create-product-grid,
     &__create-product-columns,
-    &__menu-summary {
+    &__menu-summary,
+    &__staff-summary,
+    &__create-staff-grid {
       grid-template-columns: 1fr;
     }
 
