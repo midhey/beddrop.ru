@@ -29,17 +29,19 @@ const {
   imageUploading,
   creatingProduct,
   productActionId,
-  newStaffUserId,
-  newStaffRole,
+  inviteRole,
+  inviteExpiryMinutes,
+  latestStaffInvite,
   staffActionUserId,
   actionOrderId,
+  invitesLoading,
   handleAccept,
   handleCancel,
   handleCreateProduct,
   handleCreateProductImageChange,
   toggleProductActive,
   handleDeleteProduct,
-  handleAddStaff,
+  handleCreateStaffInvite,
   handleChangeStaffRole,
   handleRemoveStaff,
   formatPrice,
@@ -91,6 +93,32 @@ const getProductImageSrc = (product: (typeof menuProducts.value)[number]) => {
 
   const firstImage = product.images?.[0]?.media?.url;
   return firstImage || placeholderImg;
+};
+
+const roleLabels: Record<'OWNER' | 'MANAGER' | 'STAFF', string> = {
+  OWNER: 'Владелец',
+  MANAGER: 'Менеджер',
+  STAFF: 'Сотрудник',
+};
+
+const inviteLink = computed(() => {
+  if (!latestStaffInvite.value) {
+    return '';
+  }
+
+  if (typeof window === 'undefined') {
+    return `/restaurants/staff-invites/${latestStaffInvite.value.token}`;
+  }
+
+  return `${window.location.origin}/restaurants/staff-invites/${latestStaffInvite.value.token}`;
+});
+
+const copyInviteLink = async () => {
+  if (!inviteLink.value || typeof navigator === 'undefined' || !navigator.clipboard) {
+    return;
+  }
+
+  await navigator.clipboard.writeText(inviteLink.value);
 };
 </script>
 
@@ -670,60 +698,130 @@ const getProductImageSrc = (product: (typeof menuProducts.value)[number]) => {
             class="restaurant-dashboard__section restaurant-dashboard__section--staff surface-card"
         >
           <div class="restaurant-dashboard__section-header section-head">
-            <h2 class="restaurant-dashboard__section-title section-title">
-              Персонал ресторана
-            </h2>
-            <span class="restaurant-dashboard__section-meta section-meta">
-              {{ staff.length ? `${staff.length} сотрудников` : 'Сотрудники не добавлены' }}
-            </span>
+            <div>
+              <h2 class="restaurant-dashboard__section-title section-title">
+                Персонал ресторана
+              </h2>
+              <span class="restaurant-dashboard__section-meta section-meta">
+                {{ staff.length ? `${staff.length} сотрудников` : 'Сотрудники не добавлены' }}
+              </span>
+            </div>
           </div>
 
-          <!-- форма добавления сотрудника -->
+          <div class="restaurant-dashboard__staff-summary">
+            <article class="restaurant-dashboard__menu-stat">
+              <span class="restaurant-dashboard__menu-stat-label">Всего в команде</span>
+              <strong class="restaurant-dashboard__menu-stat-value">{{ staff.length }}</strong>
+            </article>
+            <article class="restaurant-dashboard__menu-stat">
+              <span class="restaurant-dashboard__menu-stat-label">Менеджеров</span>
+              <strong class="restaurant-dashboard__menu-stat-value">
+                {{ staff.filter((member) => member.role === 'MANAGER').length }}
+              </strong>
+            </article>
+            <article class="restaurant-dashboard__menu-stat restaurant-dashboard__menu-stat--muted">
+              <span class="restaurant-dashboard__menu-stat-label">Сотрудников</span>
+              <strong class="restaurant-dashboard__menu-stat-value">
+                {{ staff.filter((member) => member.role === 'STAFF').length }}
+              </strong>
+            </article>
+          </div>
+
           <div class="restaurant-dashboard__create-staff surface-card--soft">
-            <div class="restaurant-dashboard__form-row form-field">
-              <label class="restaurant-dashboard__form-label">
-                ID пользователя
-              </label>
-              <input
-                  v-model="newStaffUserId"
-                  type="number"
-                  min="1"
-                  step="1"
-                  class="restaurant-dashboard__form-input field-input"
-                  placeholder="Например, 5"
-              >
-            </div>
+            <div class="restaurant-dashboard__create-staff-grid">
+              <div class="restaurant-dashboard__create-staff-main">
+                <h3 class="restaurant-dashboard__create-staff-title">
+                  Пригласить в команду
+                </h3>
+                <p class="restaurant-dashboard__create-staff-text">
+                  Создайте временную ссылку и отправьте её человеку. После входа в аккаунт он сможет
+                  принять приглашение и сразу появится в команде ресторана.
+                </p>
 
-            <div class="restaurant-dashboard__form-row form-field">
-              <label class="restaurant-dashboard__form-label">
-                Роль
-              </label>
-              <select
-                  v-model="newStaffRole"
-                  class="restaurant-dashboard__form-input field-select"
-              >
-                <option value="OWNER">
-                  Владелец
-                </option>
-                <option value="MANAGER">
-                  Менеджер
-                </option>
-                <option value="STAFF">
-                  Сотрудник
-                </option>
-              </select>
-            </div>
+                <div class="restaurant-dashboard__create-product-columns">
+                  <div class="restaurant-dashboard__form-row form-field">
+                    <label class="restaurant-dashboard__form-label">
+                      Роль
+                    </label>
+                    <select
+                        v-model="inviteRole"
+                        class="restaurant-dashboard__form-input field-select"
+                    >
+                      <option value="MANAGER">
+                        Менеджер
+                      </option>
+                      <option value="STAFF">
+                        Сотрудник
+                      </option>
+                    </select>
+                  </div>
 
-            <div class="restaurant-dashboard__form-actions form-actions">
-              <button
-                  type="button"
-                  class="restaurant-dashboard__order-btn"
-                  @click="handleAddStaff"
+                  <div class="restaurant-dashboard__form-row form-field">
+                    <label class="restaurant-dashboard__form-label">
+                      Срок действия
+                    </label>
+                    <select
+                        v-model="inviteExpiryMinutes"
+                        class="restaurant-dashboard__form-input field-select"
+                    >
+                      <option value="5">
+                        5 минут
+                      </option>
+                      <option value="15">
+                        15 минут
+                      </option>
+                      <option value="30">
+                        30 минут
+                      </option>
+                      <option value="60">
+                        1 час
+                      </option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="restaurant-dashboard__form-actions form-actions">
+                  <button
+                      type="button"
+                      class="restaurant-dashboard__order-btn"
+                      :disabled="invitesLoading"
+                      @click="handleCreateStaffInvite"
+                  >
+                    {{ invitesLoading ? 'Генерируем...' : 'Создать ссылку' }}
+                  </button>
+                </div>
+              </div>
+
+              <div
+                  v-if="latestStaffInvite"
+                  class="restaurant-dashboard__invite-card"
               >
-                Добавить сотрудника
-              </button>
+                <span class="restaurant-dashboard__invite-card-label">
+                  Актуальное приглашение
+                </span>
+                <strong class="restaurant-dashboard__invite-card-role">
+                  {{ roleLabels[latestStaffInvite.role] }}
+                </strong>
+                <span class="restaurant-dashboard__invite-card-meta">
+                  Действует до {{ formatDateTime(latestStaffInvite.expires_at) }}
+                </span>
+                <div class="restaurant-dashboard__invite-card-link">
+                  {{ inviteLink }}
+                </div>
+                <button
+                    type="button"
+                    class="restaurant-dashboard__order-btn"
+                    @click="copyInviteLink"
+                >
+                  Копировать ссылку
+                </button>
+              </div>
             </div>
           </div>
+
+          <p class="restaurant-dashboard__staff-note">
+            Добавление по `user_id` убрано. Временная ссылка надёжнее, не требует искать ID вручную и не ломается на скрытых аккаунтах.
+          </p>
 
           <p
               v-if="!staff.length"
@@ -746,6 +844,12 @@ const getProductImageSrc = (product: (typeof menuProducts.value)[number]) => {
                   <span class="restaurant-dashboard__staff-name">
                     {{ member.name || 'Без имени' }}
                   </span>
+                  <span
+                      class="status-chip"
+                      :class="member.role === 'OWNER' ? 'status-chip--info' : member.role === 'MANAGER' ? 'status-chip--success' : 'status-chip--muted'"
+                  >
+                    {{ roleLabels[member.role] }}
+                  </span>
                   <span class="restaurant-dashboard__staff-email">
                     {{ member.email }}
                   </span>
@@ -763,7 +867,7 @@ const getProductImageSrc = (product: (typeof menuProducts.value)[number]) => {
                 <select
                     v-model="member.role"
                     class="restaurant-dashboard__staff-role field-select"
-                    :disabled="staffActionUserId === member.id"
+                    :disabled="staffActionUserId === member.id || member.role === 'OWNER'"
                     @change="handleChangeStaffRole(member)"
                 >
                   <option value="OWNER">

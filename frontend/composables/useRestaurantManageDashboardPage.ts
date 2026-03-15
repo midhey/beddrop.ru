@@ -13,6 +13,7 @@ import {
 import { useRestaurantOrders } from '~/composables/useRestaurantOrders';
 import {
     useRestaurantStaff,
+    type RestaurantStaffInvite,
     type RestaurantRole,
     type RestaurantStaffMember,
 } from '~/composables/useRestaurantStaff';
@@ -82,9 +83,10 @@ export function useRestaurantManageDashboardPage() {
         loading: staffLoading,
         errorMessage: staffError,
         fetchStaff,
-        addStaff,
+        createInvite,
         updateStaff,
         removeStaff,
+        invitesLoading,
     } = useRestaurantStaff();
 
     const activeTab = ref<TabKey>('menu');
@@ -329,25 +331,20 @@ export function useRestaurantManageDashboardPage() {
         }
     };
 
-    const newStaffUserId = ref('');
-    const newStaffRole = ref<RestaurantRole>('STAFF');
+    const inviteRole = ref<Exclude<RestaurantRole, 'OWNER'>>('STAFF');
+    const inviteExpiryMinutes = ref<'5' | '15' | '30' | '60'>('5');
+    const latestStaffInvite = ref<RestaurantStaffInvite | null>(null);
     const staffActionUserId = ref<number | null>(null);
 
-    const handleAddStaff = async () => {
-        const userIdNum = Number(newStaffUserId.value);
-        if (!userIdNum || Number.isNaN(userIdNum)) {
-            feedback.failure('Укажите корректный ID пользователя');
-            return;
-        }
-
+    const handleCreateStaffInvite = async () => {
         try {
-            await addStaff(slug.value, {
-                user_id: userIdNum,
-                role: newStaffRole.value,
+            const invite = await createInvite(slug.value, {
+                role: inviteRole.value,
+                expires_in_minutes: Number(inviteExpiryMinutes.value),
             });
-            feedback.success('Сотрудник добавлен');
-            newStaffUserId.value = '';
-            newStaffRole.value = 'STAFF';
+
+            latestStaffInvite.value = invite;
+            feedback.success('Ссылка-приглашение создана');
         } catch {
         }
     };
@@ -453,17 +450,19 @@ export function useRestaurantManageDashboardPage() {
         imageUploading,
         creatingProduct,
         productActionId,
-        newStaffUserId,
-        newStaffRole,
+        inviteRole,
+        inviteExpiryMinutes,
+        latestStaffInvite,
         staffActionUserId,
         actionOrderId,
+        invitesLoading,
         handleAccept,
         handleCancel,
         handleCreateProduct,
         handleCreateProductImageChange,
         toggleProductActive,
         handleDeleteProduct,
-        handleAddStaff,
+        handleCreateStaffInvite,
         handleChangeStaffRole,
         handleRemoveStaff,
         formatPrice,

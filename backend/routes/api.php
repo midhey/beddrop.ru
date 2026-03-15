@@ -19,6 +19,7 @@ use App\Http\Controllers\Profile\ProfileController;
 use App\Http\Controllers\Restaurant\RestaurantController;
 use App\Http\Controllers\Restaurant\RestaurantOrderController;
 use App\Http\Controllers\Restaurant\RestaurantStaffController;
+use App\Http\Controllers\Restaurant\RestaurantStaffInviteController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/ping', fn() => ['message' => 'pong']);
@@ -60,6 +61,10 @@ Route::prefix('/v1')->group(function () {
                 Route::delete('/{user}', [RestaurantStaffController::class, 'destroy']);
             });
 
+            Route::middleware('auth:api')->prefix('/staff-invites')->group(function () {
+                Route::post('/', [RestaurantStaffInviteController::class, 'store']);
+            });
+
             Route::prefix('/products')->group(function () {
                 Route::get('/', [ProductController::class, 'index']);
                 Route::get('/{product}', [ProductController::class, 'show']);
@@ -82,6 +87,12 @@ Route::prefix('/v1')->group(function () {
                 Route::post('/{order}/cancel', [RestaurantOrderController::class, 'cancel']);
             });
         });
+    });
+
+    Route::prefix('/staff-invites')->group(function () {
+        Route::get('/{token}', [RestaurantStaffInviteController::class, 'show']);
+
+        Route::middleware('auth:api')->post('/{token}/accept', [RestaurantStaffInviteController::class, 'accept']);
     });
 
     Route::prefix('/product-categories')->group(function () {

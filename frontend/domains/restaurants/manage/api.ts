@@ -3,7 +3,11 @@ import type {
     ProductImageRef,
     ProductPayload,
 } from '~/composables/useRestaurantProducts';
-import type { RestaurantStaffMember } from '~/composables/useRestaurantStaff';
+import type {
+    RestaurantStaffInvite,
+    RestaurantStaffInvitePayload,
+    RestaurantStaffMember,
+} from '~/composables/useRestaurantStaff';
 import type { Order } from '~/composables/useOrders';
 import type { LaravelPaginated } from '~/utils/api/pagination';
 import { mapLaravelPagination } from '~/utils/api/pagination';
@@ -197,4 +201,39 @@ export const removeRestaurantStaff = async (
     await $api.delete(
         `/restaurants/${restaurantSlug}/users/${userId}`,
     );
+};
+
+export const createRestaurantStaffInvite = async (
+    restaurantSlug: string,
+    payload: RestaurantStaffInvitePayload,
+): Promise<RestaurantStaffInvite> => {
+    const { $api } = useNuxtApp();
+    const { data } = await $api.post<{ invite: RestaurantStaffInvite }>(
+        `/restaurants/${restaurantSlug}/staff-invites`,
+        payload,
+    );
+
+    return data.invite;
+};
+
+export const getRestaurantStaffInvite = async (
+    token: string,
+): Promise<RestaurantStaffInvite> => {
+    const { $api } = useNuxtApp();
+    const { data } = await $api.get<{ invite: RestaurantStaffInvite }>(
+        `/staff-invites/${token}`,
+    );
+
+    return data.invite;
+};
+
+export const acceptRestaurantStaffInvite = async (
+    token: string,
+): Promise<RestaurantStaffInvite> => {
+    const { $api } = useNuxtApp();
+    const { data } = await $api.post<{ invite: RestaurantStaffInvite }>(
+        `/staff-invites/${token}/accept`,
+    );
+
+    return data.invite;
 };

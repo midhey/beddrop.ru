@@ -2,7 +2,10 @@
 import { ref } from 'vue';
 import { useApiHelpers } from '~/composables/useApiHelpers';
 import {
+    acceptRestaurantStaffInvite,
     addRestaurantStaff,
+    createRestaurantStaffInvite,
+    getRestaurantStaffInvite,
     listRestaurantStaff,
     removeRestaurantStaff,
     updateRestaurantStaff,
@@ -27,11 +30,37 @@ export interface RestaurantStaffUpdatePayload {
     role: RestaurantRole;
 }
 
+export interface RestaurantStaffInviteActor {
+    id: number;
+    name: string | null;
+    email: string;
+}
+
+export interface RestaurantStaffInvite {
+    token: string;
+    role: RestaurantRole;
+    expires_at: string;
+    accepted_at: string | null;
+    restaurant: {
+        id: number;
+        name: string;
+        slug: string;
+    };
+    invited_by: RestaurantStaffInviteActor | null;
+    accepted_by?: RestaurantStaffInviteActor | null;
+}
+
+export interface RestaurantStaffInvitePayload {
+    role: Exclude<RestaurantRole, 'OWNER'>;
+    expires_in_minutes?: number;
+}
+
 export function useRestaurantStaff() {
     const { handleApiError, errorMessage } = useApiHelpers();
 
     const items = ref<RestaurantStaffMember[]>([]);
     const loading = ref(false);
+    const invitesLoading = ref(false);
 
     const fetchStaff = async (restaurantSlug: string) => {
         loading.value = true;
@@ -103,13 +132,62 @@ export function useRestaurantStaff() {
         }
     };
 
+    const createInvite = async (
+        restaurantSlug: string,
+        payload: RestaurantStaffInvitePayload,
+    ): Promise<RestaurantStaffInvite> => {
+        invitesLoading.value = true;
+        errorMessage.value = null;
+
+        try {
+            return await createRestaurantStaffInvite(restaurantSlug, payload);
+        } catch (e) {
+            handleApiError(e);
+            throw e;
+        } finally {
+            invitesLoading.value = false;
+        }
+    };
+
+    const fetchInvite = async (token: string): Promise<RestaurantStaffInvite> => {
+        invitesLoading.value = true;
+        errorMessage.value = null;
+
+        try {
+            return await getRestaurantStaffInvite(token);
+        } catch (e) {
+            handleApiError(e);
+            throw e;
+        } finally {
+            invitesLoading.value = false;
+        }
+    };
+
+    const acceptInvite = async (token: string): Promise<RestaurantStaffInvite> => {
+        invitesLoading.value = true;
+        errorMessage.value = null;
+
+        try {
+            return await acceptRestaurantStaffInvite(token);
+        } catch (e) {
+            handleApiError(e);
+            throw e;
+        } finally {
+            invitesLoading.value = false;
+        }
+    };
+
     return {
         items,
         loading,
+        invitesLoading,
         errorMessage,
         fetchStaff,
         addStaff,
         updateStaff,
         removeStaff,
+        createInvite,
+        fetchInvite,
+        acceptInvite,
     };
 }
