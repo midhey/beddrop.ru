@@ -2,24 +2,28 @@
 
 $dropdown-breakpoint: $tablet-l !default;
 
-[data-dropdown] {
+[data-dropdown-root] {
   position: relative;
 }
 
-[data-dropdown-toggle] {
+[data-dropdown-trigger] {
   background-color: transparent;
   border: none;
   cursor: pointer;
 }
 
-[data-dropdown-menu] {
+[data-dropdown-panel-inner] {
+  min-height: 0;
+}
+
+[data-dropdown-panel] {
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
 }
 
 @media (min-width: #{$dropdown-breakpoint}) {
-  [data-dropdown]::after {
+  [data-dropdown-root][data-expanded="false"]::after {
     content: "";
     position: absolute;
     top: 100%;
@@ -29,21 +33,31 @@ $dropdown-breakpoint: $tablet-l !default;
     pointer-events: auto;
   }
 
-  [data-dropdown-menu] {
+  [data-dropdown-panel] {
     position: absolute;
     top: calc(100% + #{rem(12)});
-    right: 0;
     transform: translateY(rem(10)) scale(0.98);
-    transform-origin: top right;
     transition:
       opacity .22s ease,
       transform .22s ease,
       visibility .22s ease;
   }
 
-  [data-dropdown="open"] > [data-dropdown-menu],
-  [data-dropdown]:hover > [data-dropdown-menu],
-  [data-dropdown]:focus-within > [data-dropdown-menu] {
+  [data-dropdown-root][data-placement="bottom-start"] > [data-dropdown-panel] {
+    left: 0;
+    right: auto;
+    transform-origin: top left;
+  }
+
+  [data-dropdown-root][data-placement="bottom-end"] > [data-dropdown-panel] {
+    right: 0;
+    left: auto;
+    transform-origin: top right;
+  }
+
+  [data-dropdown-root][data-state="open"] > [data-dropdown-panel],
+  [data-dropdown-root][data-hoverable="true"]:hover > [data-dropdown-panel],
+  [data-dropdown-root][data-hoverable="true"]:focus-within > [data-dropdown-panel] {
     visibility: visible;
     opacity: 1;
     pointer-events: auto;
@@ -52,23 +66,33 @@ $dropdown-breakpoint: $tablet-l !default;
 }
 
 @media (max-width: #{$dropdown-breakpoint}) {
-  [data-dropdown-menu] {
+  [data-dropdown-panel] {
     position: static;
-    max-height: 0;
-    overflow: hidden;
+    display: grid;
+    grid-template-rows: 0fr;
     transform: none;
     transition:
-      max-height .28s ease,
+      grid-template-rows .28s ease,
       opacity .2s ease,
       margin-top .2s ease,
       visibility .2s ease;
   }
 
-  [data-dropdown="open"] > [data-dropdown-menu] {
+  [data-dropdown-panel-inner] {
+    overflow: hidden;
+  }
+
+  [data-dropdown-root][data-state="open"] > [data-dropdown-panel] {
     visibility: visible;
     opacity: 1;
     pointer-events: auto;
-    max-height: 80vh;
+    grid-template-rows: 1fr;
     margin-top: rem(12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-dropdown-panel] {
+    transition: none;
   }
 }

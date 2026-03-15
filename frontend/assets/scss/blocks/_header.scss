@@ -67,10 +67,6 @@
     min-width: 0;
   }
 
-  &__dropdown--expanded &__dropdown-block {
-    cursor: default;
-  }
-
   &__dropdown-block {
     display: inline-flex;
     align-items: center;
@@ -143,9 +139,13 @@
       color 0.22s ease;
   }
 
-  &__dropdown[data-dropdown="open"] &__dropdown-chevron {
+  &__dropdown[data-state="open"] &__dropdown-chevron {
     transform: rotate(180deg);
     color: var(--color-primary);
+  }
+
+  &__dropdown-panel {
+    width: 100%;
   }
 
   &__dropdown-list {
@@ -397,6 +397,10 @@
     &__dropdown-block {
       min-height: 0;
       padding: rem(6) 0;
+    }
+
+    &__dropdown-chevron {
+      display: none;
     }
 
     &__user-name {
