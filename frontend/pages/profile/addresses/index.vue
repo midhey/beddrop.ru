@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue';
 import { Pencil, Trash2 } from 'lucide-vue-next';
 import { useSeoMeta } from '#imports';
+import AddressFields from '~/components/address/AddressFields.vue';
 import { useAddresses } from '~/composables/useAddresses';
 import { useFeedback } from '~/composables/useFeedback';
 
@@ -216,69 +217,7 @@ onMounted(async () => {
           </h2>
 
           <form class="addresses-form" @submit.prevent="submit">
-            <div class="form-field">
-              <label class="form-field__label">
-                Название (метка)
-              </label>
-              <input
-                  v-model="form.label"
-                  type="text"
-                  class="form-field__input field-input"
-                  placeholder="Дом, Работа..."
-              >
-            </div>
-
-            <div class="form-field">
-              <label class="form-field__label">
-                Адрес
-                <span class="form-field__required">*</span>
-              </label>
-              <input
-                  v-model="form.line1"
-                  type="text"
-                  class="form-field__input field-input"
-                  placeholder="Улица, дом, корпус..."
-                  required
-              >
-            </div>
-
-            <div class="form-field">
-              <label class="form-field__label">
-                Подъезд, этаж, квартира
-              </label>
-              <input
-                  v-model="form.line2"
-                  type="text"
-                  class="form-field__input field-input"
-                  placeholder="Подъезд 3, этаж 8, кв. 42"
-              >
-            </div>
-
-            <div class="form-row">
-              <div class="form-field">
-                <label class="form-field__label">
-                  Город
-                </label>
-                <input
-                    v-model="form.city"
-                    type="text"
-                    class="form-field__input field-input"
-                    placeholder="Город"
-                >
-              </div>
-
-              <div class="form-field">
-                <label class="form-field__label">
-                  Индекс
-                </label>
-                <input
-                    v-model="form.postal_code"
-                    type="text"
-                    class="form-field__input field-input"
-                    placeholder="123456"
-                >
-              </div>
-            </div>
+            <AddressFields v-model="form" required />
 
             <div class="addresses-form__actions form-actions">
               <button

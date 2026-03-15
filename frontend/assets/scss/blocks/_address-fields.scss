@@ -1,0 +1,23 @@
+@use '../core' as *;
+
+.address-fields {
+  display: grid;
+  gap: rem(10);
+
+  &__row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: rem(10);
+  }
+
+  &__required {
+    margin-left: rem(4);
+    color: #b91c1c;
+  }
+}
+
+@media (max-width: 768px) {
+  .address-fields__row {
+    grid-template-columns: 1fr;
+  }
+}
