@@ -6,25 +6,32 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Product\StoreProductCategoryRequest;
 use App\Http\Requests\Product\UpdateProductCategoryRequest;
 use App\Models\ProductCategory;
+use App\Support\PublicDataCache;
 use Illuminate\Http\Request;
 
 class ProductCategoryController extends Controller
 {
     public function index(Request $request)
     {
-        $query = ProductCategory::query()
-            ->orderBy('sort_order')
-            ->orderBy('name');
+        $payload = PublicDataCache::remember(
+            PublicDataCache::CATEGORIES,
+            ['search' => $request->query('search')],
+            function () use ($request) {
+                $query = ProductCategory::query()
+                    ->orderBy('sort_order')
+                    ->orderBy('name');
 
-        if ($search = $request->query('search')) {
-            $query->where('name', 'like', '%' . $search . '%');
-        }
+                if ($search = $request->query('search')) {
+                    $query->where('name', 'like', '%' . $search . '%');
+                }
 
-        $categories = $query->get();
+                return [
+                    'categories' => $query->get()->toArray(),
+                ];
+            },
+        );
 
-        return response()->json([
-            'categories' => $categories,
-        ]);
+        return response()->json($payload);
     }
 
     public function store(StoreProductCategoryRequest $request)

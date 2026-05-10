@@ -9,6 +9,7 @@ use App\Http\Requests\Restaurant\UpdateRestaurantRequest;
 use App\Models\Address;
 use App\Models\Restaurant;
 use App\Models\User;
+use App\Support\PublicDataCache;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
@@ -22,27 +23,52 @@ class RestaurantController extends Controller
             'category_id' => ['nullable', 'integer', 'exists:product_categories,id'],
         ]);
 
-        $restaurants = Restaurant::query()
-            ->where('is_active', true)
-            ->with(['address', 'logo']);
+        $payload = PublicDataCache::remember(
+            PublicDataCache::RESTAURANTS,
+            [
+                'category_id' => $validated['category_id'] ?? null,
+                'page' => $request->integer('page', 1),
+            ],
+            function () use ($validated) {
+                $restaurants = Restaurant::query()
+                    ->where('is_active', true)
+                    ->with(['address', 'logo']);
 
-        if (array_key_exists('category_id', $validated) && $validated['category_id'] !== null) {
-            $restaurants->whereHas('products', function ($query) use ($validated) {
-                $query
-                    ->where('category_id', $validated['category_id'])
-                    ->where('is_active', true);
-            });
-        }
+                if (array_key_exists('category_id', $validated) && $validated['category_id'] !== null) {
+                    $restaurants->whereHas('products', function ($query) use ($validated) {
+                        $query
+                            ->where('category_id', $validated['category_id'])
+                            ->where('is_active', true);
+                    });
+                }
 
-        $restaurants = $restaurants->paginate(20);
+                return $restaurants->paginate(20)->toArray();
+            },
+        );
 
-        return response()->json($restaurants);
+        return response()->json($payload);
     }
 
     public function show(Request $request, Restaurant $restaurant)
     {
         $this->authorize('view', $restaurant);
         $user = $request->user('api');
+
+        if ($user === null && $restaurant->is_active) {
+            $payload = PublicDataCache::remember(
+                PublicDataCache::RESTAURANT_DETAILS,
+                ['slug' => $restaurant->slug],
+                function () use ($restaurant) {
+                    $restaurant->load(['address', 'logo']);
+
+                    return [
+                        'restaurant' => $this->serializeRestaurant($restaurant, null),
+                    ];
+                },
+            );
+
+            return response()->json($payload);
+        }
 
         $restaurant->load(['address', 'logo']);
 

@@ -9,6 +9,7 @@ use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use App\Models\Restaurant;
 use App\Models\User;
+use App\Support\PublicDataCache;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -24,11 +25,35 @@ class ProductController extends Controller
         Gate::forUser($user)->authorize('view', $restaurant);
 
         $perPage = min($request->integer('per_page', 20), 100);
+        $canPreviewHiddenProducts = $this->canPreviewHiddenProducts($user, $restaurant);
+
+        if (! $canPreviewHiddenProducts && $restaurant->is_active) {
+            $payload = PublicDataCache::remember(
+                PublicDataCache::restaurantMenuGroup($restaurant->id),
+                [
+                    'restaurant_id' => $restaurant->id,
+                    'page' => $request->integer('page', 1),
+                    'per_page' => $perPage,
+                ],
+                function () use ($restaurant, $perPage) {
+                    $products = $restaurant->products()
+                        ->with(['category', 'images.media'])
+                        ->where('is_active', true)
+                        ->paginate($perPage);
+
+                    return ProductResource::collection($products)
+                        ->response()
+                        ->getData(true);
+                },
+            );
+
+            return response()->json($payload);
+        }
 
         $query = $restaurant->products()
             ->with(['category', 'images.media']);
 
-        if (! $this->canPreviewHiddenProducts($user, $restaurant)) {
+        if (! $canPreviewHiddenProducts) {
             $query->where('is_active', true);
         }
 
