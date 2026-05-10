@@ -1,27 +1,123 @@
-import { ref, computed, watch } from 'vue';
-import { useRouter, useNuxtApp } from '#app';
-import { useSeoMeta } from '#imports';
-import { useRestaurantProducts } from '~/composables/useRestaurantProducts';
-import type { Restaurant } from '~/composables/useRestaurants'; // лучше так, вместо локального интерфейса
+import { computed, ref, watch, type Ref } from 'vue';
+import { useRouter } from '#app';
+import { useAsyncData, useSeoMeta } from '#imports';
+import { getRestaurantBySlug } from '~/domains/restaurants/api';
+import { listRestaurantProducts } from '~/domains/restaurants/manage/api';
+import type { Product } from '~/composables/useRestaurantProducts';
+import type { Restaurant } from '~/composables/useRestaurants';
 
-export function useRestaurantPage(slugRef: Readonly<Ref<string>>) {
+type RestaurantPageData = {
+    slug: string;
+    restaurant: Restaurant | null;
+    products: Product[];
+    productsError: string | null;
+};
+
+const emptyRestaurantPageData = (slug: string): RestaurantPageData => ({
+    slug,
+    restaurant: null,
+    products: [],
+    productsError: null,
+});
+
+const getErrorStatus = (error: any): number | null => {
+    const status = error?.response?.status ?? error?.statusCode ?? error?.status;
+
+    return typeof status === 'number' ? status : null;
+};
+
+const getErrorMessage = (error: any, fallback: string): string => {
+    return error?.response?.data?.message
+        || error?.data?.message
+        || error?.message
+        || fallback;
+};
+
+export async function useRestaurantPage(slugRef: Readonly<Ref<string>>) {
     const router = useRouter();
-    const { $api } = useNuxtApp();
+    const selectedCategorySlug = ref<string>('all');
+    const seoRestaurantName = ref<string | null>(null);
 
-    const restaurant = ref<Restaurant | null>(null);
-    const restaurantLoading = ref(false);
-    const restaurantError = ref<string | null>(null);
+    // SEO регистрируется до первого await, чтобы Nuxt-контекст не терялся.
+    useSeoMeta(() => ({
+        title: seoRestaurantName.value
+            ? `${seoRestaurantName.value} — BedDrop`
+            : 'Ресторан — BedDrop',
+    }));
 
     const {
-        items: products,
-        loading: productsLoading,
-        errorMessage: productsError,
-        fetchProducts,
-    } = useRestaurantProducts();
+        data: pageData,
+        pending,
+        error,
+        refresh,
+    } = await useAsyncData<RestaurantPageData>(
+        'restaurant-page',
+        async () => {
+            const slug = slugRef.value;
 
-    const loading = computed(
-        () => restaurantLoading.value || productsLoading.value,
+            if (!slug) {
+                return emptyRestaurantPageData(slug);
+            }
+
+            const [restaurantResult, productsResult] = await Promise.allSettled([
+                getRestaurantBySlug(slug),
+                listRestaurantProducts(slug, { per_page: 100 }),
+            ]);
+
+            if (restaurantResult.status === 'rejected') {
+                throw restaurantResult.reason;
+            }
+
+            return {
+                slug,
+                restaurant: restaurantResult.value,
+                products: productsResult.status === 'fulfilled'
+                    ? productsResult.value.items
+                    : [],
+                productsError: productsResult.status === 'rejected'
+                    ? getErrorMessage(productsResult.reason, 'Не удалось загрузить меню')
+                    : null,
+            };
+        },
+        {
+            default: () => emptyRestaurantPageData(slugRef.value),
+            lazy: true,
+            watch: [slugRef],
+        },
     );
+
+    const isCurrentData = computed(() => pageData.value?.slug === slugRef.value);
+
+    const restaurant = computed(() => {
+        if (!isCurrentData.value) return null;
+
+        return pageData.value?.restaurant ?? null;
+    });
+
+    const products = computed(() => {
+        if (!isCurrentData.value) return [];
+
+        return pageData.value?.products ?? [];
+    });
+
+    const productsError = computed(() => {
+        if (!isCurrentData.value) return null;
+
+        return pageData.value?.productsError ?? null;
+    });
+
+    const loading = computed(() => {
+        return pending.value || !isCurrentData.value;
+    });
+
+    const restaurantLoading = computed(() => loading.value && !restaurant.value);
+    const productsLoading = computed(() => loading.value && products.value.length === 0);
+
+    const restaurantError = computed(() => {
+        if (!error.value) return null;
+
+        return getErrorMessage(error.value, 'Не удалось загрузить ресторан');
+    });
 
     const fullAddress = computed(() => {
         if (!restaurant.value?.address) return 'Адрес не указан';
@@ -80,8 +176,6 @@ export function useRestaurantPage(slugRef: Readonly<Ref<string>>) {
         });
     });
 
-    const selectedCategorySlug = ref<string>('all');
-
     const filteredProducts = computed(() => {
         if (selectedCategorySlug.value === 'all') {
             return products.value;
@@ -101,47 +195,31 @@ export function useRestaurantPage(slugRef: Readonly<Ref<string>>) {
         }
     });
 
-    const loadRestaurant = async () => {
-        restaurantLoading.value = true;
-        restaurantError.value = null;
+    watch(slugRef, () => {
+        selectedCategorySlug.value = 'all';
+    });
 
-        try {
-            const { data } = await $api.get<{ restaurant: Restaurant }>(
-                `/restaurants/${slugRef.value}`,
-            );
-            restaurant.value = data.restaurant;
-        } catch (e: any) {
-            restaurantError.value =
-                e?.response?.data?.message || 'Не удалось загрузить ресторан';
-
-            if (e?.response?.status === 404) {
-                await router.push('/');
-            }
-        } finally {
-            restaurantLoading.value = false;
+    const redirectIfNotFound = async (requestError: unknown) => {
+        if (getErrorStatus(requestError) === 404) {
+            await router.push('/');
         }
     };
 
-    const loadProducts = async () => {
-        if (!slugRef.value) return;
-        await fetchProducts(slugRef.value);
-    };
+    if (import.meta.client) {
+        await redirectIfNotFound(error.value);
+    }
 
-    const init = async () => {
-        await loadRestaurant();
-        await loadProducts();
-    };
-
-    // SEO прямо здесь, чтобы страница не забивалась
-    useSeoMeta(() => ({
-        title: restaurant.value
-            ? `${restaurant.value.name} — BedDrop`
-            : 'Ресторан — BedDrop',
-    }));
-
-    watch(slugRef, async () => {
-        await init();
+    watch(error, (requestError) => {
+        void redirectIfNotFound(requestError);
     });
+
+    watch(
+        restaurant,
+        (currentRestaurant) => {
+            seoRestaurantName.value = currentRestaurant?.name ?? null;
+        },
+        { immediate: true },
+    );
 
     return {
         // state
@@ -162,6 +240,6 @@ export function useRestaurantPage(slugRef: Readonly<Ref<string>>) {
         prepTimeText,
 
         // methods
-        init,
+        refresh,
     };
 }

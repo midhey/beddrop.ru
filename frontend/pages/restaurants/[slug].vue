@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed, TransitionGroup } from 'vue';
 import { ArrowLeft, Clock3, Phone } from 'lucide-vue-next';
 import { useRoute } from '#app';
 import { useRestaurantPage } from '~/composables/useRestaurantPage';
@@ -18,10 +18,7 @@ const {
   selectedCategorySlug,
   fullAddress,
   prepTimeText,
-  init,
-} = useRestaurantPage(slug);
-
-onMounted(init);
+} = await useRestaurantPage(slug);
 </script>
 
 <template>
@@ -41,6 +38,23 @@ onMounted(init);
           class="restaurant-page__error"
       >
         {{ restaurantError }}
+      </div>
+
+      <div
+          v-else-if="loading && !restaurant"
+          class="restaurant-page__header restaurant-page__header--skeleton"
+          aria-hidden="true"
+      >
+        <span class="restaurant-page__logo restaurant-page__logo--skeleton skeleton" />
+
+        <div class="restaurant-page__info restaurant-page__info--skeleton">
+          <span class="restaurant-page__title-skeleton skeleton" />
+          <span class="restaurant-page__address-skeleton skeleton" />
+          <div class="restaurant-page__meta restaurant-page__meta--skeleton">
+            <span class="restaurant-page__meta-skeleton skeleton" />
+            <span class="restaurant-page__meta-skeleton restaurant-page__meta-skeleton--short skeleton" />
+          </div>
+        </div>
       </div>
 
       <div
@@ -102,13 +116,34 @@ onMounted(init);
           <h2 class="restaurant-page__menu-title">
             Меню
           </h2>
-          <span class="restaurant-page__menu-count">
+          <span
+              v-if="loading && !filteredProducts.length"
+              class="restaurant-page__menu-count-skeleton skeleton"
+              aria-hidden="true"
+          />
+          <span
+              v-else
+              class="restaurant-page__menu-count"
+          >
             {{ filteredProducts.length }} позиций
           </span>
         </div>
 
         <div
-            v-if="categories.length"
+            v-if="loading && !categories.length"
+            class="restaurant-page__tabs restaurant-page__tabs--skeleton"
+            aria-hidden="true"
+        >
+          <span
+              v-for="index in 5"
+              :key="`category-skeleton-${index}`"
+              class="restaurant-page__tab-skeleton skeleton"
+              :class="{ 'restaurant-page__tab-skeleton--short': index === 1 }"
+          />
+        </div>
+
+        <div
+            v-else-if="categories.length"
             class="restaurant-page__tabs"
         >
           <button
@@ -133,17 +168,29 @@ onMounted(init);
         </div>
 
         <div
-            v-if="productsError"
+            v-if="productsError && !loading"
             class="restaurant-page__error"
         >
           {{ productsError }}
         </div>
 
         <div
-            v-else-if="loading"
-            class="restaurant-page__loading"
+            v-else-if="loading && !filteredProducts.length"
+            class="restaurant-page__products restaurant-page__products--skeleton"
+            aria-hidden="true"
         >
-          Загрузка меню...
+          <article
+              v-for="index in 6"
+              :key="`product-skeleton-${index}`"
+              class="restaurant-page__product-skeleton"
+          >
+            <span class="restaurant-page__product-image-skeleton skeleton" />
+            <div class="restaurant-page__product-body-skeleton">
+              <span class="restaurant-page__product-line-skeleton restaurant-page__product-line-skeleton--title skeleton" />
+              <span class="restaurant-page__product-line-skeleton skeleton" />
+              <span class="restaurant-page__product-line-skeleton restaurant-page__product-line-skeleton--short skeleton" />
+            </div>
+          </article>
         </div>
 
         <div
@@ -153,8 +200,10 @@ onMounted(init);
           Меню пока пустое
         </div>
 
-        <div
+        <TransitionGroup
             v-else
+            tag="div"
+            name="restaurant-products"
             class="restaurant-page__products"
         >
           <ProductCard
@@ -162,7 +211,7 @@ onMounted(init);
               :key="product.id"
               :product="product"
           />
-        </div>
+        </TransitionGroup>
       </div>
     </div>
   </section>

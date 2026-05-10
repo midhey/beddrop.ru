@@ -46,8 +46,19 @@
     object-fit: cover;
   }
 
+  &__logo--skeleton {
+    background: #e9eef5;
+  }
+
   &__info {
     flex: 1;
+  }
+
+  &__info--skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: rem(12);
+    padding-top: rem(4);
   }
 
   &__title {
@@ -57,10 +68,22 @@
     font-weight: 700;
   }
 
+  &__title-skeleton {
+    width: min(100%, rem(320));
+    height: rem(34);
+    border-radius: rem(12);
+  }
+
   &__address {
     margin: 0 0 12px;
     font-size: 14px;
     color: #6b7280;
+  }
+
+  &__address-skeleton {
+    width: min(100%, rem(420));
+    height: rem(14);
+    border-radius: rem(999);
   }
 
   &__meta {
@@ -90,6 +113,20 @@
     color: #9ca3af;
   }
 
+  &__meta--skeleton {
+    margin-top: 0;
+  }
+
+  &__meta-skeleton {
+    width: rem(150);
+    height: rem(24);
+    border-radius: rem(999);
+  }
+
+  &__meta-skeleton--short {
+    width: rem(112);
+  }
+
   &__menu {
     margin-top: 16px;
   }
@@ -111,6 +148,12 @@
   &__menu-count {
     font-size: 14px;
     color: #6b7280;
+  }
+
+  &__menu-count-skeleton {
+    width: rem(86);
+    height: rem(14);
+    border-radius: rem(999);
   }
 
   /* табы категорий */
@@ -135,6 +178,22 @@
     border-color: var(--color-primary, #00bcf0);
     background: rgba(0, 188, 240, 0.08);
     color: var(--color-primary, #00bcf0);
+  }
+
+  &__tabs--skeleton {
+    flex-wrap: nowrap;
+    overflow: hidden;
+  }
+
+  &__tab-skeleton {
+    flex: 0 0 auto;
+    width: rem(112);
+    height: rem(33);
+    border-radius: rem(999);
+  }
+
+  &__tab-skeleton--short {
+    width: rem(66);
   }
 
   &__loading,
@@ -164,6 +223,61 @@
     gap: 16px;
   }
 
+  &__product-skeleton {
+    display: flex;
+    flex-direction: column;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow:
+      0 1px 2px rgba(15, 23, 42, 0.05),
+      0 0 0 1px #e5e7eb;
+    overflow: hidden;
+  }
+
+  &__product-image-skeleton {
+    width: 100%;
+    height: 170px;
+  }
+
+  &__product-body-skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: rem(10);
+    padding: 12px 14px 14px;
+  }
+
+  &__product-line-skeleton {
+    width: 100%;
+    height: rem(12);
+    border-radius: rem(999);
+  }
+
+  &__product-line-skeleton--title {
+    width: 76%;
+    height: rem(17);
+  }
+
+  &__product-line-skeleton--short {
+    width: 46%;
+  }
+
+  .restaurant-products-enter-active,
+  .restaurant-products-leave-active {
+    transition:
+      opacity 0.22s ease,
+      transform 0.22s ease;
+  }
+
+  .restaurant-products-enter-from,
+  .restaurant-products-leave-to {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  .restaurant-products-move {
+    transition: transform 0.22s ease;
+  }
+
   /* адаптив */
 
   @media (max-width: 640px) {
@@ -179,6 +293,23 @@
 
     &__products {
       grid-template-columns: 1fr;
+    }
+
+    &__title-skeleton {
+      width: min(100%, rem(260));
+      height: rem(30);
+    }
+
+    &__address-skeleton {
+      width: min(100%, rem(300));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .restaurant-products-enter-active,
+    .restaurant-products-leave-active,
+    .restaurant-products-move {
+      transition: none;
     }
   }
 }
