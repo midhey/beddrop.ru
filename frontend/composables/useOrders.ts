@@ -6,6 +6,7 @@ import {
     listOrders,
 } from '~/domains/orders/api';
 import type { Restaurant } from '~/composables/useRestaurants';
+import type { Address } from '~/composables/useAddresses';
 import type { Product } from '~/composables/useRestaurantProducts';
 import type { PaginationMeta } from '~/utils/api/pagination';
 
@@ -26,6 +27,20 @@ export interface OrderEvent {
     created_at: string;
 }
 
+export interface OrderRouteSegment {
+    id: number;
+    order_id: number;
+    segment_type: 'restaurant_to_client' | 'courier_to_restaurant' | string;
+    mode: string;
+    distance_meters: number;
+    duration_seconds: number;
+    encoded_shape: string | null;
+    raw_response?: Record<string, any> | null;
+    settings_snapshot?: Record<string, any> | null;
+    created_at?: string;
+    updated_at?: string;
+}
+
 export interface Order {
     id: number;
     status: string;
@@ -37,10 +52,18 @@ export interface Order {
     delivery_address_id: number | null;
     delivery_lat: number | null;
     delivery_lng: number | null;
+    delivery_distance_meters?: number | null;
+    delivery_duration_seconds?: number | null;
+    delivery_price_snapshot?: string | null;
+    estimated_pickup_at?: string | null;
+    estimated_delivery_at?: string | null;
+    courier_approach_distance_meters?: number | null;
+    delivery_address?: Address | null;
 
     restaurant?: Restaurant | null;
     items?: OrderItem[];
     events?: OrderEvent[];
+    route_segments?: OrderRouteSegment[];
 
     items_count?: number;
     calculated_total?: number;

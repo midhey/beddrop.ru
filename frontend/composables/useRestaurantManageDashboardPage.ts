@@ -2,6 +2,7 @@ import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from '#app';
 import { useSeoMeta } from '#imports';
 import { useFeedback } from '~/composables/useFeedback';
+import type { AddressPayload } from '~/composables/useAddresses';
 import { useRestaurants, type Restaurant } from '~/composables/useRestaurants';
 import { useProductCategories } from '~/composables/useProductCategories';
 import { useMediaUpload } from '~/composables/useMediaUpload';
@@ -159,11 +160,19 @@ export function useRestaurantManageDashboardPage() {
         logo_preview_url: '',
         address: {
             label: 'Ресторан',
-            line1: '',
-            line2: '',
-            city: '',
-            postal_code: '',
-        },
+            value: null,
+            unrestricted_value: null,
+            line1: null,
+            line2: null,
+            city: null,
+            postal_code: null,
+            lat: null,
+            lng: null,
+            flat: null,
+            entrance: null,
+            floor: null,
+            intercom: null,
+        } as AddressPayload,
     });
 
     const syncSettingsForm = (source: Restaurant | null) => {
@@ -179,11 +188,8 @@ export function useRestaurantManageDashboardPage() {
             logo_media_id: source?.logo_media_id ?? null,
             logo_preview_url: source?.logo?.url ?? '',
             address: {
+                ...(source?.address ?? {}),
                 label: source?.address?.label ?? 'Ресторан',
-                line1: source?.address?.line1 ?? '',
-                line2: source?.address?.line2 ?? '',
-                city: source?.address?.city ?? '',
-                postal_code: source?.address?.postal_code ?? '',
             },
         };
     };
@@ -205,11 +211,11 @@ export function useRestaurantManageDashboardPage() {
         if (!restaurant.value || savingSettings.value) return;
 
         const name = settingsForm.value.name.trim();
-        const addressLine1 = settingsForm.value.address.line1.trim();
+        const addressValue = (settingsForm.value.address.value || settingsForm.value.address.line1 || '').trim();
         const prepTimeMin = settingsForm.value.prep_time_min.trim();
         const prepTimeMax = settingsForm.value.prep_time_max.trim();
 
-        if (!name || !addressLine1) {
+        if (!name || !addressValue || settingsForm.value.address.lat == null || settingsForm.value.address.lng == null) {
             feedback.failure('Заполните название ресторана и основной адрес');
             return;
         }
@@ -239,13 +245,8 @@ export function useRestaurantManageDashboardPage() {
                 prep_time_max: prepTimeMax ? Number(prepTimeMax) : null,
                 logo_media_id: logoMediaId,
                 address: {
-                    label: settingsForm.value.address.label.trim() || null,
-                    line1: addressLine1,
-                    line2: settingsForm.value.address.line2.trim() || null,
-                    city: settingsForm.value.address.city.trim() || null,
-                    postal_code: settingsForm.value.address.postal_code.trim() || null,
-                    lat: restaurant.value.address?.lat ? Number(restaurant.value.address.lat) : null,
-                    lng: restaurant.value.address?.lng ? Number(restaurant.value.address.lng) : null,
+                    ...settingsForm.value.address,
+                    label: settingsForm.value.address.label?.trim() || null,
                 },
             });
 

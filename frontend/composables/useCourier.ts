@@ -8,10 +8,12 @@ import {
     listCourierOrders,
     markCourierOrderDelivered,
     markCourierOrderPickedUp,
+    postCourierLocation,
     startCourierShift,
 } from '~/domains/courier/api';
 import { isCourierShiftOpen } from '~/domains/courier/presentation';
 import type {
+    CourierLocationPayload,
     CourierOrder,
     CourierProfile,
     CourierShift,
@@ -196,6 +198,13 @@ export function useCourier() {
         }
     };
 
+    const sendLocation = async (payload: CourierLocationPayload) => {
+        try {
+            await postCourierLocation(payload);
+        } catch {
+        }
+    };
+
     return {
         profile,
         shift,
@@ -220,5 +229,6 @@ export function useCourier() {
         assignOrder,
         markPickedUp,
         markDelivered,
+        sendLocation,
     };
 }

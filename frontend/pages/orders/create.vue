@@ -6,6 +6,7 @@ const {
   addresses,
   addressesError,
   orderError,
+  quoteError,
   cart,
   cartError,
   pageLoading,
@@ -14,6 +15,10 @@ const {
   paymentMethod,
   comment,
   cartTotal,
+  deliveryQuote,
+  quoteLoading,
+  deliveryPrice,
+  checkoutTotal,
   cartItemsCount,
   restaurantName,
   canSubmit,
@@ -47,7 +52,7 @@ const {
       </div>
 
       <div
-          v-if="cartError || addressesError || orderError"
+          v-if="cartError || addressesError || orderError || quoteError"
           class="checkout-page__error-list"
       >
         <p
@@ -67,6 +72,12 @@ const {
             class="checkout-page__error state-message state-message--error"
         >
           {{ orderError }}
+        </p>
+        <p
+            v-if="quoteError"
+            class="checkout-page__error state-message state-message--error"
+        >
+          {{ quoteError }}
         </p>
       </div>
 
@@ -130,16 +141,20 @@ const {
                       {{ addr.label }}
                     </span>
                     <span class="checkout-address__city">
-                      {{ addr.city || 'Город не указан' }}
+                      {{ addr.city || addr.settlement || 'Населённый пункт не указан' }}
                     </span>
                   </div>
                   <div class="checkout-address__line1">
-                    {{ addr.line1 }}
+                    {{ addr.value || addr.line1 }}
                     <span
-                        v-if="addr.line2"
+                        v-if="addr.flat || addr.entrance || addr.floor"
                         class="checkout-address__line2"
                     >
-                      , {{ addr.line2 }}
+                      , {{ [
+                        addr.entrance ? `подъезд ${addr.entrance}` : null,
+                        addr.floor ? `этаж ${addr.floor}` : null,
+                        addr.flat ? `кв. ${addr.flat}` : null,
+                      ].filter(Boolean).join(', ') }}
                     </span>
                   </div>
                   <div
@@ -246,9 +261,21 @@ const {
                 <span>Товары ({{ cartItemsCount }} поз.)</span>
                 <span>{{ formatPrice(cartTotal) }}</span>
               </div>
+              <div class="checkout-summary__row">
+                <span>Доставка</span>
+                <span v-if="quoteLoading">Считаем...</span>
+                <span v-else>{{ formatPrice(deliveryPrice) }}</span>
+              </div>
+              <div
+                  v-if="deliveryQuote"
+                  class="checkout-summary__row"
+              >
+                <span>{{ (deliveryQuote.distance_meters / 1000).toFixed(1) }} км, ~{{ deliveryQuote.eta_minutes }} мин</span>
+                <span></span>
+              </div>
               <div class="checkout-summary__row checkout-summary__row--total">
                 <span>Итого к оплате</span>
-                <span>{{ formatPrice(cartTotal) }}</span>
+                <span>{{ formatPrice(checkoutTotal) }}</span>
               </div>
             </div>
 

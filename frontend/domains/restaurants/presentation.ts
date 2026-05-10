@@ -9,9 +9,10 @@ export const formatRestaurantAddress = (
     if (!restaurant?.address) return 'Адрес не указан';
 
     return [
-        restaurant.address.city,
-        restaurant.address.line1,
-        restaurant.address.line2,
+        restaurant.address.value || restaurant.address.unrestricted_value,
+        restaurant.address.flat ? `кв. ${restaurant.address.flat}` : null,
+        restaurant.address.entrance ? `подъезд ${restaurant.address.entrance}` : null,
+        restaurant.address.floor ? `этаж ${restaurant.address.floor}` : null,
         restaurant.address.postal_code,
     ]
         .filter(Boolean)

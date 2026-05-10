@@ -1,4 +1,5 @@
 import type {
+    CourierLocationPayload,
     CourierOrder,
     CourierProfile,
     CourierShift,
@@ -141,4 +142,11 @@ export const markCourierOrderDelivered = async (
     );
 
     return extractOrderFromResponse(data);
+};
+
+export const postCourierLocation = async (
+    payload: CourierLocationPayload,
+): Promise<void> => {
+    const { $api } = useNuxtApp();
+    await $api.post('/courier/location', payload);
 };

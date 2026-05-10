@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ArrowLeft } from 'lucide-vue-next';
+import RouteMap from '~/components/map/RouteMap.vue';
 import { useOrderDetailsPage } from '~/composables/useOrderDetailsPage';
 
 const {
@@ -123,6 +124,28 @@ const {
               </div>
             </div>
           </div>
+        </div>
+
+        <div
+            v-if="current.route_segments?.length"
+            class="order-page__card surface-card"
+        >
+          <div class="order-page__section-header section-head">
+            <h2 class="section-title">Маршрут доставки</h2>
+            <span
+                v-if="current.delivery_distance_meters"
+                class="order-page__section-meta section-meta"
+            >
+              {{ (current.delivery_distance_meters / 1000).toFixed(1) }} км
+            </span>
+          </div>
+
+          <RouteMap
+              :route-segments="current.route_segments"
+              :restaurant-address="current.restaurant?.address"
+              :delivery-address="current.delivery_address"
+              :height="320"
+          />
         </div>
 
         <!-- Состав заказа -->

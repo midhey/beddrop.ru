@@ -10,7 +10,8 @@ import {
   Settings2,
   Users,
 } from "lucide-vue-next";
-import AddressFields from "~/components/address/AddressFields.vue";
+import AddressPicker from "~/components/address/AddressPicker.vue";
+import RouteMap from "~/components/map/RouteMap.vue";
 import BaseAccordion from "~/components/ui/BaseAccordion.vue";
 import { useRestaurantManageDashboardPage } from "~/composables/useRestaurantManageDashboardPage";
 import placeholderImg from "~/assets/images/placeholder.png";
@@ -481,6 +482,21 @@ const copyInviteLink = async () => {
                       >
                         Позиции заказа не найдены.
                       </p>
+
+                      <div
+                        v-if="order.route_segments?.length"
+                        class="restaurant-dashboard__order-route"
+                      >
+                        <h3 class="restaurant-dashboard__order-details-title">
+                          Маршрут
+                        </h3>
+                        <RouteMap
+                          :route-segments="order.route_segments"
+                          :restaurant-address="order.restaurant?.address"
+                          :delivery-address="order.delivery_address"
+                          :height="260"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -942,14 +958,9 @@ const copyInviteLink = async () => {
                     рестораном, а не строкой в карточке.
                   </p>
                 </div>
-                <AddressFields
+                <AddressPicker
                   v-model="settingsForm.address"
-                  line1-label="Основной адрес"
-                  line1-placeholder="Улица, дом, корпус"
-                  line2-label="Дополнение"
-                  line2-placeholder="Этаж, вход, ориентир"
-                  city-placeholder="Москва"
-                  postal-code-placeholder="101000"
+                  placeholder="Улица, дом, корпус"
                   required
                 />
               </div>

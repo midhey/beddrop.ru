@@ -10,6 +10,10 @@ export default defineNuxtConfig({
     public: {
       apiBase:
         process.env.NUXT_PUBLIC_API_BASE || "http://localhost:8080/api/v1",
+      mapTileUrl:
+        process.env.NUXT_PUBLIC_MAP_TILE_URL || "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+      mapTileAttribution:
+        process.env.NUXT_PUBLIC_MAP_TILE_ATTRIBUTION || "© OpenStreetMap contributors",
     },
   },
   typescript: {

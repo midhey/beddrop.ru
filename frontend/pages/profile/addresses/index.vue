@@ -2,8 +2,8 @@
 import { onMounted, ref } from 'vue';
 import { Pencil, Trash2 } from 'lucide-vue-next';
 import { useSeoMeta } from '#imports';
-import AddressFields from '~/components/address/AddressFields.vue';
-import { useAddresses } from '~/composables/useAddresses';
+import AddressPicker from '~/components/address/AddressPicker.vue';
+import { useAddresses, type Address, type AddressPayload } from '~/composables/useAddresses';
 import { useFeedback } from '~/composables/useFeedback';
 
 const {
@@ -24,53 +24,52 @@ useSeoMeta({
 const formMode = ref<'create' | 'edit'>('create');
 const editingId = ref<number | null>(null);
 
-const form = ref({
+const emptyAddressForm = (): AddressPayload => ({
   label: '',
-  line1: '',
-  line2: '',
-  city: '',
-  postal_code: '',
+  value: null,
+  unrestricted_value: null,
+  line1: null,
+  line2: null,
+  city: null,
+  postal_code: null,
+  lat: null,
+  lng: null,
+  flat: null,
+  entrance: null,
+  floor: null,
+  intercom: null,
 });
+
+const form = ref<AddressPayload>(emptyAddressForm());
 
 const resetForm = () => {
   formMode.value = 'create';
   editingId.value = null;
-  form.value = {
-    label: '',
-    line1: '',
-    line2: '',
-    city: '',
-    postal_code: '',
-  };
+  form.value = emptyAddressForm();
 };
 
 const startCreate = () => {
   resetForm();
 };
 
-const startEdit = (addr: any) => {
+const startEdit = (addr: Address) => {
   formMode.value = 'edit';
   editingId.value = addr.id;
   form.value = {
-    label: addr.label ?? '',
-    line1: addr.line1 ?? '',
-    line2: addr.line2 ?? '',
-    city: addr.city ?? '',
-    postal_code: addr.postal_code ?? '',
+    ...addr,
+    raw_dadata_json: addr.raw_dadata ?? addr.raw_dadata_json ?? null,
   };
 };
 
 const submit = async () => {
-  if (!form.value.line1.trim()) {
+  if (!form.value.value || form.value.lat == null || form.value.lng == null) {
+    feedback.failure('Выберите адрес из подсказок или на карте');
     return;
   }
 
   const payload = {
+    ...form.value,
     label: form.value.label || null,
-    line1: form.value.line1,
-    line2: form.value.line2 || null,
-    city: form.value.city || null,
-    postal_code: form.value.postal_code || null,
   };
 
   if (formMode.value === 'create') {
@@ -166,17 +165,21 @@ onMounted(async () => {
                     {{ addr.label }}
                   </span>
                   <span class="address-item__city">
-                    {{ addr.city || 'Город не указан' }}
+                    {{ addr.city || addr.settlement || 'Населённый пункт не указан' }}
                   </span>
                 </div>
 
                 <div class="address-item__line1">
-                  {{ addr.line1 }}
+                  {{ addr.value || addr.line1 }}
                   <span
-                      v-if="addr.line2"
+                      v-if="addr.flat || addr.entrance || addr.floor"
                       class="address-item__line2"
                   >
-                    , {{ addr.line2 }}
+                    , {{ [
+                      addr.entrance ? `подъезд ${addr.entrance}` : null,
+                      addr.floor ? `этаж ${addr.floor}` : null,
+                      addr.flat ? `кв. ${addr.flat}` : null,
+                    ].filter(Boolean).join(', ') }}
                   </span>
                 </div>
 
@@ -217,7 +220,7 @@ onMounted(async () => {
           </h2>
 
           <form class="addresses-form" @submit.prevent="submit">
-            <AddressFields v-model="form" required />
+            <AddressPicker v-model="form" required />
 
             <div class="addresses-form__actions form-actions">
               <button

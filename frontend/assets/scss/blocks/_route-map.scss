@@ -1,0 +1,43 @@
+@use '../core' as *;
+
+.route-map {
+  display: grid;
+  gap: rem(10);
+  width: 100%;
+}
+
+.route-map__canvas {
+  overflow: hidden;
+  width: 100%;
+  border: rem(1) solid #dbe3ef;
+  border-radius: rem(8);
+  background: #edf2f7;
+}
+
+.route-map__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: rem(12);
+  color: #64748b;
+  font-size: rem(13);
+}
+
+.route-map__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: rem(7);
+}
+
+.route-map__legend-line {
+  width: rem(22);
+  height: rem(4);
+  border-radius: rem(999);
+}
+
+.route-map__legend-line--delivery {
+  background: #2563eb;
+}
+
+.route-map__legend-line--approach {
+  background: #f97316;
+}

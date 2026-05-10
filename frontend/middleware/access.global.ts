@@ -10,8 +10,9 @@ export default defineNuxtRouteMiddleware(async (to) => {
     const needsOrdersAccess = matchesProtectedPrefix(to.path, '/orders');
     const needsCourierAccess = matchesProtectedPrefix(to.path, '/courier');
     const needsRestaurantAccess = matchesProtectedPrefix(to.path, '/restaurants/manage');
+    const needsAdminAccess = matchesProtectedPrefix(to.path, '/admin');
 
-    if (!needsOrdersAccess && !needsCourierAccess && !needsRestaurantAccess) {
+    if (!needsOrdersAccess && !needsCourierAccess && !needsRestaurantAccess && !needsAdminAccess) {
         return;
     }
 
@@ -34,6 +35,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
     }
 
     if (needsRestaurantAccess && !appShellStore.hasRestaurantsAccess) {
+        return navigateTo('/');
+    }
+
+    if (needsAdminAccess && !authStore.isAdmin) {
         return navigateTo('/');
     }
 });

@@ -1,4 +1,4 @@
-import { computed, onMounted, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRouter } from '#app';
 import { useSeoMeta } from '#imports';
 import { useCourier } from '~/composables/useCourier';
@@ -39,6 +39,7 @@ export function useCourierDashboardPage() {
         assignOrder,
         markPickedUp,
         markDelivered,
+        sendLocation,
     } = useCourier();
 
     useSeoMeta({
@@ -51,6 +52,7 @@ export function useCourierDashboardPage() {
 
     const actionOrderId = ref<number | null>(null);
     const actionType = ref<CourierActionType>(null);
+    const locationWatchId = ref<number | null>(null);
 
     const profileStatusLabel = computed(() => {
         if (!profile.value) return '';
@@ -132,6 +134,12 @@ export function useCourierDashboardPage() {
         return getCourierDeliveryAddress(order);
     };
 
+    const formatDistance = (meters: number | null | undefined): string => {
+        if (meters == null) return '';
+        if (meters < 1000) return `${Math.round(meters)} м`;
+        return `${(meters / 1000).toFixed(1)} км`;
+    };
+
     const goBack = () => {
         router.back();
     };
@@ -139,11 +147,51 @@ export function useCourierDashboardPage() {
     const loadCourierDashboard = async () => {
         try {
             await Promise.all([fetchProfile(), fetchShift(), fetchOrders()]);
+            syncLocationWatch();
         } catch {
         }
     };
 
+    const syncLocationWatch = () => {
+        if (typeof navigator === 'undefined' || !navigator.geolocation) return;
+
+        if (!hasActiveShift.value) {
+            if (locationWatchId.value !== null) {
+                navigator.geolocation.clearWatch(locationWatchId.value);
+                locationWatchId.value = null;
+            }
+            return;
+        }
+
+        if (locationWatchId.value !== null) return;
+
+        locationWatchId.value = navigator.geolocation.watchPosition(
+            async (position) => {
+                await sendLocation({
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
+                    accuracy: position.coords.accuracy,
+                    heading: position.coords.heading,
+                    speed: position.coords.speed,
+                    recorded_at: new Date(position.timestamp).toISOString(),
+                });
+            },
+            () => {},
+            {
+                enableHighAccuracy: true,
+                maximumAge: 15000,
+                timeout: 10000,
+            },
+        );
+    };
+
     onMounted(loadCourierDashboard);
+    watch(hasActiveShift, syncLocationWatch);
+    onBeforeUnmount(() => {
+        if (locationWatchId.value !== null && typeof navigator !== 'undefined' && navigator.geolocation) {
+            navigator.geolocation.clearWatch(locationWatchId.value);
+        }
+    });
 
     return {
         profile,
@@ -167,6 +215,7 @@ export function useCourierDashboardPage() {
         getCourierOrderStatusLabel,
         getRestaurantAddress,
         getDeliveryAddress,
+        formatDistance,
         canCourierMarkPickedUp,
         canCourierMarkDelivered,
         startOrEndShift,

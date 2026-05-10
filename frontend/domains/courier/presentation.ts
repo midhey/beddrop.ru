@@ -53,18 +53,27 @@ export const formatCourierAddress = (
     address: CourierAddress | null | undefined,
     fallback = '',
 ): string => {
-    if (!address?.line1) return fallback;
+    const main = address?.value || address?.unrestricted_value || address?.line1;
+    if (!main) return fallback;
 
     const parts = [];
 
-    if (address.city) {
+    if (address.city && !main.includes(address.city)) {
         parts.push(address.city);
     }
 
-    parts.push(address.line1);
+    parts.push(main);
 
-    if (address.line2) {
-        parts.push(address.line2);
+    if (address.entrance) {
+        parts.push(`подъезд ${address.entrance}`);
+    }
+
+    if (address.floor) {
+        parts.push(`этаж ${address.floor}`);
+    }
+
+    if (address.flat) {
+        parts.push(`кв. ${address.flat}`);
     }
 
     return parts.join(', ');

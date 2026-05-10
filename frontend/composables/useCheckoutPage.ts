@@ -1,9 +1,10 @@
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from '#app';
 import { useSeoMeta } from '#imports';
 import { useAddresses } from '~/composables/useAddresses';
 import { useFeedback } from '~/composables/useFeedback';
 import { useOrders, type CreateOrderPayload } from '~/composables/useOrders';
+import { useDeliveryQuote } from '~/composables/useDeliveryQuote';
 import { useCartStore } from '~/stores/cart';
 import { formatPrice } from '~/utils/formatting';
 
@@ -27,6 +28,13 @@ export function useCheckoutPage() {
         errorMessage: orderError,
         loading: ordersLoading,
     } = useOrders();
+    const {
+        quote: deliveryQuote,
+        loading: quoteLoading,
+        errorMessage: quoteError,
+        fetchQuote,
+        resetQuote,
+    } = useDeliveryQuote();
 
     const selectedAddressId = ref<number | null>(null);
     const paymentMethod = ref<'CASH' | 'CARD' | 'ONLINE'>('CASH');
@@ -50,6 +58,8 @@ export function useCheckoutPage() {
     });
 
     const cartTotal = computed(() => cartStore.totalPrice);
+    const deliveryPrice = computed(() => deliveryQuote.value?.delivery_price ?? 0);
+    const checkoutTotal = computed(() => cartTotal.value + deliveryPrice.value);
     const cartItemsCount = computed(() => cartStore.items.length);
     const restaurantName = computed(
         () => cartStore.restaurant?.name || 'Ресторан',
@@ -59,9 +69,25 @@ export function useCheckoutPage() {
         () =>
             !isCartEmpty.value &&
             !!selectedAddressId.value &&
+            !quoteLoading.value &&
             !submitting.value &&
             !ordersLoading.value,
     );
+
+    const refreshDeliveryQuote = async () => {
+        const restaurantId = cartStore.cart?.restaurant_id;
+        const addressId = selectedAddressId.value;
+
+        if (!restaurantId || !addressId) {
+            resetQuote();
+            return;
+        }
+
+        try {
+            await fetchQuote(restaurantId, addressId);
+        } catch {
+        }
+    };
 
     const submitOrder = async () => {
         if (!canSubmit.value) return;
@@ -91,14 +117,21 @@ export function useCheckoutPage() {
         if (addresses.value.length) {
             selectedAddressId.value = addresses.value[0].id;
         }
+
+        await refreshDeliveryQuote();
     };
 
     onMounted(init);
+
+    watch(selectedAddressId, async () => {
+        await refreshDeliveryQuote();
+    });
 
     return {
         addresses,
         addressesError,
         orderError,
+        quoteError,
         cart,
         cartError,
         pageLoading,
@@ -107,6 +140,10 @@ export function useCheckoutPage() {
         paymentMethod,
         comment,
         cartTotal,
+        deliveryQuote,
+        quoteLoading,
+        deliveryPrice,
+        checkoutTotal,
         cartItemsCount,
         restaurantName,
         canSubmit,

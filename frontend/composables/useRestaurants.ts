@@ -1,5 +1,6 @@
 import { ref } from 'vue';
 import { useApiHelpers } from '~/composables/useApiHelpers';
+import type { AddressPayload } from '~/composables/useAddresses';
 import {
     createRestaurantRequest,
     deleteRestaurantRequest,
@@ -24,16 +25,7 @@ export interface Restaurant {
     current_user_role?: 'OWNER' | 'MANAGER' | 'STAFF' | null;
     created_at: string;
     updated_at: string;
-    address?: {
-        id: number;
-        label: string | null;
-        line1: string;
-        line2: string | null;
-        city: string | null;
-        postal_code: string | null;
-        lat: string | null;
-        lng: string | null;
-    } | null;
+    address?: (AddressPayload & { id: number }) | null;
     logo?: {
         id: number;
         url: string;
@@ -49,15 +41,7 @@ export interface RestaurantPayload {
     prep_time_min?: number | null;
     prep_time_max?: number | null;
     logo_media_id?: number | null;
-    address?: {
-        label?: string | null;
-        line1: string;
-        line2?: string | null;
-        city?: string | null;
-        postal_code?: string | null;
-        lat?: number | null;
-        lng?: number | null;
-    } | null;
+    address?: AddressPayload | null;
     owner_id?: number | null;
 }
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ArrowLeft } from 'lucide-vue-next';
+import RouteMap from '~/components/map/RouteMap.vue';
 import { useCourierDashboardPage } from '~/composables/useCourierDashboardPage';
 
 const {
@@ -24,6 +25,7 @@ const {
   getCourierOrderStatusLabel,
   getRestaurantAddress,
   getDeliveryAddress,
+  formatDistance,
   canCourierMarkPickedUp,
   canCourierMarkDelivered,
   startOrEndShift,
@@ -224,6 +226,15 @@ const {
                   </div>
 
                   <div class="courier-order__meta">
+                    <span v-if="order.courier_approach_distance_meters">
+                      До ресторана {{ formatDistance(order.courier_approach_distance_meters) }}
+                    </span>
+                    <span v-if="order.delivery_distance_meters">
+                      Доставка {{ formatDistance(order.delivery_distance_meters) }}
+                    </span>
+                    <span v-if="order.estimated_delivery_at">
+                      ETA {{ formatDateTime(order.estimated_delivery_at) }}
+                    </span>
                     <span>
                       {{ order.items_count ?? '—' }} позиций
                     </span>
@@ -231,6 +242,14 @@ const {
                       {{ formatDateTime(order.created_at) }}
                     </span>
                   </div>
+
+                  <RouteMap
+                      v-if="order.route_segments?.length"
+                      :route-segments="order.route_segments"
+                      :restaurant-address="order.restaurant?.address"
+                      :delivery-address="order.delivery_address"
+                      :height="220"
+                  />
                 </div>
 
                 <div class="courier-order__actions">
@@ -329,6 +348,12 @@ const {
                   </div>
 
                   <div class="courier-order__meta">
+                    <span v-if="order.delivery_distance_meters">
+                      Доставка {{ formatDistance(order.delivery_distance_meters) }}
+                    </span>
+                    <span v-if="order.estimated_delivery_at">
+                      ETA {{ formatDateTime(order.estimated_delivery_at) }}
+                    </span>
                     <span>
                       {{ order.items_count ?? '—' }} позиций
                     </span>
@@ -347,6 +372,14 @@ const {
                         {{ getCourierOrderStatusLabel(order.status) }}
                       </span>
                   </div>
+
+                  <RouteMap
+                      v-if="order.route_segments?.length"
+                      :route-segments="order.route_segments"
+                      :restaurant-address="order.restaurant?.address"
+                      :delivery-address="order.delivery_address"
+                      :height="220"
+                  />
                 </div>
 
                 <div class="courier-order__actions">

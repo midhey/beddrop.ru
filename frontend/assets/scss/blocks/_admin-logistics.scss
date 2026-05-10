@@ -1,0 +1,106 @@
+@use '../core' as *;
+
+.admin-logistics__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(rem(340), 0.8fr);
+  gap: rem(20);
+}
+
+.admin-logistics__panel {
+  display: grid;
+  gap: rem(18);
+}
+
+.admin-logistics__settings,
+.admin-logistics__debug {
+  display: grid;
+  gap: rem(18);
+}
+
+.admin-logistics__group {
+  display: grid;
+  gap: rem(12);
+  padding-bottom: rem(18);
+  border-bottom: rem(1) solid #edf2f7;
+}
+
+.admin-logistics__group:last-child {
+  border-bottom: 0;
+}
+
+.admin-logistics__group-title {
+  margin: 0;
+  color: #172033;
+  font-size: rem(16);
+}
+
+.admin-logistics__fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: rem(14);
+}
+
+.admin-logistics__hint {
+  color: #64748b;
+  font-size: rem(12);
+  line-height: 1.4;
+}
+
+.admin-logistics__inline-form,
+.admin-logistics__route-form {
+  display: grid;
+  gap: rem(10);
+}
+
+.admin-logistics__inline-form {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.admin-logistics__route-form {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.admin-logistics__route-form .button {
+  grid-column: span 2;
+}
+
+.admin-logistics__json {
+  overflow: auto;
+  max-height: rem(340);
+  margin: 0;
+  padding: rem(14);
+  border-radius: rem(8);
+  background: #111827;
+  color: #d1d5db;
+  font-size: rem(12);
+  line-height: 1.5;
+}
+
+.admin-logistics__route-result {
+  display: grid;
+  gap: rem(10);
+}
+
+.admin-logistics__route-result p {
+  margin: 0;
+  color: #334155;
+  font-size: rem(14);
+}
+
+@media (max-width: 960px) {
+  .admin-logistics__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .admin-logistics__fields,
+  .admin-logistics__inline-form,
+  .admin-logistics__route-form {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-logistics__route-form .button {
+    grid-column: auto;
+  }
+}
