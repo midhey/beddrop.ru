@@ -56,6 +56,11 @@ class DeliveryQuoteController extends Controller
                 'delivery_price' => $quote['delivery_price'],
                 'price' => $quote['price'],
                 'time' => $quote['time'],
+                'route' => [
+                    'distance_meters' => $quote['route']['distance_meters'],
+                    'duration_seconds' => $quote['route']['duration_seconds'],
+                    'encoded_shape' => $quote['route']['encoded_shape'],
+                ],
             ],
         ]);
     }

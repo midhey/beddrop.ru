@@ -96,7 +96,8 @@ class GeoLogisticsApiTest extends TestCase
             ->assertJsonPath('quote.distance_meters', 4200)
             ->assertJsonPath('quote.duration_seconds', 780)
             ->assertJsonPath('quote.eta_minutes', 44)
-            ->assertJsonPath('quote.delivery_price', 314);
+            ->assertJsonPath('quote.delivery_price', 314)
+            ->assertJsonPath('quote.route.encoded_shape', 'encoded-shape');
     }
 
     public function test_courier_can_store_location_only_with_open_shift(): void

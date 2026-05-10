@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ArrowLeft } from 'lucide-vue-next';
+import RouteMap from '~/components/map/RouteMap.vue';
 import { useCheckoutPage } from '~/composables/useCheckoutPage';
 
 const {
@@ -17,10 +18,16 @@ const {
   cartTotal,
   deliveryQuote,
   quoteLoading,
-  deliveryPrice,
+  deliveryRoutePrice,
+  serviceFee,
   checkoutTotal,
   cartItemsCount,
   restaurantName,
+  restaurantAddress,
+  selectedAddress,
+  deliveryDistanceKm,
+  deliveryDurationMinutes,
+  quoteRouteSegments,
   canSubmit,
   submitOrder,
   formatPrice,
@@ -175,6 +182,53 @@ const {
             </div>
           </section>
 
+          <section class="checkout-card surface-card">
+            <h2 class="checkout-card__title section-title">
+              Маршрут доставки
+            </h2>
+
+            <div
+                v-if="quoteLoading"
+                class="checkout-route checkout-route--loading"
+            >
+              Считаем маршрут...
+            </div>
+
+            <div
+                v-else-if="deliveryQuote && quoteRouteSegments.length"
+                class="checkout-route"
+            >
+              <div class="checkout-route__stats">
+                <div class="checkout-route__stat">
+                  <span class="checkout-route__label">Расстояние</span>
+                  <strong>{{ deliveryDistanceKm }} км</strong>
+                </div>
+                <div class="checkout-route__stat">
+                  <span class="checkout-route__label">В пути</span>
+                  <strong>{{ deliveryDurationMinutes }} мин</strong>
+                </div>
+                <div class="checkout-route__stat">
+                  <span class="checkout-route__label">Итого до двери</span>
+                  <strong>{{ deliveryQuote.eta_minutes }} мин</strong>
+                </div>
+              </div>
+
+              <RouteMap
+                  :route-segments="quoteRouteSegments"
+                  :restaurant-address="restaurantAddress"
+                  :delivery-address="selectedAddress"
+                  :height="320"
+              />
+            </div>
+
+            <p
+                v-else
+                class="checkout-card__hint checkout-card__hint--warning"
+            >
+              Выберите адрес с координатами, чтобы увидеть маршрут и стоимость доставки.
+            </p>
+          </section>
+
           <!-- Оплата + комментарий -->
           <section class="checkout-card surface-card">
             <h2 class="checkout-card__title section-title">
@@ -264,14 +318,18 @@ const {
               <div class="checkout-summary__row">
                 <span>Доставка</span>
                 <span v-if="quoteLoading">Считаем...</span>
-                <span v-else>{{ formatPrice(deliveryPrice) }}</span>
+                <span v-else>{{ formatPrice(deliveryRoutePrice) }}</span>
+              </div>
+              <div class="checkout-summary__row">
+                <span>Сервисный сбор</span>
+                <span v-if="quoteLoading">...</span>
+                <span v-else>{{ formatPrice(serviceFee) }}</span>
               </div>
               <div
                   v-if="deliveryQuote"
-                  class="checkout-summary__row"
+                  class="checkout-summary__route"
               >
-                <span>{{ (deliveryQuote.distance_meters / 1000).toFixed(1) }} км, ~{{ deliveryQuote.eta_minutes }} мин</span>
-                <span></span>
+                {{ deliveryDistanceKm }} км, в пути ~{{ deliveryDurationMinutes }} мин, с готовкой ~{{ deliveryQuote.eta_minutes }} мин
               </div>
               <div class="checkout-summary__row checkout-summary__row--total">
                 <span>Итого к оплате</span>
@@ -287,6 +345,13 @@ const {
             >
               Оформить заказ
             </button>
+
+            <p
+                v-if="selectedAddressId && !deliveryQuote && !quoteLoading"
+                class="checkout-card__hint checkout-card__hint--warning"
+            >
+              Не удалось рассчитать доставку. Проверьте адрес или попробуйте позже.
+            </p>
 
             <p
                 v-if="!selectedAddressId && addresses.length"

@@ -25,7 +25,7 @@ class CartController extends Controller
             ->where('status', CartStatus::ACTIVE->value)
             ->where('is_active', true)
             ->with([
-                'restaurant',
+                'restaurant.address',
                 'items.product.images.media',
             ])
             ->first();

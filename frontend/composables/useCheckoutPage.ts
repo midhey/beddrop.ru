@@ -4,6 +4,7 @@ import { useSeoMeta } from '#imports';
 import { useAddresses } from '~/composables/useAddresses';
 import { useFeedback } from '~/composables/useFeedback';
 import { useOrders, type CreateOrderPayload } from '~/composables/useOrders';
+import type { OrderRouteSegment } from '~/composables/useOrders';
 import { useDeliveryQuote } from '~/composables/useDeliveryQuote';
 import { useCartStore } from '~/stores/cart';
 import { formatPrice } from '~/utils/formatting';
@@ -59,23 +60,62 @@ export function useCheckoutPage() {
 
     const cartTotal = computed(() => cartStore.totalPrice);
     const deliveryPrice = computed(() => deliveryQuote.value?.delivery_price ?? 0);
+    const deliveryRoutePrice = computed(() => {
+        const price = deliveryQuote.value?.price;
+        if (!price) return 0;
+
+        return Number(price.base || 0) + Number(price.distance || 0);
+    });
+    const serviceFee = computed(() => deliveryQuote.value?.price.service ?? 0);
     const checkoutTotal = computed(() => cartTotal.value + deliveryPrice.value);
     const cartItemsCount = computed(() => cartStore.items.length);
     const restaurantName = computed(
         () => cartStore.restaurant?.name || 'Ресторан',
     );
+    const restaurantAddress = computed(() => cartStore.restaurant?.address ?? null);
+    const selectedAddress = computed(() => {
+        return addresses.value.find((address) => address.id === selectedAddressId.value) ?? null;
+    });
+    const deliveryDistanceKm = computed(() => {
+        if (!deliveryQuote.value) return null;
+
+        return (deliveryQuote.value.distance_meters / 1000).toFixed(1);
+    });
+    const deliveryDurationMinutes = computed(() => {
+        if (!deliveryQuote.value) return null;
+
+        return Math.max(1, Math.ceil(deliveryQuote.value.duration_seconds / 60));
+    });
+    const quoteRouteSegments = computed<OrderRouteSegment[]>(() => {
+        const quote = deliveryQuote.value;
+
+        if (!quote?.route?.encoded_shape) return [];
+
+        return [
+            {
+                id: 0,
+                order_id: 0,
+                segment_type: 'restaurant_to_client',
+                mode: quote.mode,
+                distance_meters: quote.route.distance_meters,
+                duration_seconds: quote.route.duration_seconds,
+                encoded_shape: quote.route.encoded_shape,
+            },
+        ];
+    });
 
     const canSubmit = computed(
         () =>
             !isCartEmpty.value &&
             !!selectedAddressId.value &&
+            !!deliveryQuote.value &&
             !quoteLoading.value &&
             !submitting.value &&
             !ordersLoading.value,
     );
 
     const refreshDeliveryQuote = async () => {
-        const restaurantId = cartStore.cart?.restaurant_id;
+        const restaurantId = cartStore.cart?.restaurant_id ?? cartStore.restaurant?.id;
         const addressId = selectedAddressId.value;
 
         if (!restaurantId || !addressId) {
@@ -143,9 +183,16 @@ export function useCheckoutPage() {
         deliveryQuote,
         quoteLoading,
         deliveryPrice,
+        deliveryRoutePrice,
+        serviceFee,
         checkoutTotal,
         cartItemsCount,
         restaurantName,
+        restaurantAddress,
+        selectedAddress,
+        deliveryDistanceKm,
+        deliveryDurationMinutes,
+        quoteRouteSegments,
         canSubmit,
         submitOrder,
         formatPrice,

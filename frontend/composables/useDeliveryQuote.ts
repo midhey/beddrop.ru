@@ -23,6 +23,11 @@ export interface DeliveryQuote {
         buffer: number;
         total: number;
     };
+    route?: {
+        distance_meters: number;
+        duration_seconds: number;
+        encoded_shape: string | null;
+    };
 }
 
 export function useDeliveryQuote() {
