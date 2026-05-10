@@ -57,6 +57,42 @@
     gap: rem(12);
   }
 
+  &__auth-skeleton {
+    display: inline-flex;
+    align-items: center;
+    gap: rem(10);
+    min-height: rem(52);
+    padding: rem(6) rem(12) rem(6) rem(6);
+    border-radius: rem(999);
+    background: #f7f9fc;
+  }
+
+  &__auth-skeleton-avatar {
+    width: rem(40);
+    height: rem(40);
+    border-radius: 50%;
+  }
+
+  &__auth-skeleton-copy {
+    display: flex;
+    flex-direction: column;
+    gap: rem(7);
+    width: rem(132);
+  }
+
+  &__auth-skeleton-line {
+    height: rem(10);
+    border-radius: rem(999);
+  }
+
+  &__auth-skeleton-line--title {
+    width: 100%;
+  }
+
+  &__auth-skeleton-line--caption {
+    width: 62%;
+  }
+
   &__button {
     min-width: rem(132);
   }
@@ -258,6 +294,26 @@
     color: var(--color-status-danger-text);
   }
 
+  &__dropdown-item--skeleton,
+  &__dropdown-item--skeleton:hover {
+    transform: none;
+    background: transparent;
+    pointer-events: none;
+  }
+
+  &__dropdown-skeleton-line {
+    height: rem(10);
+    border-radius: rem(999);
+  }
+
+  &__dropdown-skeleton-line--title {
+    width: rem(132);
+  }
+
+  &__dropdown-skeleton-line--caption {
+    width: rem(196);
+  }
+
   button.header__dropdown-item {
     cursor: pointer;
   }
@@ -318,6 +374,12 @@
     justify-content: center;
     box-shadow: 0 4px 10px rgba(122, 59, 255, 0.3);
   }
+
+  &__cart--skeleton {
+    cursor: default;
+    border-radius: 50%;
+    background: #e9eef5;
+  }
 }
 
 @keyframes header-float-in {
@@ -363,7 +425,8 @@
 
     &__button,
     &__cart,
-    &__dropdown-block {
+    &__dropdown-block,
+    &__auth-skeleton {
       width: 100%;
       justify-content: flex-start;
       border: none;
@@ -383,6 +446,23 @@
       height: auto;
       padding: rem(6) 0;
       gap: rem(12);
+    }
+
+    &__cart--skeleton {
+      height: rem(32);
+      padding: 0;
+      border-radius: rem(8);
+    }
+
+    &__auth-skeleton {
+      min-height: 0;
+      padding: rem(6) 0;
+    }
+
+    &__auth-skeleton-copy {
+      flex: 1 1 auto;
+      width: auto;
+      max-width: rem(190);
     }
 
     &__cart-label {
@@ -415,6 +495,14 @@
       border: none;
       background: transparent;
       padding: 0;
+    }
+
+    &__dropdown-skeleton-line--title {
+      width: rem(150);
+    }
+
+    &__dropdown-skeleton-line--caption {
+      width: min(100%, rem(230));
     }
 
     &__dropdown-summary {

@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, ref, watch } from 'vue';
-import { useFeedback } from '~/composables/useFeedback';
+import { computed } from 'vue';
 
 const props = defineProps<{
   title?: string;
@@ -8,33 +7,11 @@ const props = defineProps<{
   loading?: boolean;
   emptyText?: string;
   hasItems?: boolean;
+  skeletonCount?: number;
 }>();
 
-const feedback = useFeedback();
-const gridRef = ref<HTMLElement | null>(null);
-
-watch(
-  [() => !!props.loading, gridRef],
-  ([isLoading, gridElement]) => {
-    if (!gridElement) {
-      return;
-    }
-
-    if (isLoading) {
-      feedback.block(gridElement, 'Загружаем...');
-      return;
-    }
-
-    feedback.unblock(gridElement);
-  },
-  {
-    immediate: true,
-    flush: 'post',
-  },
-);
-
-onBeforeUnmount(() => {
-  feedback.unblock(gridRef.value);
+const skeletonItems = computed(() => {
+  return Array.from({ length: props.skeletonCount ?? 6 }, (_, index) => index);
 });
 </script>
 
@@ -60,11 +37,25 @@ onBeforeUnmount(() => {
     </div>
 
     <div
-        ref="gridRef"
         class="cards__grid"
         :class="{ 'cards__grid--loading': loading }"
     >
-      <slot />
+      <template v-if="loading">
+        <article
+            v-for="item in skeletonItems"
+            :key="item"
+            class="cards__skeleton-card"
+            aria-hidden="true"
+        >
+          <span class="cards__skeleton-image skeleton" />
+          <span class="cards__skeleton-line cards__skeleton-line--title skeleton" />
+          <span class="cards__skeleton-line skeleton" />
+          <span class="cards__skeleton-line cards__skeleton-line--short skeleton" />
+          <span class="cards__skeleton-chip skeleton" />
+        </article>
+      </template>
+
+      <slot v-else />
     </div>
 
     <div

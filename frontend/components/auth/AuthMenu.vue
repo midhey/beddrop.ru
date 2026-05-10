@@ -79,12 +79,33 @@ const userInitial = computed(() => {
   const src = authStore.user?.name || authStore.user?.email || 'U';
   return src.trim().charAt(0).toUpperCase();
 });
+
+const isAuthResolving = computed(() => !authStore.isReady);
+const isShellResolving = computed(() => {
+  return authStore.isAuthenticated
+    && appShellStore.bootstrapping
+    && !appShellStore.bootstrappedForAuth;
+});
 </script>
 
 <template>
   <div class="header__menu">
     <ClientOnly>
-      <template v-if="!authStore.isAuthenticated">
+      <template v-if="isAuthResolving">
+        <div
+            class="header__auth-skeleton"
+            aria-hidden="true"
+        >
+          <span class="header__auth-skeleton-avatar skeleton" />
+          <span class="header__auth-skeleton-copy">
+            <span class="header__auth-skeleton-line header__auth-skeleton-line--title skeleton" />
+            <span class="header__auth-skeleton-line header__auth-skeleton-line--caption skeleton" />
+          </span>
+        </div>
+        <span class="visually-hidden">Восстанавливаем сессию</span>
+      </template>
+
+      <template v-else-if="!authStore.isAuthenticated">
         <button
             type="button"
             class="button header__button"
@@ -185,6 +206,21 @@ const userInitial = computed(() => {
                   </span>
                 </NuxtLink>
 
+                <template v-if="isShellResolving">
+                  <div
+                      v-for="index in 2"
+                      :key="`shell-access-${index}`"
+                      class="header__dropdown-item header__dropdown-item--skeleton"
+                      aria-hidden="true"
+                  >
+                    <span class="header__dropdown-item-icon skeleton" />
+                    <span class="header__dropdown-item-copy">
+                      <span class="header__dropdown-skeleton-line header__dropdown-skeleton-line--title skeleton" />
+                      <span class="header__dropdown-skeleton-line header__dropdown-skeleton-line--caption skeleton" />
+                    </span>
+                  </div>
+                </template>
+
                 <NuxtLink
                     v-if="appShellStore.hasRestaurantsAccess"
                     to="/restaurants/manage"
@@ -264,6 +300,19 @@ const userInitial = computed(() => {
           "
         />
       </BaseModal>
+
+      <template #fallback>
+        <div
+            class="header__auth-skeleton"
+            aria-hidden="true"
+        >
+          <span class="header__auth-skeleton-avatar skeleton" />
+          <span class="header__auth-skeleton-copy">
+            <span class="header__auth-skeleton-line header__auth-skeleton-line--title skeleton" />
+            <span class="header__auth-skeleton-line header__auth-skeleton-line--caption skeleton" />
+          </span>
+        </div>
+      </template>
     </ClientOnly>
   </div>
 </template>

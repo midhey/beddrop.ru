@@ -22,6 +22,10 @@
     cursor: pointer;
   }
 
+  &__inner--skeleton {
+    cursor: default;
+  }
+
   &__left {
     display: flex;
     flex-direction: column;
@@ -108,6 +112,34 @@
     text-underline-offset: 2px;
   }
 
+  &__skeleton-title,
+  &__skeleton-meta,
+  &__skeleton-price,
+  &__skeleton-cta {
+    border-radius: 999px;
+  }
+
+  &__skeleton-title {
+    width: rem(190);
+    height: rem(12);
+  }
+
+  &__skeleton-meta {
+    width: rem(330);
+    max-width: 62vw;
+    height: rem(12);
+  }
+
+  &__skeleton-price {
+    width: rem(86);
+    height: rem(12);
+  }
+
+  &__skeleton-cta {
+    width: rem(102);
+    height: rem(12);
+  }
+
   @media (max-width: 640px) {
     &__inner {
       padding-inline: 12px;
@@ -117,6 +149,11 @@
 
     &__right {
       align-items: flex-start;
+    }
+
+    &__skeleton-meta {
+      max-width: 100%;
+      width: rem(240);
     }
   }
 }

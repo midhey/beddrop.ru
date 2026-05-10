@@ -1,6 +1,6 @@
 import { watch } from 'vue';
 
-export default defineNuxtPlugin(async () => {
+export default defineNuxtPlugin(() => {
     const authStore = useAuthStore();
     const appShellStore = useAppShellStore();
 
@@ -14,8 +14,14 @@ export default defineNuxtPlugin(async () => {
         });
     };
 
-    await authStore.ensureSession();
-    await syncBootstrap();
+    const bootstrapInitialState = async () => {
+        await authStore.ensureSession();
+        await syncBootstrap();
+    };
+
+    void bootstrapInitialState().catch(() => {
+        appShellStore.resetForGuest();
+    });
 
     watch(
         () => authStore.isAuthenticated,
@@ -24,7 +30,7 @@ export default defineNuxtPlugin(async () => {
                 return;
             }
 
-            syncBootstrap(true);
+            void syncBootstrap(true);
         },
     );
 });
