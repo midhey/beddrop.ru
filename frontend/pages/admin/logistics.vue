@@ -5,10 +5,6 @@ import RouteMap from '~/components/map/RouteMap.vue';
 import { useAdminLogistics } from '~/composables/useAdminLogistics';
 import { useFeedback } from '~/composables/useFeedback';
 
-definePageMeta({
-  middleware: 'access',
-});
-
 useSeoMeta({
   title: 'Логистика — админка BedDrop',
 });

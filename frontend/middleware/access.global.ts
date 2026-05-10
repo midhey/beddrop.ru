@@ -24,7 +24,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     }
 
     const appShellStore = useAppShellStore();
-    await appShellStore.ensureBootstrapped();
+    await appShellStore.ensureBootstrapped(needsAdminAccess);
 
     if (!authStore.isAuthenticated) {
         return navigateTo('/');
