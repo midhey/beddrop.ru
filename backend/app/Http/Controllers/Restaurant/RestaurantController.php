@@ -88,7 +88,7 @@ class RestaurantController extends Controller
         $address = null;
 
         if($addressData) {
-            $address = Address::create($this->addressPayload($addressData, $request->user()->id));
+            $address = Address::create($this->addressPayload($addressData));
         }
 
         $restaurant = Restaurant::create([
@@ -145,7 +145,7 @@ class RestaurantController extends Controller
             if($restaurant->address) {
                 $restaurant->address->update($this->addressPayload($addressData));
             } else {
-                $address = Address::create($this->addressPayload($addressData, $request->user()->id));
+                $address = Address::create($this->addressPayload($addressData));
                 $restaurant->address_id = $address->id;
                 $restaurant->save();
             }

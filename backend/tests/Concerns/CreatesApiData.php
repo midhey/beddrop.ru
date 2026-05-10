@@ -71,7 +71,7 @@ trait CreatesApiData
     protected function createRestaurant(?User $owner = null, array $attributes = []): Restaurant
     {
         $sequence = $this->nextSequence();
-        $address = $attributes['address'] ?? $this->createAddress($owner);
+        $address = $attributes['address'] ?? $this->createAddress();
 
         unset($attributes['address']);
 

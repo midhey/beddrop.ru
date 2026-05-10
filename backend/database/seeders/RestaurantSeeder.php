@@ -60,7 +60,7 @@ class RestaurantSeeder extends Seeder
         }
 
         foreach ($items as $item) {
-            $addressPayload = $this->addressPayload($owner, $item['address']);
+            $addressPayload = $this->addressPayload($item['address']);
             $restaurant = Restaurant::where('slug', $item['slug'])->first();
 
             if ($restaurant?->address) {
@@ -111,7 +111,7 @@ class RestaurantSeeder extends Seeder
         }
     }
 
-    private function addressPayload(User $owner, array $data): array
+    private function addressPayload(array $data): array
     {
         $line1 = $data['line1']
             ?? trim(implode(', ', array_filter([
@@ -120,7 +120,7 @@ class RestaurantSeeder extends Seeder
             ])));
 
         return array_merge([
-            'user_id' => $owner->id,
+            'user_id' => null,
             'label' => 'Основной адрес ресторана',
             'line1' => $line1,
             'line2' => null,

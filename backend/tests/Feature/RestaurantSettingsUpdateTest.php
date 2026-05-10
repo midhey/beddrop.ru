@@ -12,6 +12,45 @@ class RestaurantSettingsUpdateTest extends TestCase
     use CreatesApiData;
     use RefreshDatabase;
 
+    public function test_restaurant_create_does_not_add_restaurant_address_to_owner_profile(): void
+    {
+        $owner = $this->createUser();
+
+        $response = $this
+            ->actingAs($owner, 'api')
+            ->postJson('/api/v1/restaurants', [
+                'name' => 'Ресторан с отдельным адресом',
+                'slug' => 'separate-restaurant-address',
+                'phone' => '+79990001122',
+                'is_active' => true,
+                'prep_time_min' => 20,
+                'prep_time_max' => 35,
+                'address' => [
+                    'label' => 'Ресторан',
+                    'line1' => 'Адрес ресторана, 10',
+                    'city' => 'Великий Новгород',
+                    'postal_code' => '173000',
+                    'lat' => 58.5176735,
+                    'lng' => 31.2866066,
+                ],
+            ]);
+
+        $response
+            ->assertCreated()
+            ->assertJsonPath('restaurant.address.line1', 'Адрес ресторана, 10');
+
+        $this->assertDatabaseHas('addresses', [
+            'line1' => 'Адрес ресторана, 10',
+            'user_id' => null,
+        ]);
+
+        $this
+            ->actingAs($owner, 'api')
+            ->getJson('/api/v1/addresses')
+            ->assertOk()
+            ->assertJsonCount(0, 'addresses');
+    }
+
     public function test_manager_can_update_restaurant_settings_with_nested_address(): void
     {
         $owner = $this->createUser();
@@ -63,5 +102,12 @@ class RestaurantSettingsUpdateTest extends TestCase
         $this->assertSame($logo->id, $restaurant->logo_media_id);
         $this->assertSame('Новый адрес, 10', $restaurant->address?->line1);
         $this->assertSame('Ресторан', $restaurant->address?->label);
+        $this->assertNull($restaurant->address?->user_id);
+
+        $this
+            ->actingAs($manager, 'api')
+            ->getJson('/api/v1/addresses')
+            ->assertOk()
+            ->assertJsonCount(0, 'addresses');
     }
 }
