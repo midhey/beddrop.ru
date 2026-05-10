@@ -23,7 +23,7 @@ class RestaurantOrderController extends Controller
 
         $query = Order::query()
             ->where('restaurant_id', $restaurant->id)
-            ->with(['user', 'items.product'])
+            ->with(['user', 'items.product', 'deliveryAddress', 'restaurant.address', 'routeSegments'])
             ->orderByDesc('created_at');
 
         if($status = $request->get('status')) {
@@ -43,7 +43,7 @@ class RestaurantOrderController extends Controller
             abort(404);
         }
 
-        $order->load(['user', 'items.product', 'events']);
+        $order->load(['user', 'items.product', 'events', 'deliveryAddress', 'restaurant.address', 'routeSegments']);
 
         return new OrderResource($order);
     }

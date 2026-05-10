@@ -35,4 +35,13 @@ return [
         ],
     ],
 
+    'dadata' => [
+        'api_key' => env('DADATA_API_KEY'),
+        'secret_key' => env('DADATA_SECRET_KEY'),
+    ],
+
+    'valhalla' => [
+        'url' => env('VALHALLA_URL'),
+    ],
+
 ];

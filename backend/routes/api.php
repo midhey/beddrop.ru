@@ -6,6 +6,11 @@ use App\Http\Controllers\Auth\LogoutAllController;
 use App\Http\Controllers\Auth\RefreshController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\Admin\LogisticsDebugController;
+use App\Http\Controllers\Admin\LogisticsSettingsController;
+use App\Http\Controllers\Delivery\DeliveryQuoteController;
+use App\Http\Controllers\Geo\GeoController;
+use App\Http\Controllers\Courier\CourierLocationController;
 use App\Http\Controllers\Courier\CourierProfileController;
 use App\Http\Controllers\Courier\CourierShiftController;
 use App\Http\Controllers\Courier\CourierOrderController;
@@ -127,6 +132,16 @@ Route::prefix('/v1')->group(function () {
         Route::post('/', [OrderController::class, 'store']);
     });
 
+    Route::middleware('auth:api')->prefix('/geo')->group(function () {
+        Route::get('/address-suggestions', [GeoController::class, 'suggestions']);
+        Route::post('/clean-address', [GeoController::class, 'clean']);
+        Route::post('/reverse-geocode', [GeoController::class, 'reverseGeocode']);
+    });
+
+    Route::middleware('auth:api')->prefix('/delivery')->group(function () {
+        Route::post('/quote', DeliveryQuoteController::class);
+    });
+
     Route::middleware('auth:api')->prefix('/courier')->group(function () {
         Route::get('/profile', [CourierProfileController::class, 'show']);
         Route::post('/profile', [CourierProfileController::class, 'upsert']);
@@ -138,6 +153,8 @@ Route::prefix('/v1')->group(function () {
         Route::get('/orders/available', [CourierOrderController::class, 'available']);
         Route::get('/orders/active', [CourierOrderController::class, 'active']);
         Route::get('/orders/history', [CourierOrderController::class, 'history']);
+
+        Route::post('/location', [CourierLocationController::class, 'store']);
 
         Route::post('/orders/{order}/assign', [CourierOrderController::class, 'assign']);
         Route::post('/orders/{order}/picked-up', [CourierOrderController::class, 'pickedUp']);
@@ -154,5 +171,13 @@ Route::prefix('/v1')->group(function () {
     Route::middleware('auth:api')->prefix('/media')->group(function () {
         Route::post('/', [MediaController::class, 'store']);
         Route::delete('/{media}', [MediaController::class, 'destroy']);
+    });
+
+    Route::middleware('auth:api')->prefix('/admin')->group(function () {
+        Route::get('/logistics/settings', [LogisticsSettingsController::class, 'index']);
+        Route::put('/logistics/settings', [LogisticsSettingsController::class, 'update']);
+        Route::post('/logistics/test-address', [LogisticsDebugController::class, 'testAddress']);
+        Route::post('/logistics/test-route', [LogisticsDebugController::class, 'testRoute']);
+        Route::get('/orders/{order}/routes', [LogisticsDebugController::class, 'orderRoutes']);
     });
 });

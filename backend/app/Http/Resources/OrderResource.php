@@ -31,6 +31,16 @@ class OrderResource extends JsonResource
             'delivery_address_id' => $this->delivery_address_id,
             'delivery_lat' => $this->delivery_lat,
             'delivery_lng' => $this->delivery_lng,
+            'delivery_distance_meters' => $this->delivery_distance_meters,
+            'delivery_duration_seconds' => $this->delivery_duration_seconds,
+            'delivery_price_snapshot' => $this->delivery_price_snapshot,
+            'estimated_pickup_at' => $this->estimated_pickup_at,
+            'estimated_delivery_at' => $this->estimated_delivery_at,
+            'logistics_snapshot' => $this->logistics_snapshot_json,
+            'courier_approach_distance_meters' => $this->when(
+                $this->getAttribute('courier_approach_distance_meters') !== null,
+                $this->getAttribute('courier_approach_distance_meters'),
+            ),
 
             'delivery_address' => new AddressResource(
                 $this->whenLoaded('deliveryAddress')
@@ -39,6 +49,7 @@ class OrderResource extends JsonResource
             'restaurant' => new RestaurantResource($this->whenLoaded('restaurant')),
             'items' => $items,
             'events' => OrderEventResource::collection($this->whenLoaded('events')),
+            'route_segments' => OrderRouteSegmentResource::collection($this->whenLoaded('routeSegments')),
 
             'items_count' => $itemsCount,
             'calculated_total' => $totalPrice,

@@ -2,10 +2,13 @@
 
 namespace App\Http\Requests\Restaurant;
 
+use App\Http\Requests\Concerns\ValidatesAddressPayload;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateRestaurantRequest extends FormRequest
 {
+    use ValidatesAddressPayload;
+
     public function authorize(): bool
     {
         return true;
@@ -31,13 +34,6 @@ class UpdateRestaurantRequest extends FormRequest
             'prep_time_max' => ['sometimes', 'nullable', 'integer', 'min:0'],
             'logo_media_id' => ['sometimes', 'nullable', 'integer', 'exists:media,id'],
             'address'             => ['sometimes', 'array'],
-            'address.label'       => ['sometimes', 'nullable', 'string', 'max:255'],
-            'address.line1'       => ['sometimes', 'required', 'string', 'max:255'],
-            'address.line2'       => ['sometimes', 'nullable', 'string', 'max:255'],
-            'address.city'        => ['sometimes', 'nullable', 'string', 'max:255'],
-            'address.postal_code' => ['sometimes', 'nullable', 'string', 'max:32'],
-            'address.lat'         => ['sometimes', 'nullable', 'numeric'],
-            'address.lng'         => ['sometimes', 'nullable', 'numeric'],
-        ];
+        ] + $this->addressRules('address.', true);
     }
 }

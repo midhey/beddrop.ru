@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Profile;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Profile\StoreAddressRequest;
 use App\Http\Requests\Profile\UpdateAddressRequest;
+use App\Http\Resources\AddressResource;
 use App\Models\Address;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,7 +23,7 @@ class AddressController extends Controller
             ->get();
 
         return response()->json([
-            'addresses' => $addresses,
+            'addresses' => AddressResource::collection($addresses)->resolve(),
         ]);
     }
 
@@ -31,19 +32,10 @@ class AddressController extends Controller
         $user = $request->user();
         $data = $request->validated();
 
-        $address = Address::create([
-            'user_id' => $user->id,
-            'label' => $data['label'] ?? null,
-            'line1' => $data['line1'],
-            'line2' => $data['line2'] ?? null,
-            'city' => $data['city'] ?? null,
-            'postal_code' => $data['postal_code'] ?? null,
-            'lat' => $data['lat'] ?? null,
-            'lng' => $data['lng'] ?? null,
-        ]);
+        $address = Address::create($this->addressPayload($data, $user->id));
 
         return response()->json([
-            'address' => $address,
+            'address' => new AddressResource($address),
         ], 201);
     }
 
@@ -57,20 +49,12 @@ class AddressController extends Controller
 
         $data = $request->validated();
 
-        $address->fill([
-            'label' => $data['label'] ?? $address->label,
-            'line1' => $data['line1'] ?? $address->line1,
-            'line2' => $data['line2'] ?? $address->line2,
-            'city' => $data['city'] ?? $address->city,
-            'postal_code' => $data['postal_code'] ?? $address->postal_code,
-            'lat' => $data['lat'] ?? $address->lat,
-            'lng' => $data['lng'] ?? $address->lng,
-        ]);
+        $address->fill($this->addressPayload($data));
 
         $address->save();
 
         return response()->json([
-            'address' => $address,
+            'address' => new AddressResource($address),
         ]);
     }
 
@@ -85,5 +69,21 @@ class AddressController extends Controller
         $address->delete();
 
         return response()->noContent();
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
+     */
+    private function addressPayload(array $data, ?int $userId = null): array
+    {
+        if ($userId !== null) {
+            $data['user_id'] = $userId;
+        }
+
+        $data['line1'] ??= $data['value'] ?? $data['unrestricted_value'] ?? null;
+        $data['geo_source'] ??= isset($data['raw_dadata_json']) ? 'dadata' : 'manual';
+
+        return $data;
     }
 }

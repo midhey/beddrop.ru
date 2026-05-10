@@ -31,7 +31,7 @@ class AcceptRestaurantOrder
                 ],
             ]);
 
-            return $order->load(['user', 'items.product', 'events']);
+            return $order->load(['user', 'items.product', 'events', 'deliveryAddress', 'restaurant.address', 'routeSegments']);
         });
     }
 }

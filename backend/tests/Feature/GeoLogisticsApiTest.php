@@ -1,0 +1,221 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Enums\CourierShiftStatus;
+use App\Models\CourierShift;
+use App\Models\OrderRouteSegment;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
+use Tests\Concerns\CreatesApiData;
+use Tests\TestCase;
+
+class GeoLogisticsApiTest extends TestCase
+{
+    use CreatesApiData;
+    use RefreshDatabase;
+
+    public function test_authenticated_user_can_fetch_dadata_suggestions(): void
+    {
+        config([
+            'services.dadata.api_key' => 'test-token',
+        ]);
+
+        Http::fake([
+            'suggestions.dadata.ru/*' => Http::response([
+                'suggestions' => [
+                    [
+                        'value' => 'г Великий Новгород, ул Большая Санкт-Петербургская, д 1',
+                        'unrestricted_value' => '173001, Новгородская обл, г Великий Новгород, ул Большая Санкт-Петербургская, д 1',
+                        'data' => [
+                            'geo_lat' => '58.5250',
+                            'geo_lon' => '31.2750',
+                            'city' => 'Великий Новгород',
+                            'street_with_type' => 'ул Большая Санкт-Петербургская',
+                            'house' => '1',
+                            'qc_geo' => '0',
+                        ],
+                    ],
+                ],
+            ]),
+        ]);
+
+        $user = $this->createUser();
+
+        $response = $this
+            ->actingAs($user, 'api')
+            ->getJson('/api/v1/geo/address-suggestions?q=' . urlencode('Великий Новгород Большая Санкт-Петербургская 1'));
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('suggestions.0.value', 'г Великий Новгород, ул Большая Санкт-Петербургская, д 1')
+            ->assertJsonPath('suggestions.0.data.lat', 58.525)
+            ->assertJsonPath('suggestions.0.data.lng', 31.275);
+    }
+
+    public function test_delivery_quote_uses_valhalla_and_database_settings(): void
+    {
+        config([
+            'services.valhalla.url' => 'https://valhalla.test',
+        ]);
+
+        Http::fake([
+            'valhalla.test/route' => Http::response([
+                'trip' => [
+                    'summary' => [
+                        'length' => 4.2,
+                        'time' => 780,
+                    ],
+                    'legs' => [
+                        ['shape' => 'encoded-shape'],
+                    ],
+                ],
+            ]),
+        ]);
+
+        $user = $this->createUser();
+        $restaurantAddress = $this->createAddress(null, [
+            'lat' => 58.52,
+            'lng' => 31.27,
+        ]);
+        $restaurant = $this->createRestaurant(null, ['address' => $restaurantAddress]);
+        $deliveryAddress = $this->createAddress($user, [
+            'lat' => 58.53,
+            'lng' => 31.28,
+        ]);
+
+        $response = $this
+            ->actingAs($user, 'api')
+            ->postJson('/api/v1/delivery/quote', [
+                'restaurant_id' => $restaurant->id,
+                'delivery_address_id' => $deliveryAddress->id,
+            ]);
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('quote.distance_meters', 4200)
+            ->assertJsonPath('quote.duration_seconds', 780)
+            ->assertJsonPath('quote.eta_minutes', 44)
+            ->assertJsonPath('quote.delivery_price', 314);
+    }
+
+    public function test_courier_can_store_location_only_with_open_shift(): void
+    {
+        $courier = $this->createUser();
+        $this->createCourierProfile($courier);
+
+        $withoutShift = $this
+            ->actingAs($courier, 'api')
+            ->postJson('/api/v1/courier/location', [
+                'lat' => 58.52,
+                'lng' => 31.27,
+            ]);
+
+        $withoutShift->assertStatus(422);
+
+        CourierShift::create([
+            'courier_user_id' => $courier->id,
+            'status' => CourierShiftStatus::OPEN->value,
+        ]);
+
+        $response = $this
+            ->actingAs($courier, 'api')
+            ->postJson('/api/v1/courier/location', [
+                'lat' => 58.52,
+                'lng' => 31.27,
+                'accuracy' => 12.5,
+            ]);
+
+        $response->assertCreated();
+        $this->assertDatabaseHas('courier_locations', [
+            'courier_user_id' => $courier->id,
+        ]);
+    }
+
+    public function test_admin_can_manage_logistics_settings_and_debug_routes(): void
+    {
+        config([
+            'services.valhalla.url' => 'https://valhalla.test',
+        ]);
+
+        Http::fake([
+            'valhalla.test/route' => Http::response([
+                'trip' => [
+                    'summary' => [
+                        'length' => 1.5,
+                        'time' => 300,
+                    ],
+                    'legs' => [
+                        ['shape' => 'route-shape'],
+                    ],
+                ],
+            ]),
+        ]);
+
+        $admin = $this->createUser(['is_admin' => true]);
+        $user = $this->createUser();
+
+        $this
+            ->actingAs($user, 'api')
+            ->getJson('/api/v1/admin/logistics/settings')
+            ->assertForbidden();
+
+        $this
+            ->actingAs($admin, 'api')
+            ->getJson('/api/v1/admin/logistics/settings')
+            ->assertOk()
+            ->assertJsonStructure(['groups' => ['pricing']]);
+
+        $this
+            ->actingAs($admin, 'api')
+            ->putJson('/api/v1/admin/logistics/settings', [
+                'settings' => [
+                    'delivery.base_price' => 199,
+                ],
+            ])
+            ->assertOk();
+
+        $this->assertDatabaseHas('logistics_settings', [
+            'key' => 'delivery.base_price',
+            'value' => '199',
+        ]);
+
+        $routeResponse = $this
+            ->actingAs($admin, 'api')
+            ->postJson('/api/v1/admin/logistics/test-route', [
+                'from' => ['lat' => 58.52, 'lng' => 31.27],
+                'to' => ['lat' => 58.53, 'lng' => 31.28],
+                'mode' => 'auto',
+            ]);
+
+        $routeResponse
+            ->assertOk()
+            ->assertJsonPath('route.distance_meters', 1500)
+            ->assertJsonPath('route.encoded_shape', 'route-shape');
+    }
+
+    public function test_admin_can_view_order_route_segments(): void
+    {
+        $admin = $this->createUser(['is_admin' => true]);
+        $customer = $this->createUser();
+        $restaurant = $this->createRestaurant();
+        $order = $this->createAcceptedOrder($customer, $restaurant);
+
+        OrderRouteSegment::create([
+            'order_id' => $order->id,
+            'segment_type' => 'restaurant_to_client',
+            'mode' => 'auto',
+            'distance_meters' => 4200,
+            'duration_seconds' => 780,
+            'encoded_shape' => 'encoded-shape',
+        ]);
+
+        $this
+            ->actingAs($admin, 'api')
+            ->getJson("/api/v1/admin/orders/{$order->id}/routes")
+            ->assertOk()
+            ->assertJsonPath('order_id', $order->id)
+            ->assertJsonPath('route_segments.0.segment_type', 'restaurant_to_client')
+            ->assertJsonPath('route_segments.0.encoded_shape', 'encoded-shape');
+    }
+}

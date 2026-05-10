@@ -2,10 +2,13 @@
 
 namespace App\Http\Requests\Profile;
 
+use App\Http\Requests\Concerns\ValidatesAddressPayload;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreAddressRequest extends FormRequest
 {
+    use ValidatesAddressPayload;
+
     public function authorize(): bool
     {
         return $this->user() !== null;
@@ -13,14 +16,6 @@ class StoreAddressRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
-            'label' => ['nullable', 'string', 'max:255'],
-            'line1' => ['required', 'string', 'max:255'],
-            'line2' => ['nullable', 'string', 'max:255'],
-            'city' => ['nullable', 'string', 'max:255'],
-            'postal_code' => ['nullable', 'string', 'max:32'],
-            'lat' => ['nullable', 'numeric'],
-            'lng' => ['nullable', 'numeric'],
-        ];
+        return $this->addressRules();
     }
 }

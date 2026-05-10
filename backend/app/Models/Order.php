@@ -21,6 +21,12 @@ class Order extends Model
         'delivery_address_id',
         'delivery_lat',
         'delivery_lng',
+        'delivery_distance_meters',
+        'delivery_duration_seconds',
+        'delivery_price_snapshot',
+        'estimated_pickup_at',
+        'estimated_delivery_at',
+        'logistics_snapshot_json',
     ];
 
     protected $casts = [
@@ -28,6 +34,12 @@ class Order extends Model
         'courier_fee' => 'decimal:2',
         'delivery_lat' => 'float',
         'delivery_lng' => 'float',
+        'delivery_distance_meters' => 'integer',
+        'delivery_duration_seconds' => 'integer',
+        'delivery_price_snapshot' => 'decimal:2',
+        'estimated_pickup_at' => 'datetime',
+        'estimated_delivery_at' => 'datetime',
+        'logistics_snapshot_json' => 'array',
     ];
 
     public function user(): BelongsTo
@@ -58,5 +70,10 @@ class Order extends Model
     public function events(): HasMany
     {
         return $this->hasMany(OrderEvent::class);
+    }
+
+    public function routeSegments(): HasMany
+    {
+        return $this->hasMany(OrderRouteSegment::class);
     }
 }

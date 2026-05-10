@@ -18,9 +18,11 @@ class OrderController extends Controller
         $orders = Order::query()
             ->where('user_id', $user->id)
             ->with([
-                'restaurant',
+                'restaurant.address',
                 'items.product.images.media',
                 'events',
+                'deliveryAddress',
+                'routeSegments',
             ])
             ->orderByDesc('created_at')
             ->paginate(20);
@@ -37,9 +39,11 @@ class OrderController extends Controller
         }
 
         $order->load([
-            'restaurant',
+            'restaurant.address',
             'items.product.images.media',
             'events',
+            'deliveryAddress',
+            'routeSegments',
         ]);
 
         return new OrderResource($order);

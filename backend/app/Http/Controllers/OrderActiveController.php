@@ -31,6 +31,11 @@ class OrderActiveController extends Controller
                 'payment_method' => $order->payment_method,
                 'total_price' => $order->total_price,
                 'courier_fee' => $order->courier_fee,
+                'delivery_distance_meters' => $order->delivery_distance_meters,
+                'delivery_duration_seconds' => $order->delivery_duration_seconds,
+                'delivery_price_snapshot' => $order->delivery_price_snapshot,
+                'estimated_pickup_at' => $order->estimated_pickup_at,
+                'estimated_delivery_at' => $order->estimated_delivery_at,
                 'restaurant' => $order->restaurant ? [
                     'id' => $order->restaurant->id,
                     'name' => $order->restaurant->name,

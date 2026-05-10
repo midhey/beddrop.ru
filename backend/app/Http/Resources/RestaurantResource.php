@@ -24,6 +24,7 @@ class RestaurantResource extends JsonResource
             'prep_time_max' => $this->prep_time_max,
 
             'address_id'    => $this->address_id,
+            'address'       => new AddressResource($this->whenLoaded('address')),
 
             'logo'          => $this->whenLoaded('logo', function () {
                 return [

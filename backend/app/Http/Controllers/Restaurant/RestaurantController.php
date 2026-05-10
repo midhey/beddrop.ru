@@ -6,6 +6,7 @@ use App\Enums\RestaurantStaffRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Restaurant\StoreRestaurantRequest;
 use App\Http\Requests\Restaurant\UpdateRestaurantRequest;
+use App\Http\Resources\AddressResource;
 use App\Models\Address;
 use App\Models\Restaurant;
 use App\Models\User;
@@ -87,16 +88,7 @@ class RestaurantController extends Controller
         $address = null;
 
         if($addressData) {
-            $address = Address::create([
-                'user_id' => $request->user()->id,
-                'label' => $addressData['label'] ?? null,
-                'line1' => $addressData['line1'],
-                'line2' => $addressData['line2'] ?? null,
-                'city' => $addressData['city'] ?? null,
-                'postal_code' => $addressData['postal_code'] ?? null,
-                'lat' => $addressData['lat'] ?? null,
-                'lng' => $addressData['lng'] ?? null,
-            ]);
+            $address = Address::create($this->addressPayload($addressData, $request->user()->id));
         }
 
         $restaurant = Restaurant::create([
@@ -151,14 +143,9 @@ class RestaurantController extends Controller
             $addressData = $data['address'];
 
             if($restaurant->address) {
-                $restaurant->address->update($addressData);
+                $restaurant->address->update($this->addressPayload($addressData));
             } else {
-                $address = Address::create(
-                    array_merge(
-                        $addressData,
-                        ['user_id' => $request->user()->id]
-                    )
-                );
+                $address = Address::create($this->addressPayload($addressData, $request->user()->id));
                 $restaurant->address_id = $address->id;
                 $restaurant->save();
             }
@@ -221,16 +208,9 @@ class RestaurantController extends Controller
             'address_id' => $restaurant->address_id,
             'logo_media_id' => $restaurant->logo_media_id,
             'current_user_role' => $currentUserRole,
-            'address' => $restaurant->address ? [
-                'id' => $restaurant->address->id,
-                'label' => $restaurant->address->label,
-                'line1' => $restaurant->address->line1,
-                'line2' => $restaurant->address->line2,
-                'city' => $restaurant->address->city,
-                'postal_code' => $restaurant->address->postal_code,
-                'lat' => $restaurant->address->lat,
-                'lng' => $restaurant->address->lng,
-            ] : null,
+            'address' => $restaurant->address
+                ? (new AddressResource($restaurant->address))->resolve()
+                : null,
             'logo' => $restaurant->logo ? [
                 'id' => $restaurant->logo->id,
                 'url' => $restaurant->logo->url,
@@ -238,5 +218,21 @@ class RestaurantController extends Controller
             'created_at' => $restaurant->created_at,
             'updated_at' => $restaurant->updated_at,
         ];
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
+     */
+    private function addressPayload(array $data, ?int $userId = null): array
+    {
+        if ($userId !== null) {
+            $data['user_id'] = $userId;
+        }
+
+        $data['line1'] ??= $data['value'] ?? $data['unrestricted_value'] ?? null;
+        $data['geo_source'] ??= isset($data['raw_dadata_json']) ? 'dadata' : 'manual';
+
+        return $data;
     }
 }
