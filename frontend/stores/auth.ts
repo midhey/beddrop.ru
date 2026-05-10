@@ -14,7 +14,7 @@ const isAuthFailureStatus = (status: number | null): boolean => {
 let sessionPromise: Promise<boolean> | null = null;
 let refreshPromise: Promise<boolean> | null = null;
 
-interface User {
+export interface User {
     id: number;
     email: string;
     phone: string;
@@ -76,6 +76,10 @@ export const useAuthStore = defineStore('auth', {
             this.user = user;
             this.accessToken = token;
             this.initialized = true;
+        },
+
+        setUser(user: User | null) {
+            this.user = user;
         },
 
         clearAuth() {

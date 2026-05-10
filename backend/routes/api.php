@@ -10,11 +10,13 @@ use App\Http\Controllers\Courier\CourierProfileController;
 use App\Http\Controllers\Courier\CourierShiftController;
 use App\Http\Controllers\Courier\CourierOrderController;
 use App\Http\Controllers\MediaController;
+use App\Http\Controllers\OrderActiveController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Product\ProductCategoryController;
 use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\Product\ProductImageController;
 use App\Http\Controllers\Profile\AddressController;
+use App\Http\Controllers\Profile\BootstrapController;
 use App\Http\Controllers\Profile\PasswordController;
 use App\Http\Controllers\Profile\ProfileController;
 use App\Http\Controllers\Restaurant\RestaurantController;
@@ -37,8 +39,11 @@ Route::prefix('/v1')->group(function () {
         });
     });
 
+    Route::middleware('auth:api')->get('/me/bootstrap', BootstrapController::class);
+
     Route::middleware('auth:api')->prefix('/profile')->group(function () {
         Route::get('me', [ProfileController::class, 'show']);
+        Route::get('bootstrap', BootstrapController::class);
         Route::put('me', [ProfileController::class, 'update']);
         Route::put('password', PasswordController::class);
     });
@@ -117,6 +122,7 @@ Route::prefix('/v1')->group(function () {
 
     Route::middleware('auth:api')->prefix('/orders')->group(function () {
         Route::get('/', [OrderController::class, 'index']);
+        Route::get('/active', OrderActiveController::class);
         Route::get('/{order}', [OrderController::class, 'show']);
         Route::post('/', [OrderController::class, 'store']);
     });

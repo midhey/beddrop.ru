@@ -34,7 +34,7 @@ export function useCheckoutPage() {
     const submitting = ref(false);
 
     const cart = computed(() => cartStore.cart);
-    const cartLoading = computed(() => cartStore.loading);
+    const cartLoading = computed(() => cartStore.loading || !!cartStore.cart?.is_summary);
     const cartError = computed(() => cartStore.error);
 
     const pageLoading = computed(

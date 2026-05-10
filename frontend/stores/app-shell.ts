@@ -1,12 +1,21 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import type { Order } from '~/composables/useOrders';
+import type { Cart } from '~/stores/cart';
+import type { User } from '~/stores/auth';
 
-const FINAL_ORDER_STATUSES = [
-    'DELIVERED',
-    'CANCELED_BY_USER',
-    'CANCELED_BY_RESTAURANT',
-];
+
+interface BootstrapResponse {
+    user: User;
+    has_restaurants_access: boolean;
+    has_courier_access: boolean;
+    active_order: Order | null;
+    cart_summary: Cart | null;
+}
+
+interface ActiveOrderResponse {
+    order: Order | null;
+}
 
 let bootstrapPromise: Promise<void> | null = null;
 let bootstrapRevision = 0;
@@ -42,93 +51,74 @@ export const useAppShellStore = defineStore('app-shell', () => {
         cartStore.setError(null);
     };
 
-    const loadRestaurantsAccess = async (revision: number) => {
+    const applyBootstrap = (data: BootstrapResponse, revision: number) => {
         const authStore = useAuthStore();
+        const cartStore = useCartStore();
 
-        if (!authStore.isAuthenticated) {
-            if (revision === bootstrapRevision) {
-                hasRestaurantsAccess.value = false;
-            }
-            return false;
+        if (!isRevisionActive(revision)) {
+            return;
         }
 
-        try {
-            const { $api } = useNuxtApp();
-            const { data } = await $api.get<{ restaurants?: unknown[] }>('/restaurants/my');
-            const hasAccess =
-                Array.isArray(data.restaurants) && data.restaurants.length > 0;
-
-            if (isRevisionActive(revision)) {
-                hasRestaurantsAccess.value = hasAccess;
-            }
-
-            return hasAccess;
-        } catch {
-            if (isRevisionActive(revision)) {
-                hasRestaurantsAccess.value = false;
-            }
-
-            return false;
-        }
+        authStore.setUser(data.user);
+        hasRestaurantsAccess.value = !!data.has_restaurants_access;
+        hasCourierAccess.value = !!data.has_courier_access;
+        activeOrder.value = data.active_order;
+        activeOrderLoading.value = false;
+        cartStore.setCart(data.cart_summary);
+        cartStore.setError(null);
+        bootstrappedForAuth.value = true;
     };
 
-    const loadCourierAccess = async (revision: number) => {
+    const loadBootstrap = async (revision: number) => {
         const authStore = useAuthStore();
 
         if (!authStore.isAuthenticated) {
-            if (revision === bootstrapRevision) {
-                hasCourierAccess.value = false;
-            }
-            return false;
-        }
-
-        try {
-            const { $api } = useNuxtApp();
-            const { data } = await $api.get<any>('/courier/profile');
-            const profile = data?.profile ?? data;
-            const hasAccess = !!profile && profile.status !== 'SUSPENDED';
-
-            if (isRevisionActive(revision)) {
-                hasCourierAccess.value = hasAccess;
-            }
-
-            return hasAccess;
-        } catch {
-            if (isRevisionActive(revision)) {
-                hasCourierAccess.value = false;
-            }
-
-            return false;
-        }
-    };
-
-    const loadActiveOrder = async (revision: number) => {
-        const authStore = useAuthStore();
-
-        if (!authStore.isAuthenticated) {
-            if (revision === bootstrapRevision) {
-                activeOrder.value = null;
-                activeOrderLoading.value = false;
-            }
-            return null;
+            resetForGuest();
+            return;
         }
 
         activeOrderLoading.value = true;
 
         try {
             const { $api } = useNuxtApp();
-            const { data } = await $api.get<{ data?: Order[] }>('/orders', {
-                params: { per_page: 20 },
-            });
-            const orders = Array.isArray(data?.data) ? data.data : [];
-            const nextActiveOrder =
-                orders.find((order) => !FINAL_ORDER_STATUSES.includes(order.status)) ?? null;
-
+            const { data } = await $api.get<BootstrapResponse>('/me/bootstrap');
+            applyBootstrap(data, revision);
+        } catch (error: any) {
             if (isRevisionActive(revision)) {
-                activeOrder.value = nextActiveOrder;
+                hasRestaurantsAccess.value = false;
+                hasCourierAccess.value = false;
+                activeOrder.value = null;
             }
 
-            return nextActiveOrder;
+            throw error;
+        } finally {
+            if (revision === bootstrapRevision) {
+                activeOrderLoading.value = false;
+            }
+        }
+    };
+
+    const refreshActiveOrder = async () => {
+        const authStore = useAuthStore();
+
+        if (!authStore.isAuthenticated) {
+            activeOrder.value = null;
+            activeOrderLoading.value = false;
+            return null;
+        }
+
+        const revision = bootstrapRevision;
+        activeOrderLoading.value = true;
+
+        try {
+            const { $api } = useNuxtApp();
+            const { data } = await $api.get<ActiveOrderResponse>('/orders/active');
+
+            if (isRevisionActive(revision)) {
+                activeOrder.value = data.order;
+            }
+
+            return data.order;
         } catch {
             if (isRevisionActive(revision)) {
                 activeOrder.value = null;
@@ -165,23 +155,12 @@ export const useAppShellStore = defineStore('app-shell', () => {
         bootstrapping.value = true;
 
         const currentPromise = (async () => {
-            if (!authStore.user) {
-                await authStore.profile(true).catch(() => {
-                });
-            }
-
             if (!authStore.isAuthenticated) {
                 resetForGuest();
                 return;
             }
 
-            await Promise.all([
-                loadRestaurantsAccess(revision),
-                loadCourierAccess(revision),
-                loadActiveOrder(revision),
-                cartStore.fetchCart().catch(() => {
-                }),
-            ]);
+            await loadBootstrap(revision);
 
             if (!isRevisionActive(revision) && !authStore.isAuthenticated) {
                 cartStore.setCart(null);
@@ -216,5 +195,6 @@ export const useAppShellStore = defineStore('app-shell', () => {
         activeOrderLoading,
         resetForGuest,
         ensureBootstrapped,
+        refreshActiveOrder,
     };
 });

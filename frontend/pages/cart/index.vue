@@ -19,7 +19,7 @@ const cartStore = useCartStore();
 const router = useRouter();
 const { $notify } = useNuxtApp();
 
-const loading = computed(() => cartStore.loading);
+const loading = computed(() => cartStore.loading || !!cartStore.cart?.is_summary);
 const items = computed(() => cartStore.items);
 const totalPrice = computed(() => cartStore.totalPrice);
 const totalCount = computed(() => cartStore.totalCount);

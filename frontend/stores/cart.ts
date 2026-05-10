@@ -19,7 +19,8 @@ export interface Cart {
     restaurant_id: number | null;
     status: 'ACTIVE' | 'ORDERED' | 'ABANDONED';
     is_active: boolean;
-    items: CartItem[];
+    is_summary?: boolean;
+    items?: CartItem[];
 
     restaurant?: Restaurant | null;
     items_count?: number;
@@ -44,8 +45,15 @@ export const useCartStore = defineStore('cart', {
     getters: {
         items: (state): CartItem[] => state.cart?.items ?? [],
 
-        totalCount: (state): number =>
-            (state.cart?.items ?? []).reduce((sum, item) => sum + item.quantity, 0),
+        totalCount: (state): number => {
+            const items = state.cart?.items ?? [];
+
+            if (items.length > 0) {
+                return items.reduce((sum, item) => sum + item.quantity, 0);
+            }
+
+            return state.cart?.items_count ?? 0;
+        },
 
         totalPrice: (state): number => {
             if (!state.cart) return 0;
