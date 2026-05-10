@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\Media;
+use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\ProductCategory;
-use App\Models\ProductImage;
 use App\Models\Restaurant;
 use Illuminate\Database\Seeder;
 
@@ -13,344 +12,229 @@ class ProductSeeder extends Seeder
 {
     public function run(): void
     {
-        // Рестораны
-        $pizzaRestaurant   = Restaurant::where('name', 'Пицца на районе')->first();
-        $burgerRestaurant  = Restaurant::where('name', 'Бургерная «Двор»')->first();
-        $wokRestaurant     = Restaurant::where('name', 'Лапша wok wok')->first();
+        $categories = ProductCategory::all()->keyBy('slug');
 
-        $sushiRestaurant   = Restaurant::where('name', 'Суши & Роллы')->first();
-        $shaurmaRestaurant = Restaurant::where('name', 'Шаурма Street')->first();
-        $testoRestaurant   = Restaurant::where('name', 'Тесто & Соус')->first();
-        $pelmeniRestaurant = Restaurant::where('name', 'Пельменная #1')->first();
-        $cheburekiRestaurant = Restaurant::where('name', 'Чебуречная Братцы')->first();
-        $grillRestaurant   = Restaurant::where('name', 'Гриль & Мангал')->first();
-        $homeRestaurant    = Restaurant::where('name', 'Домашняя Кухня')->first();
-
-        if (! $pizzaRestaurant || ! $burgerRestaurant || ! $wokRestaurant) {
-            throw new \RuntimeException('Some demo restaurants not found. Run RestaurantSeeder first.');
-        }
-
-        $catPizza    = ProductCategory::where('slug', 'pizza')->first();
-        $catBurgers  = ProductCategory::where('slug', 'burgers')->first();
-        $catWok      = ProductCategory::where('slug', 'wok')->first();
-        $catDrinks   = ProductCategory::where('slug', 'drinks')->first();
-        $catSushi    = ProductCategory::where('slug', 'sushi')->first();
-        $catSauces   = ProductCategory::where('slug', 'sauces')->first();
-        $catDesserts = ProductCategory::where('slug', 'desserts')->first();
-
-        if (! $catPizza || ! $catBurgers || ! $catWok || ! $catDrinks || ! $catSushi || ! $catSauces || ! $catDesserts) {
-            throw new \RuntimeException('Some product categories not found. Run ProductCategorySeeder first.');
-        }
-
-        $productsConfig = [
-            // -------- Пицца на районе -------- //
-            [
-                'restaurant' => $pizzaRestaurant,
-                'items'      => [
-                    [
-                        'category_id' => $catPizza->id,
-                        'name'        => 'Пицца Маргарита',
-                        'description' => 'Классическая пицца: томатный соус, моцарелла, базилик.',
-                        'price'       => 450.00,
-                        'is_active'   => true,
-                        'images'      => [
-                            [
-                                'path'       => 'media/products/pizza/margarita_1.png',
-                                'sort_order' => 0,
-                                'is_cover'   => true,
-                            ],
-                            [
-                                'path'       => 'media/products/pizza/margarita_2.png',
-                                'sort_order' => 1,
-                                'is_cover'   => false,
-                            ],
-                            [
-                                'path'       => 'media/products/pizza/margarita_closeup.png',
-                                'sort_order' => 2,
-                                'is_cover'   => false,
-                            ],
-                        ],
-                    ],
-                    [
-                        'category_id' => $catPizza->id,
-                        'name'        => 'Пицца Пепперони',
-                        'description' => 'Пикантная пепперони, моцарелла, томатный соус.',
-                        'price'       => 520.00,
-                        'is_active'   => true,
-                        'images'      => [
-                            [
-                                'path'       => 'media/products/pizza/pepperoni_1.png',
-                                'sort_order' => 0,
-                                'is_cover'   => true,
-                            ],
-                            [
-                                'path'       => 'media/products/pizza/pepperoni_slice.png',
-                                'sort_order' => 1,
-                                'is_cover'   => false,
-                            ],
-                        ],
-                    ],
-                    [
-                        'category_id' => $catDrinks->id,
-                        'name'        => 'Кола 0.5',
-                        'description' => 'Охлаждённый безалкогольный напиток, 0.5 л.',
-                        'price'       => 120.00,
-                        'is_active'   => true,
-                        'images'      => [
-                            [
-                                'path'       => 'media/products/drinks/cola_05_front.png',
-                                'sort_order' => 0,
-                                'is_cover'   => true,
-                            ],
-                            [
-                                'path'       => 'media/products/drinks/cola_05_group.png',
-                                'sort_order' => 1,
-                                'is_cover'   => false,
-                            ],
-                        ],
-                    ],
-                ],
+        $restaurants = [
+            'Новгородский Дворик' => [
+                ['cat' => 'soups', 'name' => 'Борщ Новгородский', 'price' => 320, 'desc' => 'Наваристый борщ с говядиной, подается со сметаной и чесночными пампушками.'],
+                ['cat' => 'soups', 'name' => 'Щи из квашеной капусты', 'price' => 290, 'desc' => 'Традиционные щи на свиных ребрышках.'],
+                ['cat' => 'soups', 'name' => 'Уха из судака', 'price' => 380, 'desc' => 'Прозрачный бульон из местной рыбы с картофелем и зеленью.'],
+                ['cat' => 'salads', 'name' => 'Салат Столичный', 'price' => 280, 'desc' => 'Классический салат с куриным филе, солеными огурчиками и домашним майонезом.'],
+                ['cat' => 'salads', 'name' => 'Винегрет с фасолью', 'price' => 220, 'desc' => 'Традиционный овощной салат с ароматным маслом.'],
+                ['cat' => 'salads', 'name' => 'Сельдь под шубой', 'price' => 260, 'desc' => 'Многослойный праздничный салат с сельдью и овощами.'],
+                ['cat' => 'main', 'name' => 'Котлета по-киевски', 'price' => 450, 'desc' => 'Сочная куриная грудка с ароматным сливочным маслом внутри.'],
+                ['cat' => 'main', 'name' => 'Голубцы домашние', 'price' => 390, 'desc' => 'Фарш с рисом в капустных листьях, тушенные в томатном соусе.'],
+                ['cat' => 'main', 'name' => 'Блины с мясом', 'price' => 310, 'desc' => 'Два больших блина с начинкой из обжаренного фарша.'],
+                ['cat' => 'main', 'name' => 'Блины с красной икрой', 'price' => 550, 'desc' => 'Тонкие блины с нежным сливочным маслом и икрой.'],
+                ['cat' => 'drinks', 'name' => 'Квас домашний', 'price' => 120, 'desc' => 'Натуральный хлебный квас собственного приготовления.'],
+                ['cat' => 'drinks', 'name' => 'Морс клюквенный', 'price' => 110, 'desc' => 'Освежающий напиток из лесных ягод.'],
+                ['cat' => 'desserts', 'name' => 'Сырники со сметаной', 'price' => 240, 'desc' => 'Нежные творожники, обжаренные до золотистой корочки.'],
+                ['cat' => 'desserts', 'name' => 'Яблочный пирог', 'price' => 190, 'desc' => 'Домашняя шарлотка с корицей.'],
+                ['cat' => 'main', 'name' => 'Пельмени в горшочке', 'price' => 420, 'desc' => 'Запеченные пельмени со сливками и сыром.'],
             ],
-
-            // -------- Бургерная «Двор» -------- //
-            [
-                'restaurant' => $burgerRestaurant,
-                'items'      => [
-                    [
-                        'category_id' => $catBurgers->id,
-                        'name'        => 'Чизбургер классический',
-                        'description' => 'Говяжья котлета, сыр чеддер, маринованные огурчики, соус.',
-                        'price'       => 390.00,
-                        'is_active'   => true,
-                        'images'      => [
-                            [
-                                'path'       => 'media/products/burgers/cheeseburger_front.png',
-                                'sort_order' => 0,
-                                'is_cover'   => true,
-                            ],
-                            [
-                                'path'       => 'media/products/burgers/cheeseburger_side.png',
-                                'sort_order' => 1,
-                                'is_cover'   => false,
-                            ],
-                            [
-                                'path'       => 'media/products/burgers/cheeseburger_cut.png',
-                                'sort_order' => 2,
-                                'is_cover'   => false,
-                            ],
-                        ],
-                    ],
-                    [
-                        'category_id' => $catBurgers->id,
-                        'name'        => 'Двойной бургер',
-                        'description' => 'Две говяжьи котлеты, сыр, лук, салат, фирменный соус.',
-                        'price'       => 520.00,
-                        'is_active'   => true,
-                        'images'      => [
-                            [
-                                'path'       => 'media/products/burgers/double_burger_front.png',
-                                'sort_order' => 0,
-                                'is_cover'   => true,
-                            ],
-                            [
-                                'path'       => 'media/products/burgers/double_burger_top.png',
-                                'sort_order' => 1,
-                                'is_cover'   => false,
-                            ],
-                        ],
-                    ],
-                ],
+            'Ильмень-Суши' => [
+                ['cat' => 'sushi', 'name' => 'Ролл Филадельфия', 'price' => 590, 'desc' => 'Классический ролл с лососем, сливочным сыром и огурцом.'],
+                ['cat' => 'sushi', 'name' => 'Ролл Калифорния', 'price' => 480, 'desc' => 'Ролл с крабом, авокадо, огурцом и икрой тобико.'],
+                ['cat' => 'sushi', 'name' => 'Ролл Дракон', 'price' => 650, 'desc' => 'Ролл с угрем, сливочным сыром и соусом унаги.'],
+                ['cat' => 'sushi', 'name' => 'Ролл Канада', 'price' => 620, 'desc' => 'Лосось, угорь, авокадо и сливочный сыр.'],
+                ['cat' => 'sushi', 'name' => 'Запеченный ролл с лососем', 'price' => 520, 'desc' => 'Теплый ролл под пикантным нежным соусом.'],
+                ['cat' => 'sushi', 'name' => 'Суши Лосось', 'price' => 150, 'desc' => 'Классические суши с кусочком свежего лосося.'],
+                ['cat' => 'sushi', 'name' => 'Суши Угорь', 'price' => 180, 'desc' => 'Суши с копченым угрем и полоской нори.'],
+                ['cat' => 'salads', 'name' => 'Салат Чука', 'price' => 250, 'desc' => 'Водоросли с ореховым соусом и кунжутом.'],
+                ['cat' => 'soups', 'name' => 'Мисо суп', 'price' => 190, 'desc' => 'Традиционный японский суп с тофу и водорослями.'],
+                ['cat' => 'main', 'name' => 'Темпура с креветками', 'price' => 450, 'desc' => 'Креветки в хрустящем кляре с соусом.'],
+                ['cat' => 'main', 'name' => 'Эдамаме', 'price' => 210, 'desc' => 'Молодые соевые бобы в стручках с морской солью.'],
+                ['cat' => 'drinks', 'name' => 'Зеленый чай Сенча', 'price' => 150, 'desc' => 'Классический японский зеленый чай.'],
+                ['cat' => 'desserts', 'name' => 'Моти Ассорти', 'price' => 320, 'desc' => 'Японский десерт из рисового теста с разными начинками.'],
+                ['cat' => 'sauces', 'name' => 'Васаби', 'price' => 30, 'desc' => 'Острая японская горчица.'],
+                ['cat' => 'sauces', 'name' => 'Имбирь маринованный', 'price' => 30, 'desc' => 'Розовый маринованный имбирь.'],
             ],
-
-            // -------- Лапша wok wok -------- //
-            [
-                'restaurant' => $wokRestaurant,
-                'items'      => [
-                    [
-                        'category_id' => $catWok->id,
-                        'name'        => 'WOK с курицей и овощами',
-                        'description' => 'Пшеничная лапша, курица, овощи, соус терияки.',
-                        'price'       => 370.00,
-                        'is_active'   => true,
-                        'images'      => [
-                            [
-                                'path'       => 'media/products/wok/chicken_veg_bowl.png',
-                                'sort_order' => 0,
-                                'is_cover'   => true,
-                            ],
-                            [
-                                'path'       => 'media/products/wok/chicken_veg_closeup.png',
-                                'sort_order' => 1,
-                                'is_cover'   => false,
-                            ],
-                        ],
-                    ],
-                    [
-                        'category_id' => $catWok->id,
-                        'name'        => 'WOK с говядиной',
-                        'description' => 'Яичная лапша, говядина, овощи, острый соус.',
-                        'price'       => 420.00,
-                        'is_active'   => true,
-                        'images'      => [
-                            [
-                                'path'       => 'media/products/wok/beef_spicy_bowl.png',
-                                'sort_order' => 0,
-                                'is_cover'   => true,
-                            ],
-                            [
-                                'path'       => 'media/products/wok/beef_spicy_closeup.png',
-                                'sort_order' => 1,
-                                'is_cover'   => false,
-                            ],
-                        ],
-                    ],
-                ],
+            'Ганзейский Бургер' => [
+                ['cat' => 'burgers', 'name' => 'Бургер Ганзейский', 'price' => 420, 'desc' => 'Фирменный бургер с котлетой из местной говядины и брусничным соусом.'],
+                ['cat' => 'burgers', 'name' => 'Бургер Черный Принц', 'price' => 490, 'desc' => 'Черная булка, двойная котлета, бекон и сыр чеддер.'],
+                ['cat' => 'burgers', 'name' => 'Чизбургер Классик', 'price' => 350, 'desc' => 'Котлета из говядины, сыр, маринованный огурчик, красный лук.'],
+                ['cat' => 'burgers', 'name' => 'Бургер Острая Ганза', 'price' => 440, 'desc' => 'С соусом халапеньо и жареным луком.'],
+                ['cat' => 'burgers', 'name' => 'Вега-бургер', 'price' => 380, 'desc' => 'Котлета из нута, свежие овощи и йогуртовый соус.'],
+                ['cat' => 'main', 'name' => 'Картофель Фри', 'price' => 150, 'desc' => 'Хрустящий картофель, обжаренный в масле.'],
+                ['cat' => 'main', 'name' => 'Картофельные дольки', 'price' => 170, 'desc' => 'Запеченные дольки картофеля со специями.'],
+                ['cat' => 'main', 'name' => 'Куриные наггетсы', 'price' => 240, 'desc' => '6 штук сочного куриного филе в панировке.'],
+                ['cat' => 'main', 'name' => 'Луковые кольца', 'price' => 190, 'desc' => 'Хрустящие кольца лука в кляре.'],
+                ['cat' => 'sauces', 'name' => 'Соус Сырный', 'price' => 40, 'desc' => 'Густой сливочно-сырный соус.'],
+                ['cat' => 'sauces', 'name' => 'Соус Барбекю', 'price' => 40, 'desc' => 'Дымный соус с пряностями.'],
+                ['cat' => 'drinks', 'name' => 'Кола 0.5', 'price' => 130, 'desc' => 'Классический газированный напиток.'],
+                ['cat' => 'drinks', 'name' => 'Милкшейк Ванильный', 'price' => 220, 'desc' => 'Густой молочный коктейль.'],
+                ['cat' => 'drinks', 'name' => 'Милкшейк Шоколадный', 'price' => 220, 'desc' => 'Молочный коктейль с натуральным какао.'],
+                ['cat' => 'desserts', 'name' => 'Донат в глазури', 'price' => 120, 'desc' => 'Сладкий пончик с начинкой.'],
             ],
-
-            // -------- Суши & Роллы -------- //
-            [
-                'restaurant' => $sushiRestaurant,
-                'items'      => [
-                    [
-                        'category_id' => $catSushi->id,
-                        'name'        => 'Сет «Классический»',
-                        'description' => 'Ассорти роллов и суши для компании из 2–3 человек.',
-                        'price'       => 890.00,
-                        'is_active'   => true,
-                    ],
-                ],
+            'Детинец Гриль' => [
+                ['cat' => 'grill', 'name' => 'Шашлык из свиной шейки', 'price' => 550, 'desc' => 'Сочное мясо, маринованное по старинному рецепту.'],
+                ['cat' => 'grill', 'name' => 'Шашлык из курицы', 'price' => 450, 'desc' => 'Нежное куриное филе, приготовленное на углях.'],
+                ['cat' => 'grill', 'name' => 'Шашлык из баранины', 'price' => 750, 'desc' => 'Отборная баранина с кавказскими специями.'],
+                ['cat' => 'grill', 'name' => 'Люля-кебаб из говядины', 'price' => 480, 'desc' => 'Нежный фарш со специями, приготовленный на углях.'],
+                ['cat' => 'grill', 'name' => 'Ребрышки Барбекю', 'price' => 620, 'desc' => 'Свиные ребрышки в густом соусе на мангале.'],
+                ['cat' => 'grill', 'name' => 'Форель на гриле', 'price' => 680, 'desc' => 'Целая рыба, запеченная с лимоном и травами.'],
+                ['cat' => 'grill', 'name' => 'Овощи гриль', 'price' => 350, 'desc' => 'Баклажаны, кабачки, болгарский перец и томаты на мангале.'],
+                ['cat' => 'salads', 'name' => 'Салат Греческий', 'price' => 320, 'desc' => 'Свежие овощи, фета и оливковое масло.'],
+                ['cat' => 'sauces', 'name' => 'Соус Шашлычный', 'price' => 50, 'desc' => 'Томатный соус с зеленью и чесноком.'],
+                ['cat' => 'sauces', 'name' => 'Соус Белый чесночный', 'price' => 50, 'desc' => 'На основе сметаны с чесноком и укропом.'],
+                ['cat' => 'pastries', 'name' => 'Лаваш свежий', 'price' => 60, 'desc' => 'Тонкий армянский лаваш.'],
+                ['cat' => 'drinks', 'name' => 'Айран', 'price' => 120, 'desc' => 'Кисломолочный освежающий напиток.'],
+                ['cat' => 'drinks', 'name' => 'Гранатовый сок', 'price' => 180, 'desc' => 'Натуральный сок прямого отжима.'],
+                ['cat' => 'main', 'name' => 'Долма', 'price' => 420, 'desc' => 'Виноградные листья с начинкой из мяса и риса.'],
+                ['cat' => 'main', 'name' => 'Плов Узбекский', 'price' => 450, 'desc' => 'Рассыпчатый рис с говядиной, морковью и нутом.'],
             ],
-
-            // -------- Шаурма Street -------- //
-            [
-                'restaurant' => $shaurmaRestaurant,
-                'items'      => [
-                    [
-                        'category_id' => $catBurgers->id,
-                        'name'        => 'Шаурма классическая',
-                        'description' => 'Курица, свежие овощи, фирменный соус, лаваш.',
-                        'price'       => 260.00,
-                        'is_active'   => true,
-                    ],
-                ],
+            'Волховская Трапеза' => [
+                ['cat' => 'pastries', 'name' => 'Пирожок с капустой', 'price' => 65, 'desc' => 'Традиционный домашний пирожок из дрожжевого теста.'],
+                ['cat' => 'pastries', 'name' => 'Пирожок с мясом', 'price' => 85, 'desc' => 'Сытный пирожок с говядиной и луком.'],
+                ['cat' => 'pastries', 'name' => 'Пирожок с яблоком', 'price' => 75, 'desc' => 'Сладкий пирожок с яблочной начинкой и корицей.'],
+                ['cat' => 'pastries', 'name' => 'Ватрушка с творогом', 'price' => 85, 'desc' => 'Свежая выпечка с нежной творожной начинкой.'],
+                ['cat' => 'pastries', 'name' => 'Слойка с сыром', 'price' => 95, 'desc' => 'Хрустящее слоеное тесто и тягучий сыр.'],
+                ['cat' => 'main', 'name' => 'Жаркое по-домашнему', 'price' => 380, 'desc' => 'Тушеная свинина с картофелем и грибами в горшочке.'],
+                ['cat' => 'main', 'name' => 'Тефтели в томате', 'price' => 320, 'desc' => 'Мясные шарики в густом томатном соусе.'],
+                ['cat' => 'main', 'name' => 'Пюре картофельное', 'price' => 120, 'desc' => 'Нежное пюре на сливочном масле.'],
+                ['cat' => 'soups', 'name' => 'Лапша куриная', 'price' => 220, 'desc' => 'Легкий бульон с домашней лапшой и зеленью.'],
+                ['cat' => 'salads', 'name' => 'Оливье', 'price' => 240, 'desc' => 'Домашняя версия классического салата.'],
+                ['cat' => 'desserts', 'name' => 'Сырники классические', 'price' => 250, 'desc' => 'Подаются со сметаной или джемом.'],
+                ['cat' => 'drinks', 'name' => 'Компот из сухофруктов', 'price' => 90, 'desc' => 'Традиционный витаминный напиток.'],
+                ['cat' => 'drinks', 'name' => 'Чай черный', 'price' => 60, 'desc' => 'Горячий крепкий чай.'],
+                ['cat' => 'main', 'name' => 'Каша овсяная', 'price' => 150, 'desc' => 'Сливочная каша с маслом.'],
+                ['cat' => 'pastries', 'name' => 'Плюшка Московская', 'price' => 80, 'desc' => 'Сдобная булка в форме сердечка с сахаром.'],
             ],
-
-            // -------- Тесто & Соус -------- //
-            [
-                'restaurant' => $testoRestaurant,
-                'items'      => [
-                    [
-                        'category_id' => $catPizza->id,
-                        'name'        => 'Фокачча с чесночным соусом',
-                        'description' => 'Итальянская лепёшка на тонком тесте, чесночный соус.',
-                        'price'       => 230.00,
-                        'is_active'   => true,
-                    ],
-                ],
+            'Софийская Пицца' => [
+                ['cat' => 'pizza', 'name' => 'Пицца Софийская', 'price' => 620, 'desc' => 'Авторская пицца с копченой курицей, грибами и сливочным соусом.'],
+                ['cat' => 'pizza', 'name' => 'Пицца 4 Сыра', 'price' => 580, 'desc' => 'Моцарелла, пармезан, чеддер и горгонзола.'],
+                ['cat' => 'pizza', 'name' => 'Пицца Мясной Пир', 'price' => 680, 'desc' => 'Пепперони, ветчина, бекон и охотничьи колбаски.'],
+                ['cat' => 'pizza', 'name' => 'Пицца Маргарита', 'price' => 450, 'desc' => 'Томатный соус, моцарелла, базилик.'],
+                ['cat' => 'pizza', 'name' => 'Пицца Пепперони', 'price' => 550, 'desc' => 'Пикантная пепперони и много сыра.'],
+                ['cat' => 'pizza', 'name' => 'Пицца Гавайская', 'price' => 560, 'desc' => 'С курицей и ананасами.'],
+                ['cat' => 'main', 'name' => 'Паста Карбонара', 'price' => 450, 'desc' => 'Спагетти, бекон, сливки и пармезан.'],
+                ['cat' => 'main', 'name' => 'Паста Болоньезе', 'price' => 480, 'desc' => 'С мясным соусом и травами.'],
+                ['cat' => 'salads', 'name' => 'Салат Цезарь', 'price' => 390, 'desc' => 'Классика с курицей и гренками.'],
+                ['cat' => 'main', 'name' => 'Сырные палочки', 'price' => 220, 'desc' => 'Обжаренный сыр в панировке.'],
+                ['cat' => 'sauces', 'name' => 'Соус Чесночный', 'price' => 40, 'desc' => 'Для бортиков пиццы.'],
+                ['cat' => 'drinks', 'name' => 'Лимонад Домашний', 'price' => 180, 'desc' => 'Цитрусовый освежающий напиток.'],
+                ['cat' => 'drinks', 'name' => 'Сок в ассортименте', 'price' => 120, 'desc' => 'Апельсин, яблоко или вишня.'],
+                ['cat' => 'desserts', 'name' => 'Тирамису', 'price' => 350, 'desc' => 'Итальянский многослойный десерт.'],
+                ['cat' => 'pizza', 'name' => 'Пицца Грибная', 'price' => 520, 'desc' => 'Шампиньоны, вешенки и белый соус.'],
             ],
-
-            // -------- Пельменная #1 -------- //
-            [
-                'restaurant' => $pelmeniRestaurant,
-                'items'      => [
-                    [
-                        'category_id' => $catSauces->id,
-                        'name'        => 'Пельмени классические',
-                        'description' => 'Ручной лепки, подаются со сметаной и зеленью.',
-                        'price'       => 310.00,
-                        'is_active'   => true,
-                    ],
-                ],
+            'Лапша Садко' => [
+                ['cat' => 'wok', 'name' => 'Лапша с курицей Терияки', 'price' => 390, 'desc' => 'Пшеничная лапша, куриное филе, овощи и соус терияки.'],
+                ['cat' => 'wok', 'name' => 'Лапша с говядиной', 'price' => 450, 'desc' => 'Яичная лапша, говядина, болгарский перец и черный перец.'],
+                ['cat' => 'wok', 'name' => 'Рис с креветками', 'price' => 480, 'desc' => 'Обжаренный рис с тигровыми креветками и яйцом.'],
+                ['cat' => 'soups', 'name' => 'Рамен с говядиной', 'price' => 450, 'desc' => 'Наваристый бульон, пшеничная лапша, маринованное яйцо и говядина.'],
+                ['cat' => 'soups', 'name' => 'Том Ям', 'price' => 550, 'desc' => 'Острый тайский суп с креветками.'],
+                ['cat' => 'soups', 'name' => 'Фо Бо', 'price' => 490, 'desc' => 'Вьетнамский суп с рисовой лапшой и говядиной.'],
+                ['cat' => 'main', 'name' => 'Спринг-роллы с овощами', 'price' => 280, 'desc' => 'Хрустящие блинчики с овощной начинкой и сладким чили.'],
+                ['cat' => 'main', 'name' => 'Курица Гунбао', 'price' => 420, 'desc' => 'Кусочки курицы с арахисом и острым перцем.'],
+                ['cat' => 'salads', 'name' => 'Салат Битые Огурцы', 'price' => 250, 'desc' => 'Острая закуска с чесноком и кунжутным маслом.'],
+                ['cat' => 'salads', 'name' => 'Салат с фунчозой', 'price' => 220, 'desc' => 'Стеклянная лапша с овощами.'],
+                ['cat' => 'desserts', 'name' => 'Жареный банан', 'price' => 240, 'desc' => 'В кляре с карамельным соусом.'],
+                ['cat' => 'drinks', 'name' => 'Чай Жасминовый', 'price' => 150, 'desc' => 'Традиционный китайский чай.'],
+                ['cat' => 'drinks', 'name' => 'Пиво Азиатское (б/а)', 'price' => 250, 'desc' => 'Безалкогольное светлое пиво.'],
+                ['cat' => 'main', 'name' => 'Дим-самы с мясом', 'price' => 380, 'desc' => 'Паровые пельмени из тонкого теста.'],
+                ['cat' => 'wok', 'name' => 'Стеклянная лапша с морепродуктами', 'price' => 520, 'desc' => 'Фунчоза с мидиями, кальмарами и креветками.'],
             ],
-
-            // -------- Чебуречная Братцы -------- //
-            [
-                'restaurant' => $cheburekiRestaurant,
-                'items'      => [
-                    [
-                        'category_id' => $catSauces->id,
-                        'name'        => 'Чебурек с говядиной',
-                        'description' => 'Сочный чебурек с говяжьим фаршем и луком.',
-                        'price'       => 190.00,
-                        'is_active'   => true,
-                    ],
-                ],
+            'Витязь Кебаб' => [
+                ['cat' => 'main', 'name' => 'Шаурма Классическая', 'price' => 280, 'desc' => 'Курица гриль, свежие овощи и фирменный чесночный соус.'],
+                ['cat' => 'main', 'name' => 'Шаурма Сырная', 'price' => 310, 'desc' => 'В желтом лаваше с дополнительным сыром.'],
+                ['cat' => 'main', 'name' => 'Шаурма Острая', 'price' => 300, 'desc' => 'С перцем халапеньо и острым соусом.'],
+                ['cat' => 'main', 'name' => 'Кебаб в лаваше', 'price' => 320, 'desc' => 'Рубленая говядина со специями, завернутая в тонкий лаваш.'],
+                ['cat' => 'main', 'name' => 'Фалафель', 'price' => 250, 'desc' => 'Обжаренные шарики из нута с соусом тахини.'],
+                ['cat' => 'main', 'name' => 'Гирос', 'price' => 340, 'desc' => 'Греческая шаурма в пите с картофелем фри.'],
+                ['cat' => 'main', 'name' => 'Хот-дог Французский', 'price' => 180, 'desc' => 'Сосиска в хрустящем багете с соусами.'],
+                ['cat' => 'main', 'name' => 'Хот-дог Датский', 'price' => 190, 'desc' => 'С маринованными огурцами и жареным луком.'],
+                ['cat' => 'main', 'name' => 'Картофель по-деревенски', 'price' => 170, 'desc' => 'Крупные дольки картофеля во фритюре.'],
+                ['cat' => 'sauces', 'name' => 'Соус Тар-тар', 'price' => 50, 'desc' => 'Сливочный соус с солеными огурчиками.'],
+                ['cat' => 'drinks', 'name' => 'Айран баночный', 'price' => 110, 'desc' => 'Освежающий кисломолочный напиток.'],
+                ['cat' => 'drinks', 'name' => 'Энергетик 0.3', 'price' => 150, 'desc' => 'Бодрящий газированный напиток.'],
+                ['cat' => 'drinks', 'name' => 'Вода без газа', 'price' => 80, 'desc' => 'Минеральная вода 0.5 л.'],
+                ['cat' => 'drinks', 'name' => 'Кофе 3в1', 'price' => 70, 'desc' => 'Быстрый горячий напиток.'],
+                ['cat' => 'main', 'name' => 'Кебаб тарелка', 'price' => 450, 'desc' => 'Мясо кебаба, картофель фри, овощи и соус.'],
             ],
-
-            // -------- Гриль & Мангал -------- //
-            [
-                'restaurant' => $grillRestaurant,
-                'items'      => [
-                    [
-                        'category_id' => $catBurgers->id,
-                        'name'        => 'Шашлык из свинины',
-                        'description' => 'Маринованная свинина на углях, лук, лаваш.',
-                        'price'       => 520.00,
-                        'is_active'   => true,
-                    ],
-                ],
+            'Пряничный Домик' => [
+                ['cat' => 'desserts', 'name' => 'Имбирный пряник Новгородский', 'price' => 150, 'desc' => 'Традиционное лакомство с ручной росписью глазурью.'],
+                ['cat' => 'desserts', 'name' => 'Чизкейк Классический', 'price' => 320, 'desc' => 'Нежный десерт на основе сливочного сыра.'],
+                ['cat' => 'desserts', 'name' => 'Медовик', 'price' => 280, 'desc' => 'Многослойный торт на натуральном меду.'],
+                ['cat' => 'desserts', 'name' => 'Наполеон', 'price' => 290, 'desc' => 'Хрустящее слоеное тесто и заварной крем.'],
+                ['cat' => 'desserts', 'name' => 'Эклер Шоколадный', 'price' => 180, 'desc' => 'С заварным кремом и шоколадной помадкой.'],
+                ['cat' => 'desserts', 'name' => 'Макаруны (3 шт)', 'price' => 350, 'desc' => 'Набор французских пирожных ассорти.'],
+                ['cat' => 'drinks', 'name' => 'Капучино', 'price' => 210, 'desc' => 'Кофе со взбитой молочной пенкой.'],
+                ['cat' => 'drinks', 'name' => 'Латте', 'price' => 230, 'desc' => 'Молочный кофейный напиток.'],
+                ['cat' => 'drinks', 'name' => 'Раф Кофе', 'price' => 260, 'desc' => 'Нежный кофе со сливками и ванильным сахаром.'],
+                ['cat' => 'drinks', 'name' => 'Облепиховый чай', 'price' => 250, 'desc' => 'Витаминный напиток из натуральной облепихи с медом.'],
+                ['cat' => 'drinks', 'name' => 'Горячий шоколад', 'price' => 220, 'desc' => 'Насыщенный десертный напиток.'],
+                ['cat' => 'drinks', 'name' => 'Смузи ягодный', 'price' => 310, 'desc' => 'Из свежезамороженных ягод.'],
+                ['cat' => 'drinks', 'name' => 'Чай Эрл Грей', 'price' => 150, 'desc' => 'Черный чай с бергамотом.'],
+                ['cat' => 'desserts', 'name' => 'Профитроли', 'price' => 240, 'desc' => 'Маленькие пирожные со сливками.'],
+                ['cat' => 'desserts', 'name' => 'Мороженое шарик', 'price' => 120, 'desc' => 'Ванильное, шоколадное или клубничное.'],
             ],
-
-            // -------- Домашняя Кухня -------- //
-            [
-                'restaurant' => $homeRestaurant,
-                'items'      => [
-                    [
-                        'category_id' => $catDesserts->id,
-                        'name'        => 'Пирог домашний',
-                        'description' => 'Домашний пирог дня, выбирается на месте.',
-                        'price'       => 250.00,
-                        'is_active'   => true,
-                    ],
-                ],
+            'Пельменный Мастер' => [
+                ['cat' => 'pelmeni', 'name' => 'Пельмени Сибирские', 'price' => 350, 'desc' => 'Классические пельмени с говядиной и свининой.'],
+                ['cat' => 'pelmeni', 'name' => 'Пельмени с бараниной', 'price' => 450, 'desc' => 'Ароматные пельмени с восточными специями.'],
+                ['cat' => 'pelmeni', 'name' => 'Пельмени с Лососем', 'price' => 550, 'desc' => 'Изысканные пельмени с филе дикого лосося.'],
+                ['cat' => 'pelmeni', 'name' => 'Пельмени Цветные', 'price' => 380, 'desc' => 'Детские пельмени с натуральными соками (свекла, шпинат).'],
+                ['cat' => 'pelmeni', 'name' => 'Вареники с картошкой и грибами', 'price' => 280, 'desc' => 'Традиционная постная начинка.'],
+                ['cat' => 'pelmeni', 'name' => 'Вареники с вишней', 'price' => 320, 'desc' => 'Сладкие вареники с целыми ягодами.'],
+                ['cat' => 'pelmeni', 'name' => 'Вареники с творогом', 'price' => 310, 'desc' => 'Домашний творог и тонкое тесто.'],
+                ['cat' => 'main', 'name' => 'Манты с мясом', 'price' => 420, 'desc' => '3 большие штуки, приготовленные на пару.'],
+                ['cat' => 'main', 'name' => 'Хинкали классик', 'price' => 450, 'desc' => '3 штуки с наваристым бульоном внутри.'],
+                ['cat' => 'soups', 'name' => 'Бульон с пельменями', 'price' => 250, 'desc' => 'Легкий мясной бульон с 10 пельменями.'],
+                ['cat' => 'sauces', 'name' => 'Сметана 20%', 'price' => 50, 'desc' => 'Порция густой сметаны.'],
+                ['cat' => 'sauces', 'name' => 'Хрен домашний', 'price' => 40, 'desc' => 'Острая приправа к пельменям.'],
+                ['cat' => 'sauces', 'name' => 'Горчица', 'price' => 40, 'desc' => 'Классическая острая горчица.'],
+                ['cat' => 'drinks', 'name' => 'Чай с лимоном', 'price' => 80, 'desc' => 'Горячий напиток к пельменям.'],
+                ['cat' => 'drinks', 'name' => 'Водка (порция)', 'price' => 200, 'desc' => 'Традиционное сопровождение (50 мл, 18+).'],
             ],
         ];
 
-        foreach ($productsConfig as $group) {
-            $restaurant = $group['restaurant'];
+        foreach ($restaurants as $restaurantName => $items) {
+            $restaurant = Restaurant::where('name', $restaurantName)->first();
 
-            if (! $restaurant) {
-                $this->command?->warn('Restaurant not found for products group, skip.');
+            if (!$restaurant) {
+                $this->command?->warn("Restaurant [{$restaurantName}] not found, skipping items.");
                 continue;
             }
 
-            foreach ($group['items'] as $item) {
-                $product = Product::updateOrCreate(
+            $seededProductNames = [];
+
+            foreach ($items as $item) {
+                $category = $categories->get($item['cat']);
+
+                if (! $category) {
+                    $this->command?->warn("Category [{$item['cat']}] not found, skipping item [{$item['name']}].");
+                    continue;
+                }
+
+                $seededProductNames[] = $item['name'];
+
+                Product::updateOrCreate(
                     [
                         'restaurant_id' => $restaurant->id,
                         'name'          => $item['name'],
                     ],
                     [
-                        'category_id' => $item['category_id'],
-                        'description' => $item['description'] ?? null,
+                        'category_id' => $category->id,
+                        'description' => $item['desc'],
                         'price'       => $item['price'],
-                        'is_active'   => $item['is_active'] ?? true,
+                        'is_active'   => true,
                     ]
                 );
-
-                if (! empty($item['images']) && is_array($item['images'])) {
-                    foreach ($item['images'] as $img) {
-                        /** @var \App\Models\Media|null $media */
-                        $media = Media::where('path', $img['path'])->first();
-
-                        if (! $media) {
-                            $this->command?->warn("Media not found for path [{$img['path']}], skip.");
-                            continue;
-                        }
-
-                        ProductImage::updateOrCreate(
-                            [
-                                'product_id' => $product->id,
-                                'media_id'   => $media->id,
-                            ],
-                            [
-                                'sort_order' => $img['sort_order'] ?? 0,
-                                'is_cover'   => $img['is_cover'] ?? false,
-                            ]
-                        );
-                    }
-                }
             }
+
+            $restaurant->products()
+                ->whereNotIn('name', $seededProductNames)
+                ->get()
+                ->each(function (Product $product): void {
+                    if (OrderItem::where('product_id', $product->id)->exists()) {
+                        $product->update(['is_active' => false]);
+
+                        return;
+                    }
+
+                    $product->delete();
+                });
         }
+
+        $this->command?->info('ProductSeeder expanded with 150 items (15 per restaurant).');
     }
 }

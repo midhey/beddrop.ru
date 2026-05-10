@@ -132,26 +132,8 @@ class GeoLogisticsApiTest extends TestCase
         ]);
     }
 
-    public function test_admin_can_manage_logistics_settings_and_debug_routes(): void
+    public function test_admin_can_manage_logistics_settings(): void
     {
-        config([
-            'services.valhalla.url' => 'https://valhalla.test',
-        ]);
-
-        Http::fake([
-            'valhalla.test/route' => Http::response([
-                'trip' => [
-                    'summary' => [
-                        'length' => 1.5,
-                        'time' => 300,
-                    ],
-                    'legs' => [
-                        ['shape' => 'route-shape'],
-                    ],
-                ],
-            ]),
-        ]);
-
         $admin = $this->createUser(['is_admin' => true]);
         $user = $this->createUser();
 
@@ -179,6 +161,64 @@ class GeoLogisticsApiTest extends TestCase
             'key' => 'delivery.base_price',
             'value' => '199',
         ]);
+    }
+
+    public function test_admin_can_debug_dadata_address(): void
+    {
+        config([
+            'services.dadata.api_key' => 'test-token',
+            'services.dadata.secret_key' => 'test-secret',
+        ]);
+
+        Http::fake([
+            'cleaner.dadata.ru/*' => Http::response([
+                [
+                    'result' => 'г Великий Новгород, ул Большая Московская, д 10',
+                    'geo_lat' => '58.5176735',
+                    'geo_lon' => '31.2866066',
+                    'city' => 'Великий Новгород',
+                    'street_with_type' => 'ул Большая Московская',
+                    'house' => '10',
+                    'qc_geo' => '0',
+                ],
+            ]),
+        ]);
+
+        $admin = $this->createUser(['is_admin' => true]);
+
+        $this
+            ->actingAs($admin, 'api')
+            ->postJson('/api/v1/admin/logistics/test-address', [
+                'address' => 'Великий Новгород, Большая Московская, 10',
+            ])
+            ->assertOk()
+            ->assertJsonPath('address.value', 'г Великий Новгород, ул Большая Московская, д 10')
+            ->assertJsonPath('address.data.lat', 58.5176735)
+            ->assertJsonPath('address.data.lng', 31.2866066)
+            ->assertJsonPath('address.data.qc_geo', 0);
+    }
+
+    public function test_admin_can_debug_valhalla_routes(): void
+    {
+        config([
+            'services.valhalla.url' => 'https://valhalla.test',
+        ]);
+
+        Http::fake([
+            'valhalla.test/route' => Http::response([
+                'trip' => [
+                    'summary' => [
+                        'length' => 1.5,
+                        'time' => 300,
+                    ],
+                    'legs' => [
+                        ['shape' => 'route-shape'],
+                    ],
+                ],
+            ]),
+        ]);
+
+        $admin = $this->createUser(['is_admin' => true]);
 
         $routeResponse = $this
             ->actingAs($admin, 'api')
