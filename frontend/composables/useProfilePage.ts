@@ -53,14 +53,22 @@ export function useProfilePage() {
     };
 
     const init = async () => {
-        if (authStore.accessToken && !authStore.user) {
+        const hasSession = await authStore.ensureSession();
+
+        if (!hasSession) {
+            feedback.info('Авторизуйтесь, чтобы просмотреть профиль');
+            await navigateTo('/');
+            return;
+        }
+
+        if (!authStore.user) {
             try {
                 await authStore.profile(true);
             } catch {
             }
         }
 
-        if (!authStore.accessToken) {
+        if (!authStore.isAuthenticated) {
             feedback.info('Авторизуйтесь, чтобы просмотреть профиль');
             await navigateTo('/');
         }

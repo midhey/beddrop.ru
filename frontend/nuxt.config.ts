@@ -4,7 +4,6 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: [
       "@pinia/nuxt",
-      'pinia-plugin-persistedstate/nuxt',
   ],
   css: ["~/assets/scss/main.scss"],
   runtimeConfig: {
@@ -17,4 +16,3 @@ export default defineNuxtConfig({
     strict: true,
   },
 });
-

@@ -1,11 +1,18 @@
 import axios from 'axios';
 import {useAuthStore} from "~/stores/auth";
 
+const canAttemptSessionRefresh = (url?: string): boolean => {
+    return url !== '/auth/refresh'
+        && url !== '/auth/login'
+        && url !== '/auth/register';
+};
+
 export default defineNuxtPlugin((nuxtApp) => {
     const config = useRuntimeConfig();
 
     const api = axios.create({
         baseURL: config.public.apiBase,
+        withCredentials: true,
     });
 
     api.interceptors.request.use((request) => {
@@ -25,32 +32,37 @@ export default defineNuxtPlugin((nuxtApp) => {
 
             const status = error?.response?.status;
 
-            if (!status) {
+            if (!status || !originalRequest) {
                 return Promise.reject(error);
             }
 
-            const isLoggedIn = !!authStore.accessToken;
-
             if (
                 status === 401 &&
-                isLoggedIn &&
+                canAttemptSessionRefresh(originalRequest?.url) &&
                 !originalRequest._retry &&
-                originalRequest.url !== '/auth/refresh'
+                (!authStore.isReady || authStore.isAuthenticated)
             ) {
                 originalRequest._retry = true;
 
                 try {
-                    await authStore.refresh();
+                    await authStore.refresh(true);
 
                     if (authStore.accessToken) {
                         originalRequest.headers = originalRequest.headers || {};
                         originalRequest.headers.Authorization = `Bearer ${authStore.accessToken}`;
+                    } else {
+                        return Promise.reject(error);
                     }
 
                     return api(originalRequest);
-                } catch (e) {
-                    authStore.clearAuth();
-                    return Promise.reject(e);
+                } catch (refreshError: any) {
+                    const refreshStatus = refreshError?.response?.status;
+
+                    if (refreshStatus === 401 || refreshStatus === 403) {
+                        authStore.clearAuth();
+                    }
+
+                    return Promise.reject(refreshError);
                 }
             }
 

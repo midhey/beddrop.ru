@@ -102,6 +102,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Order::class);
     }
 
+    public function refreshTokens(): HasMany
+    {
+        return $this->hasMany(AuthRefreshToken::class);
+    }
+
     public function isAdmin(): bool
     {
         return $this->is_admin;

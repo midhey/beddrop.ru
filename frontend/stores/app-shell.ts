@@ -144,6 +144,7 @@ export const useAppShellStore = defineStore('app-shell', () => {
 
     const ensureBootstrapped = async (force = false) => {
         const authStore = useAuthStore();
+        await authStore.ensureSession();
 
         if (!authStore.isAuthenticated) {
             resetForGuest();

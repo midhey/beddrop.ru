@@ -2,25 +2,39 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Exceptions\Auth\InvalidRefreshTokenException;
 use App\Http\Controllers\Controller;
+use App\Services\Auth\AuthResponseFactory;
+use App\Services\Auth\RefreshTokenService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RefreshController extends Controller
 {
-    public function __invoke(): JsonResponse
+    public function __invoke(
+        Request $request,
+        RefreshTokenService $refreshTokens,
+        AuthResponseFactory $responses,
+    ): JsonResponse
     {
-        try {
-            $newToken = auth('api')->refresh();
+        $plainTextToken = $refreshTokens->extractFromRequest($request);
 
-            return response()->json([
-                'access_token' => $newToken,
-                'token_type'   => 'bearer',
-                'expires_in'   => auth('api')->factory()->getTTL() * 60,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Не удалось обновить токен',
-            ], 401);
+        if (! $plainTextToken) {
+            return $responses->invalidRefreshResponse();
+        }
+
+        try {
+            [$user, $session, $newRefreshToken] = $refreshTokens->rotate($plainTextToken, $request);
+            $accessToken = Auth::guard('api')->login($user);
+
+            return $responses->refreshed(
+                $accessToken,
+                $session->client_type,
+                $newRefreshToken,
+            );
+        } catch (InvalidRefreshTokenException $e) {
+            return $responses->invalidRefreshResponse();
         }
     }
 }

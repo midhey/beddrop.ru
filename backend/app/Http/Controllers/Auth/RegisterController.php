@@ -2,15 +2,22 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enums\AuthClientType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
+use App\Services\Auth\AuthResponseFactory;
+use App\Services\Auth\RefreshTokenService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller
 {
-    public function __invoke(RegisterRequest $request)
+    public function __invoke(
+        RegisterRequest $request,
+        RefreshTokenService $refreshTokens,
+        AuthResponseFactory $responses,
+    )
     {
         $data = $request->validated();
 
@@ -23,11 +30,14 @@ class RegisterController extends Controller
 
         $token = Auth::guard('api')->login($user);
 
-        return response()->json([
-            'user' => $user,
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth('api')->factory()->getTTL() * 60,
-        ], 201);
+        $clientType = AuthClientType::fromNullable($data['client_type'] ?? null);
+        [, $refreshToken] = $refreshTokens->issue(
+            $user,
+            $clientType,
+            $request,
+            $data['device_name'] ?? null,
+        );
+
+        return $responses->authenticated($user, $token, $clientType, $refreshToken, 201);
     }
 }

@@ -1,6 +1,19 @@
 import {defineStore} from "pinia";
 import { useFeedback } from '~/composables/useFeedback';
 
+const getErrorStatus = (error: any): number | null => {
+    const status = error?.response?.status;
+
+    return typeof status === 'number' ? status : null;
+};
+
+const isAuthFailureStatus = (status: number | null): boolean => {
+    return status === 401 || status === 403;
+};
+
+let sessionPromise: Promise<boolean> | null = null;
+let refreshPromise: Promise<boolean> | null = null;
+
 interface User {
     id: number;
     email: string;
@@ -15,6 +28,7 @@ interface AuthState {
     accessToken: string | null;
     loading: boolean;
     error: string | null;
+    initialized: boolean;
 }
 
 interface RegisterPayload {
@@ -48,27 +62,30 @@ export const useAuthStore = defineStore('auth', {
         accessToken: null,
         loading: false,
         error: null,
+        initialized: false,
     }),
 
     getters: {
         isAuthenticated: (state): boolean => !!state.accessToken,
         isAdmin: (state): boolean => !!state.user?.is_admin,
-    },
-
-    persist: {
-        storage: piniaPluginPersistedstate.localStorage(),
-        pick: ['accessToken'],
+        isReady: (state): boolean => state.initialized,
     },
 
     actions: {
         setAuth(user: User, token: string) {
             this.user = user;
             this.accessToken = token;
+            this.initialized = true;
         },
 
         clearAuth() {
             this.user = null;
             this.accessToken = null;
+            this.initialized = true;
+        },
+
+        setInitialized(value: boolean) {
+            this.initialized = value;
         },
 
         setError(message: string | null) {
@@ -88,7 +105,10 @@ export const useAuthStore = defineStore('auth', {
             try {
                 const { $api } = useNuxtApp();
                 const feedback = useFeedback();
-                const { data } = await $api.post('/auth/register', payload);
+                const { data } = await $api.post('/auth/register', {
+                    ...payload,
+                    client_type: 'web',
+                });
                 this.setAuth(data.user, data.access_token);
                 feedback.success('Вы успешно зарегистрированы');
                 return data;
@@ -107,7 +127,10 @@ export const useAuthStore = defineStore('auth', {
             try {
                 const { $api } = useNuxtApp();
                 const feedback = useFeedback();
-                const { data } = await $api.post('/auth/login', payload);
+                const { data } = await $api.post('/auth/login', {
+                    ...payload,
+                    client_type: 'web',
+                });
                 this.setAuth(data.user, data.access_token);
                 feedback.success('Вы успешно вошли');
                 return data;
@@ -120,7 +143,6 @@ export const useAuthStore = defineStore('auth', {
         },
 
         async logout() {
-            if (!this.accessToken) return null;
             this.loading = true;
             this.clearError();
 
@@ -128,36 +150,99 @@ export const useAuthStore = defineStore('auth', {
                 const { $api } = useNuxtApp();
                 const feedback = useFeedback();
                 await $api.post('/auth/logout');
+                this.clearAuth();
                 feedback.info('Вы вышли из аккаунта');
                 return true;
             } catch (error: any) {
+                const status = getErrorStatus(error);
+
+                if (isAuthFailureStatus(status)) {
+                    this.clearAuth();
+                    return true;
+                }
+
                 this.handleError(error);
                 throw error;
             } finally {
-                this.clearAuth();
                 this.loading = false;
             }
         },
 
-        async refresh() {
-            if (!this.accessToken) return null;
-
-            try {
-                const { $api } = useNuxtApp();
-                const feedback = useFeedback();
-                const { data } = await $api.post('/auth/refresh');
-                this.accessToken = data.access_token;
-                return true;
-            } catch (error: any) {
-                feedback.info('Ваша сессия истекла. Повторите авторизацию');
-                this.clearAuth();
-                throw error;
+        async ensureSession(force = false) {
+            if (this.initialized && !force) {
+                return this.isAuthenticated;
             }
+
+            if (sessionPromise && !force) {
+                return sessionPromise;
+            }
+
+            this.initialized = false;
+
+            sessionPromise = (async () => {
+                if (this.accessToken) {
+                    this.initialized = true;
+                    return true;
+                }
+
+                try {
+                    await this.refresh(true);
+                    return !!this.accessToken;
+                } catch {
+                    return false;
+                } finally {
+                    this.initialized = true;
+                    sessionPromise = null;
+                }
+            })();
+
+            return sessionPromise;
+        },
+
+        async refresh(silent = false) {
+            if (refreshPromise) {
+                return refreshPromise;
+            }
+
+            refreshPromise = (async () => {
+                try {
+                    const { $api } = useNuxtApp();
+                    const { data } = await $api.post('/auth/refresh');
+                    this.accessToken = data.access_token;
+                    this.initialized = true;
+                    return true;
+                } catch (error: any) {
+                    const feedback = useFeedback();
+                    const status = getErrorStatus(error);
+
+                    if (isAuthFailureStatus(status)) {
+                        if (!silent) {
+                            feedback.info('Ваша сессия истекла. Повторите авторизацию');
+                        }
+
+                        this.clearAuth();
+                    }
+
+                    throw error;
+                } finally {
+                    refreshPromise = null;
+                }
+            })();
+
+            return refreshPromise;
         },
 
         // Работа с профилем
 
         async profile(silent = false) {
+            if (!this.accessToken) {
+                const hasSession = await this.ensureSession();
+
+                if (!hasSession || !this.accessToken) {
+                    return null;
+                }
+            }
+
             if (!this.accessToken) return null;
 
             this.loading = true;
@@ -171,13 +256,20 @@ export const useAuthStore = defineStore('auth', {
                 this.user = data.user;
                 return data.user as User;
             } catch (error: any) {
-                if (!silent) {
-                    this.handleError(error);
+                const status = getErrorStatus(error);
+
+                if (isAuthFailureStatus(status)) {
+                    this.clearAuth();
+                } else if (!silent) {
+                    if (!isAuthFailureStatus(status)) {
+                        this.handleError(error);
+                    }
                 }
-                this.clearAuth();
-                if (!silent) {
+
+                if (!silent && !isAuthFailureStatus(status)) {
                     throw error;
                 }
+
                 return null;
             } finally {
                 this.loading = false;

@@ -3,6 +3,10 @@ const matchesProtectedPrefix = (path: string, prefix: string) => {
 };
 
 export default defineNuxtRouteMiddleware(async (to) => {
+    if (import.meta.server) {
+        return;
+    }
+
     const needsOrdersAccess = matchesProtectedPrefix(to.path, '/orders');
     const needsCourierAccess = matchesProtectedPrefix(to.path, '/courier');
     const needsRestaurantAccess = matchesProtectedPrefix(to.path, '/restaurants/manage');
@@ -12,6 +16,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     }
 
     const authStore = useAuthStore();
+    await authStore.ensureSession();
 
     if (!authStore.isAuthenticated) {
         return navigateTo('/');

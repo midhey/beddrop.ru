@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Enums\AuthClientType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class RegisterRequest extends FormRequest
 {
@@ -27,6 +29,8 @@ class RegisterRequest extends FormRequest
             'phone' => ['required', 'string', 'digits:11', 'unique:users,phone'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'name' => ['nullable', 'string', 'max:255'],
+            'client_type' => ['sometimes', Rule::enum(AuthClientType::class)],
+            'device_name' => ['nullable', 'string', 'max:255'],
         ];
     }
 }
