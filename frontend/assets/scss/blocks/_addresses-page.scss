@@ -1,117 +1,183 @@
 @use '../core' as *;
 
 .addresses-page {
+  @include fluid('padding-top', 36, 16, $tablet-l);
+  @include fluid('padding-bottom', 48, 24, $tablet-l);
+
+  &__container {
+  }
+
+  &__back {
+    margin-bottom: rem(24);
+  }
+
+  &__header {
+    margin-bottom: rem(32);
+  }
+
+  &__title {
+    margin: 0 0 rem(8);
+    font-family: $font-secondary;
+    font-size: rem(32);
+    font-weight: 800;
+    color: var(--color-text-strong);
+    letter-spacing: -0.01em;
+  }
+
+  &__subtitle {
+    margin: 0;
+    font-size: rem(15);
+    color: var(--color-text-muted);
+  }
+
   &__error {
-    margin-bottom: 12px;
+    margin-bottom: rem(20);
   }
 
   &__layout {
     display: grid;
     grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-    gap: 20px;
+    gap: rem(32);
+    align-items: flex-start;
+
+    @media (max-width: $tablet-l) {
+      grid-template-columns: 1fr;
+      gap: rem(40);
+    }
   }
 
   &__section-title {
-    margin-bottom: 12px;
+    margin: 0 0 rem(20);
+    font-size: rem(18);
+    font-weight: 700;
+    color: var(--color-text-strong);
+    display: flex;
+    align-items: center;
+    gap: rem(10);
+
+    .ui-icon {
+      color: var(--color-primary);
+    }
   }
 
-  &__loading,
-  &__empty {
-    padding: 0;
+  &__card {
+    background: $white;
+    border-radius: var(--radius-24, 24px);
+    box-shadow: 0 4px 20px rgba(31, 27, 45, 0.04);
+    border: 1px solid #f0f2f5;
+    padding: rem(28);
+
+    @media (max-width: $mobile) {
+      padding: rem(20);
+    }
   }
 
   /* список адресов */
-
   &__list {
     margin: 0;
     padding: 0;
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: rem(16);
   }
 }
 
 .address-item {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
-}
+  gap: rem(20);
+  padding: rem(18) rem(20);
+  background: #f8fafc;
+  border: 1px solid #edf2f7;
+  border-radius: rem(16);
+  transition: all 0.2s ease;
 
-.address-item__main {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 13px;
-}
+  &:hover {
+    background: $white;
+    border-color: var(--color-primary);
+    transform: translateY(rem(-2));
+    box-shadow: 0 8px 20px rgba(122, 59, 255, 0.08);
+  }
 
-.address-item__label-line {
-  display: flex;
-  gap: 8px;
-  align-items: baseline;
-}
+  &__main {
+    display: flex;
+    flex-direction: column;
+    gap: rem(6);
+    min-width: 0;
+  }
 
-.address-item__label {
-  font-weight: 600;
-  color: #111827;
-}
+  &__label-line {
+    display: flex;
+    gap: rem(10);
+    align-items: center;
+    flex-wrap: wrap;
+  }
 
-.address-item__city {
-  color: #6b7280;
-}
+  &__label {
+    font-size: rem(11);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: rem(3) rem(10);
+    border-radius: rem(999);
+    background: var(--color-primary);
+    color: $white;
+  }
 
-.address-item__line1 {
-  color: #111827;
-}
+  &__city {
+    font-size: rem(13);
+    font-weight: 700;
+    color: var(--color-text-muted);
+  }
 
-.address-item__line2 {
-  color: #4b5563;
-}
+  &__line1 {
+    font-size: rem(15);
+    font-weight: 700;
+    color: var(--color-text-strong);
+    line-height: 1.4;
+    word-break: break-word;
+  }
 
-.address-item__postal {
-  font-size: 12px;
-  color: #6b7280;
-}
+  &__line2 {
+    font-weight: 600;
+    color: var(--color-text-subtle);
+  }
 
-.address-item__actions {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  align-items: flex-end;
-  flex-shrink: 0;
-}
+  &__postal {
+    font-size: rem(12);
+    font-weight: 600;
+    color: var(--color-text-soft);
+  }
 
-.address-item__actions .button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    gap: rem(8);
+    align-items: flex-end;
+    flex-shrink: 0;
+
+    @media (max-width: $mobile) {
+      flex-direction: row;
+      align-items: center;
+      margin-top: rem(12);
+    }
+  }
 }
 
 /* форма */
-
 .addresses-form {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-}
+  gap: rem(16);
 
-.addresses-form__actions {
-  margin-top: 8px;
-}
+  &__actions {
+    margin-top: rem(8);
+    display: flex;
+    gap: rem(12);
 
-/* адаптив */
-
-@media (max-width: 768px) {
-  .addresses-page__layout {
-    grid-template-columns: 1fr;
-  }
-
-  .address-item {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .address-item__actions {
-    flex-direction: row;
+    @media (max-width: $mobile) {
+      flex-direction: column;
+    }
   }
 }

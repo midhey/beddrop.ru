@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { Pencil, Trash2 } from 'lucide-vue-next';
+import { Pencil, Trash2, ArrowLeft, MapPin, PlusCircle, CheckCircle2 } from 'lucide-vue-next';
 import { useSeoMeta } from '#imports';
 import AddressPicker from '~/components/address/AddressPicker.vue';
 import { useAddresses, type Address, type AddressPayload } from '~/composables/useAddresses';
@@ -105,18 +105,22 @@ onMounted(async () => {
 </script>
 
 <template>
-  <section class="addresses-page page-shell">
-    <div class="addresses-page__container container">
-      <div class="page-head">
-        <div>
-          <h1 class="addresses-page__title page-title">
-            Мои адреса
-          </h1>
+  <section class="addresses-page">
+    <div class="addresses-page__container">
+      <button
+          type="button"
+          class="addresses-page__back page-back"
+          @click="$router.back()"
+      >
+        <ArrowLeft :size="16" />
+        <span>Назад к профилю</span>
+      </button>
 
-          <p class="addresses-page__subtitle page-subtitle">
-            Добавьте несколько адресов, чтобы быстрее оформлять заказы.
-          </p>
-        </div>
+      <div class="addresses-page__header">
+        <h1 class="addresses-page__title">Мои адреса</h1>
+        <p class="addresses-page__subtitle">
+          Управляйте вашими точками доставки для быстрого оформления заказов.
+        </p>
       </div>
 
       <div
@@ -128,8 +132,9 @@ onMounted(async () => {
 
       <div class="addresses-page__layout">
         <!-- список адресов -->
-        <div class="addresses-page__list-card surface-card">
-          <h2 class="addresses-page__section-title section-title">
+        <div class="addresses-page__list-card addresses-page__card">
+          <h2 class="addresses-page__section-title">
+            <MapPin :size="20" class="ui-icon" />
             Сохранённые адреса
           </h2>
 
@@ -154,7 +159,7 @@ onMounted(async () => {
             <li
                 v-for="addr in addresses"
                 :key="addr.id"
-                class="address-item surface-card--soft"
+                class="address-item"
             >
               <div class="address-item__main">
                 <div class="address-item__label-line">
@@ -165,14 +170,14 @@ onMounted(async () => {
                     {{ addr.label }}
                   </span>
                   <span class="address-item__city">
-                    {{ addr.city || addr.settlement || 'Населённый пункт не указан' }}
+                    {{ addr.city || addr.settlement || 'Населённый пункт' }}
                   </span>
                 </div>
 
                 <div class="address-item__line1">
                   {{ addr.value || addr.line1 }}
                   <span
-                      v-if="addr.flat || addr.entrance || addr.floor"
+                      v-if="(addr.flat || addr.entrance || addr.floor) && !addr.value?.includes('кв')"
                       class="address-item__line2"
                   >
                     , {{ [
@@ -198,7 +203,7 @@ onMounted(async () => {
                     aria-label="Редактировать адрес"
                     @click="startEdit(addr)"
                 >
-                  <Pencil class="ui-icon" :size="16" :stroke-width="1.9" aria-hidden="true" />
+                  <Pencil class="ui-icon" :size="16" />
                 </button>
                 <button
                     type="button"
@@ -206,7 +211,7 @@ onMounted(async () => {
                     aria-label="Удалить адрес"
                     @click="handleDelete(addr.id)"
                 >
-                  <Trash2 class="ui-icon" :size="16" :stroke-width="1.9" aria-hidden="true" />
+                  <Trash2 class="ui-icon" :size="16" />
                 </button>
               </div>
             </li>
@@ -214,20 +219,21 @@ onMounted(async () => {
         </div>
 
         <!-- форма -->
-        <div class="addresses-page__form-card surface-card">
-          <h2 class="addresses-page__section-title section-title">
-            {{ formMode === 'create' ? 'Новый адрес' : 'Редактирование адреса' }}
+        <div class="addresses-page__form-card addresses-page__card">
+          <h2 class="addresses-page__section-title">
+            <component :is="formMode === 'create' ? PlusCircle : CheckCircle2" :size="20" class="ui-icon" />
+            {{ formMode === 'create' ? 'Новый адрес' : 'Редактирование' }}
           </h2>
 
           <form class="addresses-form" @submit.prevent="submit">
             <AddressPicker v-model="form" required />
 
-            <div class="addresses-form__actions form-actions">
+            <div class="addresses-form__actions">
               <button
                   type="submit"
                   class="button"
               >
-                {{ formMode === 'create' ? 'Сохранить адрес' : 'Обновить адрес' }}
+                {{ formMode === 'create' ? 'Сохранить адрес' : 'Обновить данные' }}
               </button>
 
               <button
