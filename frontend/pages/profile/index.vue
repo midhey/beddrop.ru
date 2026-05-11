@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Pencil } from 'lucide-vue-next';
+import { Pencil, MapPin, ChevronRight, ShieldCheck } from 'lucide-vue-next';
 
 const {
   user,
@@ -34,311 +34,339 @@ const {
   <ClientOnly>
     <section class="profile">
       <div class="profile__container">
-        <div class="profile__block">
-          <h1>Мой профиль</h1>
-
-          <div
-              v-if="user"
-              class="profile__card"
-          >
-            <div class="profile__column profile__column--avatar">
+        <div
+            v-if="user"
+            class="profile__section"
+        >
+          <!-- Шапка профиля -->
+          <div class="profile__header">
+            <div class="profile__avatar-wrapper">
               <div class="profile__avatar">
                 {{ userInitial }}
               </div>
             </div>
+            <h1 class="profile__title">Мой профиль</h1>
+          </div>
 
-            <div class="profile__column profile__column--full-width">
-              <div class="profile__row">
-                <template v-if="!isEditing.name">
-                  <div class="profile__field">
-                    <div class="profile__box">
-                      <span class="profile__label">Имя</span>
-                      <span class="profile__value">
-                  {{ user.name || 'User' }}
-                </span>
+          <!-- Группа: Основные данные -->
+          <div class="profile__group">
+            <h2 class="profile__group-title">Личные данные</h2>
+            <div class="profile__card">
+              <div class="profile__info-list">
+                <!-- Имя -->
+                <div class="profile__info-item-wrapper">
+                  <div
+                      v-if="!isEditing.name"
+                      class="profile__info-item"
+                  >
+                    <div class="profile__info-content">
+                      <span class="profile__info-label">Имя</span>
+                      <span class="profile__info-value">{{ user.name || 'Не указано' }}</span>
                     </div>
                     <button
                         type="button"
-                        class="profile__edit-btn button"
-                        aria-label="Редактировать имя"
+                        class="profile__edit-trigger"
+                        title="Редактировать имя"
                         @click="startEdit('name')"
                     >
-                      <Pencil class="ui-icon" :size="18" :stroke-width="1.9" aria-hidden="true" />
+                      <Pencil :size="18" />
                     </button>
                   </div>
-                </template>
-
-                <template v-else>
-                  <form
-                      ref="nameFormRef"
-                      class="form form--inline"
-                      @submit.prevent="submitName"
+                  <div
+                      v-else
+                      class="profile__form-wrapper"
                   >
-                    <div class="form__field form__field--inline">
-                      <label class="form__label">
-                        <input
-                            v-model="nameInput"
-                            type="text"
-                            class="form__input"
-                            placeholder="Имя"
-                            autocomplete="name"
-                        />
-                        <span class="form__label-text">Имя</span>
-                      </label>
-                    </div>
+                    <form
+                        ref="nameFormRef"
+                        class="form"
+                        @submit.prevent="submitName"
+                    >
+                      <div class="form__field">
+                        <label class="form__label">
+                          <input
+                              v-model="nameInput"
+                              type="text"
+                              class="form__input"
+                              placeholder="Имя"
+                              autocomplete="name"
+                              required
+                          />
+                          <span class="form__label-text">Ваше имя</span>
+                        </label>
+                      </div>
+                      <div class="profile__form-actions">
+                        <button
+                            type="submit"
+                            class="button"
+                            :disabled="isLoading"
+                        >
+                          {{ isLoading ? 'Сохранение...' : 'Обновить' }}
+                        </button>
+                        <button
+                            type="button"
+                            class="button button--ghost"
+                            @click="cancelEdit('name')"
+                        >
+                          Отмена
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
 
-                    <div class="form__inline-actions">
-                      <button
-                          type="submit"
-                          class="button"
-                          :disabled="isLoading"
-                      >
-                        {{ isLoading ? 'Сохраняем...' : 'Сохранить' }}
-                      </button>
-                      <button
-                          type="button"
-                          class="button button--text"
-                          @click="cancelEdit('name')"
-                      >
-                        Отмена
-                      </button>
-                    </div>
-                  </form>
-                </template>
-              </div>
-
-              <div class="profile__row">
-                <template v-if="!isEditing.email">
-                  <div class="profile__field">
-                    <div class="profile__box">
-                      <span class="profile__label">Email</span>
-                      <span class="profile__value">
-                    {{ user.email }}
-                  </span>
+                <!-- Email -->
+                <div class="profile__info-item-wrapper">
+                  <div
+                      v-if="!isEditing.email"
+                      class="profile__info-item"
+                  >
+                    <div class="profile__info-content">
+                      <span class="profile__info-label">Электронная почта</span>
+                      <span class="profile__info-value">{{ user.email }}</span>
                     </div>
                     <button
                         type="button"
-                        class="profile__edit-btn button"
-                        aria-label="Редактировать email"
+                        class="profile__edit-trigger"
+                        title="Редактировать email"
                         @click="startEdit('email')"
                     >
-                      <Pencil class="ui-icon" :size="18" :stroke-width="1.9" aria-hidden="true" />
+                      <Pencil :size="18" />
                     </button>
                   </div>
-                </template>
-
-                <template v-else>
-                  <form
-                      ref="emailFormRef"
-                      class="form form--inline"
-                      @submit.prevent="submitEmail"
+                  <div
+                      v-else
+                      class="profile__form-wrapper"
                   >
-                    <div class="form__field form__field--inline">
-                      <label class="form__label">
-                        <input
-                            v-model="emailInput"
-                            type="email"
-                            class="form__input"
-                            placeholder="Электронная почта"
-                            required
-                            autocomplete="email"
-                        />
-                        <span class="form__label-text">Электронная почта</span>
-                      </label>
-                    </div>
+                    <form
+                        ref="emailFormRef"
+                        class="form"
+                        @submit.prevent="submitEmail"
+                    >
+                      <div class="form__field">
+                        <label class="form__label">
+                          <input
+                              v-model="emailInput"
+                              type="email"
+                              class="form__input"
+                              placeholder="Email"
+                              autocomplete="email"
+                              required
+                          />
+                          <span class="form__label-text">Электронная почта</span>
+                        </label>
+                      </div>
+                      <div class="profile__form-actions">
+                        <button
+                            type="submit"
+                            class="button"
+                            :disabled="isLoading"
+                        >
+                          {{ isLoading ? 'Сохранение...' : 'Обновить' }}
+                        </button>
+                        <button
+                            type="button"
+                            class="button button--ghost"
+                            @click="cancelEdit('email')"
+                        >
+                          Отмена
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
 
-                    <div class="form__inline-actions">
-                      <button
-                          type="submit"
-                          class="button"
-                          :disabled="isLoading"
-                      >
-                        {{ isLoading ? 'Сохраняем...' : 'Сохранить' }}
-                      </button>
-                      <button
-                          type="button"
-                          class="button button--text"
-                          @click="cancelEdit('email')"
-                      >
-                        Отмена
-                      </button>
-                    </div>
-                  </form>
-                </template>
-              </div>
-
-              <div class="profile__row">
-                <template v-if="!isEditing.phone">
-                  <div class="profile__field">
-                    <div class="profile__box">
-                      <span class="profile__label">Телефон</span>
-                      <span class="profile__value">
-                    {{ formatPhone(user.phone) }}
-                  </span>
+                <!-- Телефон -->
+                <div class="profile__info-item-wrapper">
+                  <div
+                      v-if="!isEditing.phone"
+                      class="profile__info-item"
+                  >
+                    <div class="profile__info-content">
+                      <span class="profile__info-label">Номер телефона</span>
+                      <span class="profile__info-value">{{ formatPhone(user.phone) }}</span>
                     </div>
                     <button
                         type="button"
-                        class="profile__edit-btn button"
-                        aria-label="Редактировать телефон"
+                        class="profile__edit-trigger"
+                        title="Редактировать телефон"
                         @click="startEdit('phone')"
                     >
-                      <Pencil class="ui-icon" :size="18" :stroke-width="1.9" aria-hidden="true" />
+                      <Pencil :size="18" />
                     </button>
                   </div>
-                </template>
-
-                <template v-else>
-                  <form
-                      ref="phoneFormRef"
-                      class="form form--inline"
-                      @submit.prevent="submitPhone"
+                  <div
+                      v-else
+                      class="profile__form-wrapper"
                   >
-                    <div class="form__field form__field--inline">
-                      <label class="form__label">
-                        <input
-                            v-model="phoneInput"
-                            type="tel"
-                            class="form__input"
-                            placeholder="Телефон"
-                            autocomplete="tel"
-                            v-imask="phoneMask"
-                        />
-                        <span class="form__label-text">Телефон</span>
-                      </label>
-                    </div>
-
-                    <div class="form__inline-actions">
-                      <button
-                          type="submit"
-                          class="button"
-                          :disabled="isLoading"
-                      >
-                        {{ isLoading ? 'Сохраняем...' : 'Сохранить' }}
-                      </button>
-                      <button
-                          type="button"
-                          class="button button--text"
-                          @click="cancelEdit('phone')"
-                      >
-                        Отмена
-                      </button>
-                    </div>
-                  </form>
-                </template>
+                    <form
+                        ref="phoneFormRef"
+                        class="form"
+                        @submit.prevent="submitPhone"
+                    >
+                      <div class="form__field">
+                        <label class="form__label">
+                          <input
+                              v-model="phoneInput"
+                              type="tel"
+                              class="form__input"
+                              placeholder="Телефон"
+                              autocomplete="tel"
+                              v-imask="phoneMask"
+                              required
+                          />
+                          <span class="form__label-text">Номер телефона</span>
+                        </label>
+                      </div>
+                      <div class="profile__form-actions">
+                        <button
+                            type="submit"
+                            class="button"
+                            :disabled="isLoading"
+                        >
+                          {{ isLoading ? 'Сохранение...' : 'Обновить' }}
+                        </button>
+                        <button
+                            type="button"
+                            class="button button--ghost"
+                            @click="cancelEdit('phone')"
+                        >
+                          Отмена
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-
+          <!-- Адреса -->
           <NuxtLink
               to="/profile/addresses"
-              class="button button--outline"
+              class="profile__card profile__nav-card"
           >
-            Управление адресами
-          </NuxtLink>
-          <div
-              v-if="user"
-              class="profile__card profile__card--password"
-          >
-            <div class="profile__security-head">
-              <div class="profile__security-copy">
-                <h2 class="profile__subtitle">Безопасность</h2>
-                <p class="profile__hint">
-                  Для защиты аккаунта пароль меняется только вручную по отдельной кнопке.
-                </p>
+            <div class="profile__nav-content">
+              <div class="profile__nav-icon">
+                <MapPin :size="24" />
               </div>
-
-              <button
-                  v-if="!isPasswordFormVisible"
-                  type="button"
-                  class="button button--outline"
-                  @click="openPasswordForm"
-              >
-                Сменить пароль
-              </button>
-
-              <button
-                  v-else
-                  type="button"
-                  class="button button--text"
-                  @click="closePasswordForm"
-              >
-                Скрыть
-              </button>
+              <div class="profile__nav-copy">
+                <span class="profile__nav-title">Мои адреса</span>
+                <span class="profile__nav-subtitle">Управление сохраненными точками доставки</span>
+              </div>
             </div>
+            <ChevronRight class="profile__nav-chevron" :size="20" />
+          </NuxtLink>
 
-            <form
-                v-if="isPasswordFormVisible"
-                ref="passwordFormRef"
-                class="form form--password profile__password-form"
-                @submit.prevent="submitPassword"
-            >
-              <div class="form__field">
-                <label class="form__label">
-                  <input
-                      v-model="currentPassword"
-                      type="password"
-                      class="form__input"
-                      placeholder="Текущий пароль"
-                      required
-                      autocomplete="current-password"
-                  />
-                  <span class="form__label-text">Текущий пароль</span>
-                </label>
-              </div>
+          <!-- Безопасность -->
+          <div class="profile__group profile__security">
+            <h2 class="profile__group-title">Конфиденциальность</h2>
+            <div class="profile__card profile__security-card">
+              <div class="profile__security-header">
+                <div class="profile__security-info">
+                  <div class="profile__security-title-row row">
+                    <ShieldCheck :size="20" class="ui-icon" style="color: var(--color-success)" />
+                    <h3 class="profile__security-title">Безопасность аккаунта</h3>
+                  </div>
+                  <p class="profile__security-text">
+                    Регулярно меняйте пароль для обеспечения максимальной защиты ваших данных и заказов.
+                  </p>
+                </div>
 
-              <div class="form__field">
-                <label class="form__label">
-                  <input
-                      v-model="newPassword"
-                      type="password"
-                      class="form__input"
-                      placeholder="Новый пароль"
-                      required
-                      autocomplete="new-password"
-                  />
-                  <span class="form__label-text">Новый пароль</span>
-                </label>
-              </div>
-
-              <div class="form__field">
-                <label class="form__label">
-                  <input
-                      v-model="newPasswordConfirmation"
-                      type="password"
-                      class="form__input"
-                      placeholder="Повторите новый пароль"
-                      required
-                      autocomplete="new-password"
-                  />
-                  <span class="form__label-text">Повторите новый пароль</span>
-                </label>
-              </div>
-
-              <div class="profile__actions profile__actions--password">
                 <button
-                    type="submit"
-                    class="button"
-                    :disabled="isLoading"
+                    v-if="!isPasswordFormVisible"
+                    type="button"
+                    class="button button--outline"
+                    @click="openPasswordForm"
                 >
-                  {{ isLoading ? 'Сохраняем...' : 'Изменить пароль' }}
+                  Сменить пароль
                 </button>
                 <button
+                    v-else
                     type="button"
-                    class="button button--ghost"
+                    class="button button--text"
                     @click="closePasswordForm"
                 >
-                  Отмена
+                  Скрыть форму
                 </button>
               </div>
-            </form>
-          </div>
 
-          <div
-              v-else
-              class="profile__empty"
-          >
-            Загрузка профиля...
+              <form
+                  v-if="isPasswordFormVisible"
+                  ref="passwordFormRef"
+                  class="profile__password-form form"
+                  @submit.prevent="submitPassword"
+              >
+                <div class="form__field">
+                  <label class="form__label">
+                    <input
+                        v-model="currentPassword"
+                        type="password"
+                        class="form__input"
+                        placeholder="Текущий пароль"
+                        required
+                        autocomplete="current-password"
+                    />
+                    <span class="form__label-text">Текущий пароль</span>
+                  </label>
+                </div>
+
+                <div class="form-row">
+                  <div class="form__field">
+                    <label class="form__label">
+                      <input
+                          v-model="newPassword"
+                          type="password"
+                          class="form__input"
+                          placeholder="Новый пароль"
+                          required
+                          autocomplete="new-password"
+                      />
+                      <span class="form__label-text">Новый пароль</span>
+                    </label>
+                  </div>
+
+                  <div class="form__field">
+                    <label class="form__label">
+                      <input
+                          v-model="newPasswordConfirmation"
+                          type="password"
+                          class="form__input"
+                          placeholder="Повторите новый пароль"
+                          required
+                          autocomplete="new-password"
+                      />
+                      <span class="form__label-text">Повторите новый пароль</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="profile__form-actions">
+                  <button
+                      type="submit"
+                      class="button"
+                      :disabled="isLoading"
+                  >
+                    {{ isLoading ? 'Сохранение...' : 'Обновить пароль' }}
+                  </button>
+                  <button
+                      type="button"
+                      class="button button--ghost"
+                      @click="closePasswordForm"
+                  >
+                    Отмена
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div
+            v-else
+            class="profile__empty"
+        >
+          <div class="state-message state-message--loading">
+            Загружаем ваш профиль...
           </div>
         </div>
       </div>

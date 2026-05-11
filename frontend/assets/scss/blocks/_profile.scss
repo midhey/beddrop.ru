@@ -1,173 +1,259 @@
 @use '../core' as *;
 
 .profile {
-
   @include fluid('padding-top', 36, 16, $tablet-l);
-  @include fluid('padding-bottom', 36, 16, $tablet-l);
+  @include fluid('padding-bottom', 48, 24, $tablet-l);
 
   &__container {
-
+    max-width: rem(800);
+    margin: 0 auto;
   }
 
-  &__block {
+  &__header {
+    margin-bottom: rem(32);
+    text-align: center;
     display: flex;
     flex-direction: column;
-    gap: rem(24);
-    background-color: $white;
-    padding: rem(24);
-    border-radius: $border-radius-main;
+    align-items: center;
+    gap: rem(16);
   }
 
-  &__title {
-  }
-
-  &__card {
-    display: flex;
-    flex-direction: row;
-    gap: rem(64);
-
-    &--password {
-      flex-direction: column;
-      gap: rem(20);
-      padding: rem(20);
-      border: 1px solid $gray;
-      border-radius: rem(16);
-      background-color: #f8fafc;
-    }
-    
-    @media (max-width: $tablet) {
-      flex-direction: column;
-    }
-  }
-
-  &__column {
-    display: flex;
-    flex-direction: column;
-    gap: rem(24);
-
-    &--full-width {
-      flex-grow: 1;
-    }
-
-    @media (max-width: $tablet) {
-      &--avatar {
-        align-items: center;
-      }
-    }
-  }
-
-  &__row {
-    display: flex;
-    flex-direction: row;
-  }
-
-  &__field {
-    display: flex;
-    width: 100%;
+  &__avatar-wrapper {
+    position: relative;
+    display: inline-flex;
   }
 
   &__avatar {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: $secondary;
-    width: rem(160);
-    height: rem(160);
-    font-size: rem(64);
-    //@include fluid('height', 160, 120, $tablet);
-    //@include fluid('width', 160, 120, $mobile);
-    //@include fluid('font-size', 64, 32, $tablet);
-    font-weight: 700;
+    width: rem(100);
+    height: rem(100);
     border-radius: 50%;
-    border: 6px solid $primary;
+    background: linear-gradient(135deg, var(--color-primary) 0%, #4f46e5 100%);
+    color: $white;
+    font-family: $font-secondary;
+    font-size: rem(36);
+    font-weight: 700;
+    box-shadow: 0 8px 24px rgba(122, 59, 255, 0.2);
+    border: 4px solid $white;
   }
 
-  &__box {
+  &__title {
+    margin: 0;
+    font-size: rem(32);
+    font-weight: 800;
+    color: var(--color-text-strong);
+  }
+
+  &__section {
     display: flex;
     flex-direction: column;
-    gap: rem(8);
-    width: 100%;
+    gap: rem(24);
   }
 
-  &__label {
-    font-size: rem(24);
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: rem(16);
+  }
+
+  &__group-title {
+    margin: 0;
+    font-size: rem(14);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted);
+    padding-left: rem(4);
+  }
+
+  &__card {
+    background: $white;
+    border-radius: var(--radius-24, 24px);
+    box-shadow: 0 4px 20px rgba(31, 27, 45, 0.04);
+    border: 1px solid #f0f2f5;
+    overflow: hidden;
+  }
+
+  &__info-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__info-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: rem(20) rem(24);
+    gap: rem(16);
+    transition: background-color 0.2s ease;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid #f0f2f5;
+    }
+  }
+
+  &__info-content {
+    display: flex;
+    flex-direction: column;
+    gap: rem(4);
+    min-width: 0;
+  }
+
+  &__info-label {
+    font-size: rem(13);
     font-weight: 600;
+    color: var(--color-text-muted);
   }
 
-  &__value {
+  &__info-value {
+    font-size: rem(16);
+    font-weight: 700;
+    color: var(--color-text-strong);
+    word-break: break-all;
   }
 
-  &__edit-btn {
+  &__edit-trigger {
+    flex: 0 0 auto;
+    width: rem(40);
+    height: rem(40);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: rem(16);
-    cursor: pointer;
-    transition: opacity .3s ease;
+    border-radius: rem(12);
+    background: #f4f6f9;
+    color: var(--color-text-muted);
     border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
 
-    @media (min-width: $tablet) {
-      opacity: 0;
-      visibility: hidden;
+    &:hover {
+      background: var(--color-primary);
+      color: $white;
+      transform: translateY(-2px);
     }
   }
 
-  &__field:hover > &__edit-btn {
-    @media (min-width: $tablet) {
-      opacity: 1;
-      visibility: visible;
-    }
+  &__form-wrapper {
+    padding: rem(20) rem(24);
+    background: #f9fafb;
   }
 
-  &__subtitle {
-    margin: 0;
-    font-size: rem(24);
-    font-weight: 600;
+  &__security {
+    margin-top: rem(12);
   }
 
-  &__actions {
-    &--password {
-      display: flex;
-      gap: rem(16);
-      flex-wrap: wrap;
-    }
+  &__security-card {
+    padding: rem(24);
   }
 
-  &__empty {
-  }
-
-  &__security-head {
+  &__security-header {
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    align-items: flex-start;
-    gap: rem(24);
+    gap: rem(16);
+    margin-bottom: rem(20);
 
     @media (max-width: $tablet) {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+  &__security-info {
+    display: flex;
+    flex-direction: column;
+    gap: rem(4);
+  }
+
+  &__security-title {
+    margin: 0;
+    font-size: rem(18);
+    font-weight: 700;
+    color: var(--color-text-strong);
+  }
+
+  &__security-text {
+    margin: 0;
+    font-size: rem(14);
+    line-height: 1.5;
+    color: var(--color-text-muted);
+    max-width: rem(440);
+  }
+
+  &__password-form {
+    display: grid;
+    gap: rem(16);
+    margin-top: rem(24);
+    padding-top: rem(24);
+    border-top: 1px dashed #e5e7eb;
+  }
+
+  &__form-actions {
+    display: flex;
+    gap: rem(12);
+    margin-top: rem(8);
+
+    @media (max-width: $mobile) {
       flex-direction: column;
     }
   }
 
-  &__security-copy {
+  &__nav-card {
+    margin-top: rem(24);
+    padding: rem(16) rem(24);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(90deg, #f8fafc 0%, #ffffff 100%);
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(31, 27, 45, 0.08);
+    }
+  }
+
+  &__nav-content {
+    display: flex;
+    align-items: center;
+    gap: rem(16);
+  }
+
+  &__nav-icon {
+    width: rem(48);
+    height: rem(48);
+    border-radius: rem(14);
+    background: #eef2ff;
+    color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__nav-copy {
     display: flex;
     flex-direction: column;
-    gap: rem(8);
+    gap: rem(2);
   }
 
-  &__hint {
-    margin: 0;
-    max-width: rem(560);
-    color: $gray-dark;
+  &__nav-title {
+    font-size: rem(16);
+    font-weight: 700;
+    color: var(--color-text-strong);
   }
 
-  &__password-form {
-    width: 100%;
+  &__nav-subtitle {
+    font-size: rem(13);
+    color: var(--color-text-muted);
   }
 
-  .form {
-    &__inline-actions {
-      display: flex;
-      flex-direction: row;
-      gap: rem(16);
-    }
+  &__empty {
+    text-align: center;
+    padding: rem(64) 0;
+    color: var(--color-text-muted);
   }
 }
