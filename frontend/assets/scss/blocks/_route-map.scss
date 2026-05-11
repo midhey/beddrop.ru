@@ -41,3 +41,15 @@
 .route-map__legend-line--approach {
   background: #f97316;
 }
+
+.route-map__legend-point {
+  width: rem(10);
+  height: rem(10);
+  border-radius: 50%;
+  border: rem(2) solid #fff;
+  box-shadow: 0 0 0 rem(1) #f97316;
+}
+
+.route-map__legend-point--courier {
+  background: #f97316;
+}

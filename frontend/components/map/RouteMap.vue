@@ -14,12 +14,14 @@ const props = withDefaults(
     routeSegments?: OrderRouteSegment[] | null;
     restaurantAddress?: Partial<Address> | null;
     deliveryAddress?: Partial<Address> | null;
+    courierLocation?: { lat: number | string | null; lng: number | string | null } | null;
     height?: number;
   }>(),
   {
     routeSegments: null,
     restaurantAddress: null,
     deliveryAddress: null,
+    courierLocation: null,
     height: 300,
   },
 );
@@ -41,6 +43,12 @@ const drawableSegments = computed(() => {
 });
 
 const hasRoutes = computed(() => drawableSegments.value.length > 0);
+const hasDeliverySegment = computed(() =>
+  drawableSegments.value.some((segment) => segment.segment_type === 'restaurant_to_client'),
+);
+const hasApproachSegment = computed(() =>
+  drawableSegments.value.some((segment) => segment.segment_type === 'courier_to_restaurant'),
+);
 
 const segmentColor = (segmentType: string) => {
   if (segmentType === 'courier_to_restaurant') return '#f97316';
@@ -204,6 +212,7 @@ const drawRoutes = () => {
 
   drawMarker(props.restaurantAddress, '#10b981');
   drawMarker(props.deliveryAddress, '#ef4444');
+  drawMarker(props.courierLocation, '#f97316');
 
   const bounds = new window.maplibregl.LngLatBounds();
   drawableSegments.value.forEach((segment) => {
@@ -229,6 +238,10 @@ watch(drawableSegments, async () => {
   drawRoutes();
 });
 
+watch(() => props.courierLocation, () => {
+  drawRoutes();
+});
+
 onBeforeUnmount(() => {
   clearMarkers();
   if (map) {
@@ -246,16 +259,17 @@ onBeforeUnmount(() => {
       :style="{ minHeight: `${height}px` }"
     />
     <div class="route-map__legend">
-      <span class="route-map__legend-item">
+      <span v-if="hasDeliverySegment" class="route-map__legend-item">
         <i class="route-map__legend-line route-map__legend-line--delivery" />
         Ресторан → клиент
       </span>
-      <span
-        v-if="routeSegments?.some((segment) => segment.segment_type === 'courier_to_restaurant')"
-        class="route-map__legend-item"
-      >
+      <span v-if="hasApproachSegment" class="route-map__legend-item">
         <i class="route-map__legend-line route-map__legend-line--approach" />
         Курьер → ресторан
+      </span>
+      <span v-if="courierLocation" class="route-map__legend-item">
+        <i class="route-map__legend-point route-map__legend-point--courier" />
+        Курьер
       </span>
     </div>
     <p v-if="mapLoadError" class="route-map__fallback state-message state-message--empty">

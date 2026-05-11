@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowLeft } from 'lucide-vue-next';
+import { ArrowLeft, LocateFixed } from 'lucide-vue-next';
 import RouteMap from '~/components/map/RouteMap.vue';
 import { useCourierDashboardPage } from '~/composables/useCourierDashboardPage';
 
@@ -20,14 +20,26 @@ const {
   vehicleLabel,
   ratingText,
   shiftSummary,
-  formatPrice,
+  latestLocation,
+  locationStatus,
+  locationStatusLabel,
+  locationUpdatedText,
+  locationAccuracyText,
+  locationSpeedText,
+  locationError,
   formatDateTime,
   getCourierOrderStatusLabel,
   getRestaurantAddress,
   getDeliveryAddress,
+  getCourierPayout,
+  getOrderMoneyDetails,
+  getCourierRideTime,
+  getDeliveryTime,
+  getRouteSegmentsForOrder,
   formatDistance,
   canCourierMarkPickedUp,
   canCourierMarkDelivered,
+  requestCourierLocation,
   startOrEndShift,
   doAssign,
   doPickup,
@@ -156,6 +168,49 @@ const {
             </div>
           </section>
 
+          <section class="courier-card surface-card">
+            <div class="courier-card__header section-head">
+              <h2 class="courier-card__title section-title">
+                Геолокация
+              </h2>
+              <span
+                  class="courier-location__status status-chip"
+                  :class="{
+                    'status-chip--success': locationStatus === 'tracking',
+                    'status-chip--danger': locationStatus === 'denied' || locationStatus === 'error',
+                    'status-chip--muted': locationStatus !== 'tracking' && locationStatus !== 'denied' && locationStatus !== 'error',
+                  }"
+              >
+                {{ locationStatusLabel }}
+              </span>
+            </div>
+
+            <div class="courier-location">
+              <div class="courier-location__grid">
+                <span>{{ locationUpdatedText }}</span>
+                <span>{{ locationAccuracyText }}</span>
+                <span>{{ locationSpeedText }}</span>
+              </div>
+
+              <p
+                  v-if="locationError"
+                  class="courier-location__error"
+              >
+                {{ locationError }}
+              </p>
+
+              <button
+                  type="button"
+                  class="button courier-location__btn"
+                  :disabled="!hasActiveShift"
+                  @click="requestCourierLocation"
+              >
+                <LocateFixed class="ui-icon" :size="16" :stroke-width="1.9" aria-hidden="true" />
+                <span>Обновить позицию</span>
+              </button>
+            </div>
+          </section>
+
           <!-- Доступные заказы -->
           <section class="courier-card surface-card">
             <div class="courier-card__header section-head">
@@ -195,9 +250,14 @@ const {
                     <span class="courier-order__number">
                       Заказ #{{ order.id }}
                     </span>
-                    <span class="courier-order__price">
-                      {{ formatPrice(order.total_price) }}
+                    <span class="courier-order__payout">
+                      <span>Курьеру</span>
+                      <strong>{{ getCourierPayout(order) }}</strong>
                     </span>
+                  </div>
+
+                  <div class="courier-order__ride">
+                    {{ getCourierRideTime(order) }}
                   </div>
 
                   <div class="courier-order__restaurant">
@@ -229,6 +289,9 @@ const {
                     <span v-if="order.courier_approach_distance_meters">
                       До ресторана {{ formatDistance(order.courier_approach_distance_meters) }}
                     </span>
+                    <span v-if="getDeliveryTime(order)">
+                      {{ getDeliveryTime(order) }}
+                    </span>
                     <span v-if="order.delivery_distance_meters">
                       Доставка {{ formatDistance(order.delivery_distance_meters) }}
                     </span>
@@ -243,34 +306,39 @@ const {
                     </span>
                   </div>
 
+                  <div class="courier-order__money">
+                    {{ getOrderMoneyDetails(order) }}
+                  </div>
+
                   <RouteMap
-                      v-if="order.route_segments?.length"
-                      :route-segments="order.route_segments"
+                      v-if="getRouteSegmentsForOrder(order, 'available').length"
+                      :route-segments="getRouteSegmentsForOrder(order, 'available')"
                       :restaurant-address="order.restaurant?.address"
                       :delivery-address="order.delivery_address"
-                      :height="220"
+                      :courier-location="latestLocation"
+                      :height="360"
                   />
-                </div>
 
-                <div class="courier-order__actions">
-                  <button
-                      type="button"
-                      class="button courier-order__btn"
-                      :disabled="
-                      !hasActiveShift ||
-                      (!!actionOrderId && actionOrderId === order.id)
-                    "
-                      @click="doAssign(order.id)"
-                  >
-                    <template
-                        v-if="actionOrderId === order.id && actionType === 'assign'"
+                  <div class="courier-order__actions">
+                    <button
+                        type="button"
+                        class="button courier-order__btn"
+                        :disabled="
+                        !hasActiveShift ||
+                        (!!actionOrderId && actionOrderId === order.id)
+                      "
+                        @click="doAssign(order.id)"
                     >
-                      Берём заказ...
-                    </template>
-                    <template v-else>
-                      Взять заказ
-                    </template>
-                  </button>
+                      <template
+                          v-if="actionOrderId === order.id && actionType === 'assign'"
+                      >
+                        Берём заказ...
+                      </template>
+                      <template v-else>
+                        Взять заказ
+                      </template>
+                    </button>
+                  </div>
                 </div>
               </li>
             </ul>
@@ -318,9 +386,14 @@ const {
                     <span class="courier-order__number">
                       Заказ #{{ order.id }}
                     </span>
-                    <span class="courier-order__price">
-                      {{ formatPrice(order.total_price) }}
+                    <span class="courier-order__payout">
+                      <span>Курьеру</span>
+                      <strong>{{ getCourierPayout(order) }}</strong>
                     </span>
+                  </div>
+
+                  <div class="courier-order__ride">
+                    {{ getCourierRideTime(order) }}
                   </div>
 
                   <div class="courier-order__restaurant">
@@ -348,6 +421,9 @@ const {
                   </div>
 
                   <div class="courier-order__meta">
+                    <span v-if="getDeliveryTime(order)">
+                      {{ getDeliveryTime(order) }}
+                    </span>
                     <span v-if="order.delivery_distance_meters">
                       Доставка {{ formatDistance(order.delivery_distance_meters) }}
                     </span>
@@ -362,6 +438,10 @@ const {
                     </span>
                   </div>
 
+                  <div class="courier-order__money">
+                    {{ getOrderMoneyDetails(order) }}
+                  </div>
+
                   <div
                       class="courier-order__status status-chip status-chip--muted"
                       :data-status="order.status"
@@ -374,61 +454,62 @@ const {
                   </div>
 
                   <RouteMap
-                      v-if="order.route_segments?.length"
-                      :route-segments="order.route_segments"
+                      v-if="getRouteSegmentsForOrder(order, 'active').length"
+                      :route-segments="getRouteSegmentsForOrder(order, 'active')"
                       :restaurant-address="order.restaurant?.address"
                       :delivery-address="order.delivery_address"
-                      :height="220"
+                      :courier-location="latestLocation"
+                      :height="360"
                   />
-                </div>
 
-                <div class="courier-order__actions">
-                  <button
-                      v-if="canCourierMarkPickedUp(order)"
-                      type="button"
-                      class="button courier-order__btn"
-                      :disabled="
-                      !hasActiveShift ||
-                      (!!actionOrderId && actionOrderId === order.id)
-                    "
-                      @click="doPickup(order.id)"
-                  >
-                    <template
-                        v-if="actionOrderId === order.id && actionType === 'pickup'"
+                  <div class="courier-order__actions">
+                    <button
+                        v-if="canCourierMarkPickedUp(order)"
+                        type="button"
+                        class="button courier-order__btn"
+                        :disabled="
+                        !hasActiveShift ||
+                        (!!actionOrderId && actionOrderId === order.id)
+                      "
+                        @click="doPickup(order.id)"
                     >
-                      Подтверждаем забор...
-                    </template>
-                    <template v-else>
-                      Заказ забран
-                    </template>
-                  </button>
+                      <template
+                          v-if="actionOrderId === order.id && actionType === 'pickup'"
+                      >
+                        Подтверждаем забор...
+                      </template>
+                      <template v-else>
+                        Заказ забран
+                      </template>
+                    </button>
 
-                  <button
-                      v-else-if="canCourierMarkDelivered(order)"
-                      type="button"
-                      class="button courier-order__btn"
-                      :disabled="
-                      !hasActiveShift ||
-                      (!!actionOrderId && actionOrderId === order.id)
-                    "
-                      @click="doDeliver(order.id)"
-                  >
-                    <template
-                        v-if="actionOrderId === order.id && actionType === 'deliver'"
+                    <button
+                        v-else-if="canCourierMarkDelivered(order)"
+                        type="button"
+                        class="button courier-order__btn"
+                        :disabled="
+                        !hasActiveShift ||
+                        (!!actionOrderId && actionOrderId === order.id)
+                      "
+                        @click="doDeliver(order.id)"
                     >
-                      Подтверждаем доставку...
-                    </template>
-                    <template v-else>
-                      Доставлен
-                    </template>
-                  </button>
+                      <template
+                          v-if="actionOrderId === order.id && actionType === 'deliver'"
+                      >
+                        Подтверждаем доставку...
+                      </template>
+                      <template v-else>
+                        Доставлен
+                      </template>
+                    </button>
 
-                  <span
-                      v-else
-                      class="courier-order__hint"
-                  >
-                    Ожидает следующего шага
-                  </span>
+                    <span
+                        v-else
+                        class="courier-order__hint"
+                    >
+                      Ожидает следующего шага
+                    </span>
+                  </div>
                 </div>
               </li>
             </ul>
@@ -471,7 +552,10 @@ const {
                 </div>
                 <div class="courier-history__meta">
                   <span class="courier-history__price">
-                    {{ formatPrice(order.total_price) }}
+                    {{ getCourierPayout(order) }}
+                  </span>
+                  <span class="courier-history__total">
+                    {{ getOrderMoneyDetails(order) }}
                   </span>
                   <span class="courier-history__time">
                     {{ formatDateTime(order.created_at) }}

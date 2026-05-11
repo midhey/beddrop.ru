@@ -39,6 +39,7 @@ export interface CourierAddress {
 
 export interface CourierOrder extends Order {
     delivery_address?: CourierAddress | null;
+    courier_estimated_fee?: string | null;
 }
 
 export interface CourierLocationPayload {
