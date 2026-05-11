@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Clock, Timer } from "lucide-vue-next";
 import { computed } from "vue";
 import type { Restaurant } from "~/composables/useRestaurants";
 import {
@@ -37,7 +38,7 @@ const prepTimeText = computed(() => {
   if (min) return `от ${min} мин.`;
   if (max) return `до ${max} мин.`;
 
-  return "Время приготовления не указано";
+  return null;
 });
 
 const workingHoursText = computed(() =>
@@ -60,15 +61,12 @@ const imageSrc = computed(() => {
 <template>
   <article class="restaurant-card" @click="onClick">
     <div class="restaurant-card__logo-wrapper">
-      <!-- Если есть картинка/заглушка — показываем -->
       <img
         v-if="imageSrc"
         :src="imageSrc"
         :alt="restaurant.name"
         class="restaurant-card__logo"
       />
-
-      <!-- Дополнительный fallback — буква -->
       <div
         v-else
         class="restaurant-card__logo restaurant-card__logo--placeholder"
@@ -84,14 +82,19 @@ const imageSrc = computed(() => {
         {{ restaurant.name }}
       </h2>
 
-      <p class="restaurant-card__address">
-        {{ addressText }}
+      <p v-if="restaurant.description" class="restaurant-card__description">
+        {{ restaurant.description }}
       </p>
 
       <div class="restaurant-card__meta">
-        <span v-if="workingHoursText" class="restaurant-card__meta-item">
-          {{ workingHoursText }}
-        </span>
+        <div v-if="prepTimeText" class="restaurant-card__meta-item">
+          <Timer :size="14" class="ui-icon" />
+          <span>{{ prepTimeText }}</span>
+        </div>
+        <div v-if="workingHoursText" class="restaurant-card__meta-item">
+          <Clock :size="14" class="ui-icon" />
+          <span>{{ workingHoursText }}</span>
+        </div>
       </div>
     </div>
 

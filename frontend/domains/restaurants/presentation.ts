@@ -62,7 +62,7 @@ export const getRestaurantAvailabilityLabel = (
       return "Скрыт из каталога";
     case "manually_closed":
       return availability.closed_reason
-        ? `Пауза заказов: ${availability.closed_reason}`
+        ? `${availability.closed_reason}`
         : "Прием заказов на паузе";
     case "closed_by_schedule":
       return "Закрыт по графику";
