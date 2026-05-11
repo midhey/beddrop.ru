@@ -19,7 +19,9 @@ const cartStore = useCartStore();
 const router = useRouter();
 const { $notify } = useNuxtApp();
 
-const loading = computed(() => cartStore.loading || !!cartStore.cart?.is_summary);
+const loading = computed(
+  () => cartStore.loading || !!cartStore.cart?.is_summary,
+);
 const items = computed(() => cartStore.items);
 const totalPrice = computed(() => cartStore.totalPrice);
 const totalCount = computed(() => cartStore.totalCount);
@@ -197,26 +199,25 @@ const changeQuantity = async (item: CartItem, nextQuantity: number) => {
         <div class="cart__main">
           <section v-if="restaurant" class="cart__restaurant-card surface-card">
             <div class="cart__restaurant-copy">
-              <span
-                class="cart__restaurant-badge status-chip status-chip--info"
-              >
-                <Store
-                  class="ui-icon"
-                  :size="14"
-                  :stroke-width="1.9"
-                  aria-hidden="true"
-                />
-                Один ресторан
-              </span>
+              <!-- <span -->
+              <!--   class="cart__restaurant-badge status-chip status-chip--info" -->
+              <!-- > -->
+              <!--   <Store -->
+              <!--     class="ui-icon" -->
+              <!--     :size="14" -->
+              <!--     :stroke-width="1.9" -->
+              <!--     aria-hidden="true" -->
+              <!--   /> -->
+              <!--   Один ресторан -->
+              <!-- </span> -->
 
               <h2 class="cart__restaurant-title">
                 {{ restaurant.name }}
               </h2>
 
-              <p class="cart__restaurant-note">
-                Все позиции в корзине будут оформлены одним заказом, как в
-                карточке продавца на маркетплейсе.
-              </p>
+              <!-- <p class="cart__restaurant-note"> -->
+              <!--   {{ restaurant.description }} -->
+              <!-- </p> -->
             </div>
 
             <button

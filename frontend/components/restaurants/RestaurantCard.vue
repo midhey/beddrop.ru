@@ -40,9 +40,15 @@ const prepTimeText = computed(() => {
   return "Время приготовления не указано";
 });
 
-const workingHoursText = computed(() => formatRestaurantWorkingHours(props.restaurant));
-const availabilityLabel = computed(() => getRestaurantAvailabilityLabel(props.restaurant));
-const availabilityStatus = computed(() => getRestaurantAvailabilityStatus(props.restaurant));
+const workingHoursText = computed(() =>
+  formatRestaurantWorkingHours(props.restaurant),
+);
+const availabilityLabel = computed(() =>
+  getRestaurantAvailabilityLabel(props.restaurant),
+);
+const availabilityStatus = computed(() =>
+  getRestaurantAvailabilityStatus(props.restaurant),
+);
 
 // вычисляем, какую картинку показывать
 const imageSrc = computed(() => {
@@ -83,14 +89,6 @@ const imageSrc = computed(() => {
       </p>
 
       <div class="restaurant-card__meta">
-        <span class="restaurant-card__meta-item">
-          {{ prepTimeText }}
-        </span>
-
-        <span v-if="restaurant.phone" class="restaurant-card__meta-item">
-          {{ restaurant.phone }}
-        </span>
-
         <span v-if="workingHoursText" class="restaurant-card__meta-item">
           {{ workingHoursText }}
         </span>
@@ -98,10 +96,7 @@ const imageSrc = computed(() => {
     </div>
 
     <div class="restaurant-card__footer">
-      <span
-        class="restaurant-card__status"
-        :data-status="availabilityStatus"
-      >
+      <span class="restaurant-card__status" :data-status="availabilityStatus">
         {{ availabilityLabel }}
       </span>
     </div>
