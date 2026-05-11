@@ -33,6 +33,17 @@ class UserSeeder extends Seeder
         );
 
         User::updateOrCreate(
+            ['email' => 'customer@mail.com'],
+            [
+                'phone'     => '79990000004',
+                'name'      => 'Покупатель',
+                'is_admin'  => false,
+                'is_banned' => false,
+                'password'  => Hash::make('customer123'),
+            ]
+        );
+
+        User::updateOrCreate(
             ['email' => 'manager@mail.com'],
             [
                 'phone'     => '79990000002',

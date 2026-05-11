@@ -14,8 +14,10 @@ export default defineConfig({
       restaurantSlug: "novgorodskii-dvorik",
       accounts: {
         user: {
-          email: "test@mail.com",
-          password: "12345678",
+          email: "customer@mail.com",
+          password: "customer123",
+          phone: "79990000004",
+          name: "Покупатель",
         },
         restaurantOwner: {
           email: "owner@mail.com",

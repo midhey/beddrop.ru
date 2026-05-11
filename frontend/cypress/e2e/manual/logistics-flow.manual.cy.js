@@ -11,10 +11,11 @@ const account = (name) => {
   return selected;
 };
 
-const loginByApi = (credentials) => {
+const loginByApi = (credentials, failOnStatusCode = true) => {
   return cy.request({
     method: "POST",
     url: `${apiBaseUrl()}/auth/login`,
+    failOnStatusCode,
     body: {
       email: credentials.email,
       password: credentials.password,
@@ -23,8 +24,31 @@ const loginByApi = (credentials) => {
   });
 };
 
-const authorize = (credentials) => {
-  return loginByApi(credentials).then((response) => response.body.access_token);
+const registerByApi = (credentials) => {
+  return cy.request({
+    method: "POST",
+    url: `${apiBaseUrl()}/auth/register`,
+    body: {
+      email: credentials.email,
+      phone: credentials.phone,
+      name: credentials.name,
+      password: credentials.password,
+      password_confirmation: credentials.password,
+      client_type: "web",
+    },
+  });
+};
+
+const authorize = (credentials, options = {}) => {
+  return loginByApi(credentials, !options.registerIfMissing).then((response) => {
+    if (response.status === 401 && options.registerIfMissing) {
+      return registerByApi(credentials).then((registerResponse) => registerResponse.body.access_token);
+    }
+
+    expect(response.status).to.eq(200);
+
+    return response.body.access_token;
+  });
 };
 
 const authHeaders = (accessToken) => ({
@@ -147,7 +171,7 @@ describe("manual logistics flow", () => {
   it("calculates checkout delivery, draws the route, creates an order, and shows route segments", () => {
     let createdOrderId;
 
-    authorize(account("user")).then((accessToken) => {
+    authorize(account("user"), { registerIfMissing: true }).then((accessToken) => {
       resetCart(accessToken);
       createDeliveryAddress(accessToken);
       fetchRestaurant();
