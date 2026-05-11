@@ -305,11 +305,11 @@
 }
 
 .base-switch--checked .base-switch__control {
-  border-color: color-mix(in oklab, var(--color-primary) 72%, var(--color-secondary));
-  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  border-color: var(--color-primary);
+  background: var(--color-primary);
   box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.22),
-    0 5px 14px color-mix(in oklab, var(--color-primary) 24%, transparent);
+    inset 0 1px 1px rgba(255, 255, 255, 0.18),
+    0 4px 12px color-mix(in oklab, var(--color-primary) 18%, transparent);
 }
 
 .base-switch--checked .base-switch__thumb {
