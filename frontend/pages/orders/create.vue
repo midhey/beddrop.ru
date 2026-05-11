@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowLeft } from "lucide-vue-next";
+import { ArrowLeft, Plus } from "lucide-vue-next";
 import RouteMap from "~/components/map/RouteMap.vue";
 import { useCheckoutPage } from "~/composables/useCheckoutPage";
 
@@ -26,9 +26,6 @@ const {
   restaurantClosedText,
   restaurantAddress,
   selectedAddress,
-  deliveryDistanceKm,
-  deliveryDurationMinutes,
-  deliveryTimeBreakdown,
   quoteRouteSegments,
   canSubmit,
   submitOrder,
@@ -113,11 +110,28 @@ const {
         <div class="checkout-page__main">
           <!-- Адреса -->
           <section class="checkout-card surface-card">
-            <h2 class="checkout-card__title section-title">Адрес доставки</h2>
+            <div class="checkout-card__header section-head">
+              <h2 class="checkout-card__title section-title">
+                Адрес доставки
+              </h2>
+
+              <NuxtLink
+                to="/profile/addresses"
+                class="button button--ghost button--small button--icon"
+              >
+                <Plus
+                  class="ui-icon"
+                  :size="16"
+                  :stroke-width="1.9"
+                  aria-hidden="true"
+                />
+                <span>Добавить адрес</span>
+              </NuxtLink>
+            </div>
 
             <p v-if="!addresses.length" class="checkout-card__hint">
-              У вас нет сохранённых адресов. Перейдите в профиль и добавьте хотя
-              бы один адрес.
+              У вас нет сохранённых адресов. Добавьте адрес, чтобы продолжить
+              оформление заказа.
             </p>
 
             <div v-else class="checkout-addresses">
@@ -189,25 +203,18 @@ const {
               v-else-if="deliveryQuote && quoteRouteSegments.length"
               class="checkout-route"
             >
-              <div class="checkout-route__stats">
-                <div class="checkout-route__stat">
-                  <span class="checkout-route__label"
-                    >Минимальное время ожидания доставки</span
-                  >
-                  <strong>{{ deliveryQuote.eta_minutes }} мин</strong>
-                </div>
+              <div class="checkout-route__estimate">
+                <span class="checkout-route__estimate-label">
+                  Примерное ожидание
+                </span>
+                <strong class="checkout-route__estimate-value">
+                  {{ deliveryQuote.eta_minutes }} мин
+                </strong>
+                <span class="checkout-route__estimate-note">
+                  Время включает подготовку, путь курьера до ресторана и
+                  доставку до вас.
+                </span>
               </div>
-
-              <!-- <div class="checkout-route__breakdown"> -->
-              <!--   <div -->
-              <!--     v-for="item in deliveryTimeBreakdown" -->
-              <!--     :key="item.label" -->
-              <!--     class="checkout-route__breakdown-item" -->
-              <!--   > -->
-              <!--     <span>{{ item.label }}</span> -->
-              <!--     <strong>{{ item.value }} мин</strong> -->
-              <!--   </div> -->
-              <!-- </div> -->
 
               <RouteMap
                 :route-segments="quoteRouteSegments"

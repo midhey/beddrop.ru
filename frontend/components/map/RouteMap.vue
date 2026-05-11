@@ -51,13 +51,6 @@ const markerCoordinates = computed<[number, number][]>(() => {
     .map((point) => [Number(point?.lng), Number(point?.lat)] as [number, number]);
 });
 const hasMarkers = computed(() => markerCoordinates.value.length > 0);
-const hasDeliverySegment = computed(() =>
-  drawableSegments.value.some((segment) => segment.segment_type === 'restaurant_to_client'),
-);
-const hasApproachSegment = computed(() =>
-  drawableSegments.value.some((segment) => segment.segment_type === 'courier_to_restaurant'),
-);
-
 const segmentColor = (segmentType: string) => {
   if (segmentType === 'courier_to_restaurant') return '#f97316';
   return '#2563eb';
@@ -272,20 +265,6 @@ onBeforeUnmount(() => {
       class="route-map__canvas"
       :style="{ minHeight: `${height}px` }"
     />
-    <div class="route-map__legend">
-      <span v-if="hasDeliverySegment" class="route-map__legend-item">
-        <i class="route-map__legend-line route-map__legend-line--delivery" />
-        Ресторан → клиент
-      </span>
-      <span v-if="hasApproachSegment" class="route-map__legend-item">
-        <i class="route-map__legend-line route-map__legend-line--approach" />
-        Курьер → ресторан
-      </span>
-      <span v-if="courierLocation" class="route-map__legend-item">
-        <i class="route-map__legend-point route-map__legend-point--courier" />
-        Курьер
-      </span>
-    </div>
     <p v-if="mapLoadError" class="route-map__fallback state-message state-message--empty">
       Карта маршрута недоступна.
     </p>
