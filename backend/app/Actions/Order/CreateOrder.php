@@ -48,6 +48,12 @@ class CreateOrder
             ], 422));
         }
 
+        if (!$cart->restaurant || !$cart->restaurant->isOpenForOrders()) {
+            throw new HttpResponseException(response()->json([
+                'message' => $this->closedRestaurantMessage($cart->restaurant?->availability()),
+            ], 422));
+        }
+
         $total = 0;
         foreach ($cart->items as $item) {
             $total += (float) $item->unit_price_snapshot * (int) $item->quantity;
@@ -159,5 +165,22 @@ class CreateOrder
         } catch (Throwable) {
             return null;
         }
+    }
+
+    /**
+     * @param array<string, mixed>|null $availability
+     */
+    private function closedRestaurantMessage(?array $availability): string
+    {
+        if (!empty($availability['closed_reason'])) {
+            return 'Ресторан сейчас не принимает заказы: ' . $availability['closed_reason'];
+        }
+
+        return match ($availability['status'] ?? null) {
+            'inactive' => 'Ресторан сейчас недоступен для заказов.',
+            'manually_closed' => 'Ресторан сейчас не принимает заказы.',
+            'closed_by_schedule' => 'Ресторан сейчас закрыт для заказов.',
+            default => 'Ресторан сейчас не принимает заказы.',
+        };
     }
 }

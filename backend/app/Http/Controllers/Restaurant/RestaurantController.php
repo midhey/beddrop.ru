@@ -47,7 +47,7 @@ class RestaurantController extends Controller
             },
         );
 
-        return response()->json($payload);
+        return response()->json($this->withFreshAvailabilityForPaginatedPayload($payload));
     }
 
     public function show(Request $request, Restaurant $restaurant)
@@ -68,7 +68,7 @@ class RestaurantController extends Controller
                 },
             );
 
-            return response()->json($payload);
+            return response()->json($this->withFreshAvailabilityForRestaurantPayload($payload));
         }
 
         $restaurant->load(['address', 'logo']);
@@ -97,6 +97,11 @@ class RestaurantController extends Controller
             'slug' => $data['slug'] ?? null,
             'phone' => $data['phone'] ?? null,
             'is_active' => $data['is_active'] ?? true,
+            'accepts_orders' => $data['accepts_orders'] ?? true,
+            'timezone' => $data['timezone'] ?? 'Europe/Moscow',
+            'opens_at' => $data['opens_at'] ?? null,
+            'closes_at' => $data['closes_at'] ?? null,
+            'closed_reason' => $data['closed_reason'] ?? null,
             'prep_time_min' => $data['prep_time_min'] ?? null,
             'prep_time_max' => $data['prep_time_max'] ?? null,
             'address_id' => $address?->id,
@@ -128,6 +133,11 @@ class RestaurantController extends Controller
             'description' => array_key_exists('description', $data) ? $data['description'] : $restaurant->description,
             'phone' => array_key_exists('phone', $data) ? $data['phone'] : $restaurant->phone,
             'is_active' => $data['is_active'] ?? $restaurant->is_active,
+            'accepts_orders' => $data['accepts_orders'] ?? $restaurant->accepts_orders,
+            'timezone' => $data['timezone'] ?? $restaurant->timezone,
+            'opens_at' => array_key_exists('opens_at', $data) ? $data['opens_at'] : $restaurant->opens_at,
+            'closes_at' => array_key_exists('closes_at', $data) ? $data['closes_at'] : $restaurant->closes_at,
+            'closed_reason' => array_key_exists('closed_reason', $data) ? $data['closed_reason'] : $restaurant->closed_reason,
             'prep_time_min' => array_key_exists('prep_time_min', $data) ? $data['prep_time_min'] : $restaurant->prep_time_min,
             'prep_time_max' => array_key_exists('prep_time_max', $data) ? $data['prep_time_max'] : $restaurant->prep_time_max,
             'logo_media_id' => array_key_exists('logo_media_id', $data) ? $data['logo_media_id'] : $restaurant->logo_media_id,
@@ -203,6 +213,12 @@ class RestaurantController extends Controller
             'slug' => $restaurant->slug,
             'phone' => $restaurant->phone,
             'is_active' => (bool) $restaurant->is_active,
+            'accepts_orders' => (bool) ($restaurant->accepts_orders ?? true),
+            'timezone' => $restaurant->timezone ?: 'Europe/Moscow',
+            'opens_at' => $restaurant->availability()['opens_at'],
+            'closes_at' => $restaurant->availability()['closes_at'],
+            'closed_reason' => $restaurant->closed_reason,
+            'availability' => $restaurant->availability(),
             'prep_time_min' => $restaurant->prep_time_min,
             'prep_time_max' => $restaurant->prep_time_max,
             'prep_time_avg_minutes' => $restaurant->prepTimeAverageMinutes(),
@@ -219,6 +235,51 @@ class RestaurantController extends Controller
             'created_at' => $restaurant->created_at,
             'updated_at' => $restaurant->updated_at,
         ];
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     * @return array<string, mixed>
+     */
+    private function withFreshAvailabilityForPaginatedPayload(array $payload): array
+    {
+        $payload['data'] = collect($payload['data'] ?? [])
+            ->map(fn (array $restaurant) => $this->withFreshAvailability($restaurant))
+            ->all();
+
+        return $payload;
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     * @return array<string, mixed>
+     */
+    private function withFreshAvailabilityForRestaurantPayload(array $payload): array
+    {
+        if (isset($payload['restaurant']) && is_array($payload['restaurant'])) {
+            $payload['restaurant'] = $this->withFreshAvailability($payload['restaurant']);
+        }
+
+        return $payload;
+    }
+
+    /**
+     * @param array<string, mixed> $restaurant
+     * @return array<string, mixed>
+     */
+    private function withFreshAvailability(array $restaurant): array
+    {
+        $model = new Restaurant($restaurant);
+        $model->exists = true;
+
+        $restaurant['accepts_orders'] = (bool) ($restaurant['accepts_orders'] ?? true);
+        $restaurant['timezone'] = $restaurant['timezone'] ?? 'Europe/Moscow';
+        $restaurant['opens_at'] = $model->availability()['opens_at'];
+        $restaurant['closes_at'] = $model->availability()['closes_at'];
+        $restaurant['closed_reason'] = $restaurant['closed_reason'] ?? null;
+        $restaurant['availability'] = $model->availability();
+
+        return $restaurant;
     }
 
     /**

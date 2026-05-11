@@ -69,6 +69,11 @@ class RestaurantSettingsUpdateTest extends TestCase
                 'description' => 'Новое длинное описание ресторана',
                 'phone' => '+79990001122',
                 'is_active' => false,
+                'accepts_orders' => false,
+                'timezone' => 'Europe/Moscow',
+                'opens_at' => '10:00',
+                'closes_at' => '23:00',
+                'closed_reason' => 'Технический перерыв',
                 'prep_time_min' => 20,
                 'prep_time_max' => 35,
                 'logo_media_id' => $logo->id,
@@ -89,6 +94,12 @@ class RestaurantSettingsUpdateTest extends TestCase
             ->assertJsonPath('restaurant.description', 'Новое длинное описание ресторана')
             ->assertJsonPath('restaurant.phone', '+79990001122')
             ->assertJsonPath('restaurant.is_active', false)
+            ->assertJsonPath('restaurant.accepts_orders', false)
+            ->assertJsonPath('restaurant.timezone', 'Europe/Moscow')
+            ->assertJsonPath('restaurant.opens_at', '10:00')
+            ->assertJsonPath('restaurant.closes_at', '23:00')
+            ->assertJsonPath('restaurant.closed_reason', 'Технический перерыв')
+            ->assertJsonPath('restaurant.availability.status', 'inactive')
             ->assertJsonPath('restaurant.prep_time_min', 20)
             ->assertJsonPath('restaurant.prep_time_max', 35)
             ->assertJsonPath('restaurant.prep_time_avg_minutes', 28)
@@ -100,6 +111,11 @@ class RestaurantSettingsUpdateTest extends TestCase
         $restaurant->refresh();
         $this->assertSame('Новое название ресторана', $restaurant->name);
         $this->assertSame('Новое длинное описание ресторана', $restaurant->description);
+        $this->assertFalse($restaurant->accepts_orders);
+        $this->assertSame('Europe/Moscow', $restaurant->timezone);
+        $this->assertSame('10:00', substr((string) $restaurant->opens_at, 0, 5));
+        $this->assertSame('23:00', substr((string) $restaurant->closes_at, 0, 5));
+        $this->assertSame('Технический перерыв', $restaurant->closed_reason);
         $this->assertSame($logo->id, $restaurant->logo_media_id);
         $this->assertSame('Новый адрес, 10', $restaurant->address?->line1);
         $this->assertSame('Ресторан', $restaurant->address?->label);
