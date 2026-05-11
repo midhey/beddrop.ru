@@ -6,7 +6,7 @@
     "build": "nuxt build",
     "cy:open": "cypress open",
     "cy:run": "cypress run",
-    "cy:run:manual": "cypress run --spec \"cypress/e2e/manual/**/*.cy.{js,jsx,ts,tsx}\"",
+    "cy:run:manual": "cypress run --config \"specPattern=cypress/e2e/manual/**/*.cy.js\"",
     "e2e": "cypress run",
     "e2e:manual": "npm run cy:run:manual",
     "dev": "nuxt dev",
