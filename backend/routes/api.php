@@ -6,6 +6,11 @@ use App\Http\Controllers\Auth\LogoutAllController;
 use App\Http\Controllers\Auth\RefreshController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\Admin\AdminCourierController;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminOrderController;
+use App\Http\Controllers\Admin\AdminRestaurantController;
+use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\LogisticsDebugController;
 use App\Http\Controllers\Admin\LogisticsSettingsController;
 use App\Http\Controllers\Delivery\DeliveryQuoteController;
@@ -173,7 +178,34 @@ Route::prefix('/v1')->group(function () {
         Route::delete('/{media}', [MediaController::class, 'destroy']);
     });
 
-    Route::middleware('auth:api')->prefix('/admin')->group(function () {
+    Route::middleware(['auth:api', 'admin'])->prefix('/admin')->group(function () {
+        Route::get('/dashboard', AdminDashboardController::class);
+
+        Route::get('/users', [AdminUserController::class, 'index']);
+        Route::get('/users/{user}', [AdminUserController::class, 'show']);
+        Route::patch('/users/{user}', [AdminUserController::class, 'update']);
+
+        Route::get('/restaurants', [AdminRestaurantController::class, 'index']);
+        Route::get('/restaurants/{restaurant}', [AdminRestaurantController::class, 'show']);
+        Route::put('/restaurants/{restaurant}', [AdminRestaurantController::class, 'update']);
+        Route::put('/restaurants/{restaurant}/staff/{user}', [AdminRestaurantController::class, 'updateStaff']);
+        Route::delete('/restaurants/{restaurant}/staff/{user}', [AdminRestaurantController::class, 'removeStaff']);
+
+        Route::get('/couriers', [AdminCourierController::class, 'index']);
+        Route::post('/couriers', [AdminCourierController::class, 'store']);
+        Route::get('/couriers/{courier}', [AdminCourierController::class, 'show']);
+        Route::patch('/couriers/{courier}', [AdminCourierController::class, 'update']);
+
+        Route::get('/orders', [AdminOrderController::class, 'index']);
+        Route::get('/orders/{order}', [AdminOrderController::class, 'show']);
+        Route::post('/orders/{order}/accept', [AdminOrderController::class, 'accept']);
+        Route::post('/orders/{order}/cancel', [AdminOrderController::class, 'cancel']);
+        Route::post('/orders/{order}/assign-courier', [AdminOrderController::class, 'assign']);
+        Route::post('/orders/{order}/unassign-courier', [AdminOrderController::class, 'unassign']);
+        Route::post('/orders/{order}/picked-up', [AdminOrderController::class, 'pickedUp']);
+        Route::post('/orders/{order}/delivered', [AdminOrderController::class, 'delivered']);
+        Route::patch('/orders/{order}/payment', [AdminOrderController::class, 'updatePayment']);
+
         Route::get('/logistics/settings', [LogisticsSettingsController::class, 'index']);
         Route::put('/logistics/settings', [LogisticsSettingsController::class, 'update']);
         Route::post('/logistics/test-address', [LogisticsDebugController::class, 'testAddress']);

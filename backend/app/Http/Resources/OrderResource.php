@@ -24,6 +24,9 @@ class OrderResource extends JsonResource
 
         return [
             'id' => $this->id,
+            'user_id' => $this->user_id,
+            'restaurant_id' => $this->restaurant_id,
+            'courier_id' => $this->courier_id,
             'status' => $this->status,
             'payment_status' => $this->payment_status,
             'payment_method' => $this->payment_method,
@@ -50,6 +53,25 @@ class OrderResource extends JsonResource
             ),
 
             'restaurant' => new RestaurantResource($this->whenLoaded('restaurant')),
+            'user' => $this->whenLoaded('user', fn () => [
+                'id' => $this->user->id,
+                'name' => $this->user->name,
+                'email' => $this->user->email,
+                'phone' => $this->user->phone,
+                'is_banned' => (bool) $this->user->is_banned,
+            ]),
+            'courier' => $this->whenLoaded('courier', fn () => $this->courier ? [
+                'user_id' => $this->courier->user_id,
+                'status' => $this->courier->status,
+                'vehicle' => $this->courier->vehicle,
+                'rating' => $this->courier->rating,
+                'user' => $this->courier->relationLoaded('user') && $this->courier->user ? [
+                    'id' => $this->courier->user->id,
+                    'name' => $this->courier->user->name,
+                    'email' => $this->courier->user->email,
+                    'phone' => $this->courier->user->phone,
+                ] : null,
+            ] : null),
             'items' => $items,
             'events' => OrderEventResource::collection($this->whenLoaded('events')),
             'route_segments' => OrderRouteSegmentResource::collection($this->whenLoaded('routeSegments')),

@@ -39,6 +39,7 @@ class UpdateRestaurantRequest extends FormRequest
             'prep_time_min' => ['sometimes', 'nullable', 'integer', 'min:0'],
             'prep_time_max' => ['sometimes', 'nullable', 'integer', 'min:0'],
             'logo_media_id' => ['sometimes', 'nullable', 'integer', 'exists:media,id'],
+            'owner_id'      => ['sometimes', 'nullable', 'exists:users,id'],
             'address'             => ['sometimes', 'array'],
         ] + $this->addressRules('address.', true);
     }

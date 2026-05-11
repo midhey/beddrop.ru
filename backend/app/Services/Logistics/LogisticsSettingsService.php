@@ -9,15 +9,15 @@ class LogisticsSettingsService
     /**
      * @var array<string, mixed>|null
      */
-    private static ?array $settingsCache = null;
+    private ?array $settingsCache = null;
 
     /**
      * @return array<string, mixed>
      */
     public function all(): array
     {
-        if (self::$settingsCache === null) {
-            self::$settingsCache = LogisticsSetting::query()
+        if ($this->settingsCache === null) {
+            $this->settingsCache = LogisticsSetting::query()
                 ->orderBy('sort_order')
                 ->get()
                 ->mapWithKeys(fn (LogisticsSetting $setting) => [
@@ -26,7 +26,7 @@ class LogisticsSettingsService
                 ->all();
         }
 
-        return self::$settingsCache;
+        return $this->settingsCache;
     }
 
     public function get(string $key, mixed $default = null): mixed
@@ -61,7 +61,7 @@ class LogisticsSettingsService
                 ->update(['value' => (string) $value]);
         }
 
-        self::$settingsCache = null;
+        $this->settingsCache = null;
     }
 
     /**

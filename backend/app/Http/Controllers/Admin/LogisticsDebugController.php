@@ -18,8 +18,6 @@ class LogisticsDebugController extends Controller
 {
     public function testAddress(Request $request, DadataAddressService $dadata): JsonResponse
     {
-        $this->ensureAdmin();
-
         $data = $request->validate([
             'address' => ['required', 'string', 'min:2', 'max:500'],
         ]);
@@ -42,8 +40,6 @@ class LogisticsDebugController extends Controller
         ValhallaRouteService $routes,
         LogisticsSettingsService $settings,
     ): JsonResponse {
-        $this->ensureAdmin();
-
         $data = $request->validate([
             'from_address_id' => ['nullable', 'integer', 'exists:addresses,id'],
             'to_address_id' => ['nullable', 'integer', 'exists:addresses,id'],
@@ -94,8 +90,6 @@ class LogisticsDebugController extends Controller
 
     public function orderRoutes(Order $order): JsonResponse
     {
-        $this->ensureAdmin();
-
         $order->load('routeSegments');
 
         return response()->json([
@@ -131,12 +125,5 @@ class LogisticsDebugController extends Controller
             'lat' => (float) $point['lat'],
             'lng' => (float) $point['lng'],
         ];
-    }
-
-    private function ensureAdmin(): void
-    {
-        if (!request()->user()?->is_admin) {
-            abort(403, 'Доступно только администратору.');
-        }
     }
 }
