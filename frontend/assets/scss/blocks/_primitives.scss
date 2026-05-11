@@ -64,7 +64,7 @@
   position: relative;
   overflow: hidden;
   display: block;
-  background: #e9eef5;
+  background: var(--color-surface-soft);
 }
 
 .skeleton::after {
@@ -132,7 +132,7 @@
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  border: 2px solid #d7e0eb;
+  border: 2px solid var(--color-border-neutral);
   border-top-color: var(--color-primary);
   animation: state-loading-spin 0.72s linear infinite;
 }
@@ -259,9 +259,9 @@
   flex: 0 0 auto;
   width: 50px;
   height: 28px;
-  border: 1px solid #d5dfeb;
+  border: 1px solid var(--color-border-neutral);
   border-radius: var(--radius-pill);
-  background: #e9eef5;
+  background: var(--color-surface-soft);
   box-shadow:
     inset 0 1px 2px rgba(15, 23, 42, 0.08),
     0 1px 2px rgba(15, 23, 42, 0.04);
@@ -278,7 +278,7 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: #ffffff;
+  background: var(--color-surface);
   box-shadow:
     0 2px 5px rgba(15, 23, 42, 0.2),
     0 0 0 1px rgba(15, 23, 42, 0.04);
@@ -305,8 +305,8 @@
 }
 
 .base-switch--checked .base-switch__control {
-  border-color: color-mix(in oklab, var(--color-primary) 70%, #2ecc71);
-  background: linear-gradient(135deg, var(--color-primary), #2ecc71);
+  border-color: color-mix(in oklab, var(--color-primary) 72%, var(--color-secondary));
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
   box-shadow:
     inset 0 1px 1px rgba(255, 255, 255, 0.22),
     0 5px 14px color-mix(in oklab, var(--color-primary) 24%, transparent);

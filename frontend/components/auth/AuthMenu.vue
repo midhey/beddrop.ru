@@ -5,6 +5,7 @@ import {
   ChevronDown,
   LogOut,
   ReceiptText,
+  ShieldCheck,
   Store,
   UserRound,
 } from 'lucide-vue-next';
@@ -255,6 +256,25 @@ const isShellResolving = computed(() => {
                     </span>
                     <span class="header__dropdown-item-subtitle">
                       Смены, доставки и доход
+                    </span>
+                  </span>
+                </NuxtLink>
+
+                <NuxtLink
+                    v-if="authStore.isAdmin"
+                    to="/admin"
+                    class="header__dropdown-item"
+                    @click="handleNavigate"
+                >
+                  <span class="header__dropdown-item-icon">
+                    <ShieldCheck class="ui-icon" :size="18" :stroke-width="1.9" aria-hidden="true" />
+                  </span>
+                  <span class="header__dropdown-item-copy">
+                    <span class="header__dropdown-item-title">
+                      Админка
+                    </span>
+                    <span class="header__dropdown-item-subtitle">
+                      Операции, заказы и логистика
                     </span>
                   </span>
                 </NuxtLink>

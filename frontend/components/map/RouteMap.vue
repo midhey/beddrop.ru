@@ -43,6 +43,14 @@ const drawableSegments = computed(() => {
 });
 
 const hasRoutes = computed(() => drawableSegments.value.length > 0);
+const markerCoordinates = computed<[number, number][]>(() => {
+  const points = [props.restaurantAddress, props.deliveryAddress, props.courierLocation];
+
+  return points
+    .filter((point) => point?.lat != null && point?.lng != null)
+    .map((point) => [Number(point?.lng), Number(point?.lat)] as [number, number]);
+});
+const hasMarkers = computed(() => markerCoordinates.value.length > 0);
 const hasDeliverySegment = computed(() =>
   drawableSegments.value.some((segment) => segment.segment_type === 'restaurant_to_client'),
 );
@@ -123,13 +131,13 @@ const loadMapLibre = async () => {
 };
 
 const createMap = async () => {
-  if (!mapEl.value || map || !hasRoutes.value) return;
+  if (!mapEl.value || map || (!hasRoutes.value && !hasMarkers.value)) return;
 
   try {
     const loaded = await loadMapLibre();
     if (!loaded || !window.maplibregl) return;
 
-    const firstCoord = drawableSegments.value[0].coordinates[0];
+    const firstCoord = drawableSegments.value[0]?.coordinates[0] ?? markerCoordinates.value[0];
     map = new window.maplibregl.Map({
       container: mapEl.value,
       style: {
@@ -176,7 +184,7 @@ const drawMarker = (address: Partial<Address> | null | undefined, color: string)
 };
 
 const drawRoutes = () => {
-  if (!map || !hasRoutes.value) return;
+  if (!map || (!hasRoutes.value && !hasMarkers.value)) return;
 
   clearMarkers();
 
@@ -218,6 +226,7 @@ const drawRoutes = () => {
   drawableSegments.value.forEach((segment) => {
     segment.coordinates.forEach((coord) => bounds.extend(coord));
   });
+  markerCoordinates.value.forEach((coord) => bounds.extend(coord));
 
   if (!bounds.isEmpty()) {
     map.fitBounds(bounds, { padding: 42, maxZoom: 15 });
@@ -238,9 +247,14 @@ watch(drawableSegments, async () => {
   drawRoutes();
 });
 
-watch(() => props.courierLocation, () => {
+watch(() => [props.restaurantAddress, props.deliveryAddress, props.courierLocation], async () => {
+  await nextTick();
+  if (!map) {
+    await createMap();
+    return;
+  }
   drawRoutes();
-});
+}, { deep: true });
 
 onBeforeUnmount(() => {
   clearMarkers();
@@ -252,7 +266,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div v-if="hasRoutes" class="route-map">
+  <div v-if="hasRoutes || hasMarkers" class="route-map">
     <div
       ref="mapEl"
       class="route-map__canvas"

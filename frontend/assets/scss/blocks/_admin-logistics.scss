@@ -1,8 +1,7 @@
 @use '../core' as *;
 
-.admin-logistics__grid {
+.admin-logistics__stack {
   display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(rem(340), 0.8fr);
   gap: rem(20);
 }
 
@@ -11,38 +10,108 @@
   gap: rem(18);
 }
 
-.admin-logistics__settings,
-.admin-logistics__debug {
+.admin-logistics__settings {
   display: grid;
   gap: rem(18);
+}
+
+.admin-logistics__tools-grid,
+.admin-logistics__ops-grid {
+  display: grid;
+  gap: rem(18);
+}
+
+.admin-logistics__tools-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+}
+
+.admin-logistics__ops-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.admin-logistics__map-area,
+.admin-logistics__ops-side,
+.admin-logistics__mini-section {
+  min-width: 0;
+}
+
+.admin-logistics__ops-side {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: rem(16);
+}
+
+.admin-logistics__mini-section {
+  display: grid;
+  gap: rem(10);
+}
+
+.admin-logistics__mini-section h3 {
+  margin: 0;
+  color: var(--color-text-strong);
+  font-size: rem(15);
 }
 
 .admin-logistics__group {
   display: grid;
   gap: rem(12);
-  padding-bottom: rem(18);
-  border-bottom: rem(1) solid #edf2f7;
-}
-
-.admin-logistics__group:last-child {
-  border-bottom: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
 }
 
 .admin-logistics__group-title {
   margin: 0;
-  color: #172033;
+  color: var(--color-text-strong);
   font-size: rem(16);
 }
 
 .admin-logistics__fields {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: rem(14);
+  gap: rem(10);
+}
+
+.admin-logistics__field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(rem(150), rem(220));
+  gap: rem(16);
+  align-items: center;
+  padding: rem(13);
+  border: rem(1) solid var(--color-border-neutral);
+  border-radius: var(--radius-12);
+  background: var(--color-surface);
+}
+
+.admin-logistics__field-copy {
+  display: grid;
+  gap: rem(5);
+  min-width: 0;
+}
+
+.admin-logistics__field-label {
+  color: var(--color-text-strong);
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.admin-logistics__field-copy code {
+  overflow: hidden;
+  color: var(--color-text-muted);
+  font-size: rem(11);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-logistics__field-control {
+  display: flex;
+  justify-content: flex-end;
+  min-width: 0;
 }
 
 .admin-logistics__hint {
-  color: #64748b;
-  font-size: rem(12);
+  color: var(--color-text-muted);
+  font-size: rem(13);
   line-height: 1.4;
 }
 
@@ -54,6 +123,10 @@
 
 .admin-logistics__inline-form {
   grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.admin-logistics__inline-form--wide {
+  max-width: rem(520);
 }
 
 .admin-logistics__route-form {
@@ -69,9 +142,9 @@
   max-height: rem(340);
   margin: 0;
   padding: rem(14);
-  border-radius: rem(8);
-  background: #111827;
-  color: #d1d5db;
+  border-radius: var(--radius-12);
+  background: var(--color-text-strong);
+  color: var(--color-surface);
   font-size: rem(12);
   line-height: 1.5;
 }
@@ -81,23 +154,62 @@
   gap: rem(10);
 }
 
+.admin-logistics__mini-list {
+  display: grid;
+  gap: rem(8);
+}
+
+.admin-logistics__mini-item,
+.admin-logistics__mini-order {
+  display: grid;
+  gap: rem(4);
+  padding: rem(10);
+  border: rem(1) solid var(--color-border-neutral);
+  border-radius: var(--radius-12);
+  background: var(--color-surface);
+  color: var(--color-text-subtle);
+  text-align: left;
+}
+
+.admin-logistics__mini-item {
+  cursor: pointer;
+}
+
+.admin-logistics__mini-item--active,
+.admin-logistics__mini-item:hover {
+  border-color: var(--color-primary);
+  background: color-mix(in oklab, var(--color-primary) 8%, var(--color-surface));
+}
+
+.admin-logistics__mini-item span,
+.admin-logistics__mini-order {
+  color: var(--color-text-muted);
+  font-size: rem(12);
+}
+
 .admin-logistics__route-result p {
   margin: 0;
-  color: #334155;
+  color: var(--color-text-subtle);
   font-size: rem(14);
 }
 
 @media (max-width: 960px) {
-  .admin-logistics__grid {
+  .admin-logistics__tools-grid,
+  .admin-logistics__ops-grid,
+  .admin-logistics__ops-side {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 680px) {
-  .admin-logistics__fields,
+  .admin-logistics__field,
   .admin-logistics__inline-form,
   .admin-logistics__route-form {
     grid-template-columns: 1fr;
+  }
+
+  .admin-logistics__field-control {
+    justify-content: flex-start;
   }
 
   .admin-logistics__route-form .button {
