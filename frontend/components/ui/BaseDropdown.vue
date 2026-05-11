@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, useId } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue';
+import { useRoute } from '#app';
 
 type DropdownPlacement = 'bottom-start' | 'bottom-end';
 
@@ -30,6 +31,7 @@ const emit = defineEmits<{
   (e: 'close'): void;
 }>();
 
+const route = useRoute();
 const rootRef = ref<HTMLElement | null>(null);
 const viewportWidth = ref<number | null>(null);
 const localOpen = ref(props.defaultOpen);
@@ -82,6 +84,10 @@ const close = () => {
   setOpen(false);
 };
 
+watch(() => route.fullPath, () => {
+  close();
+});
+
 const handleDocumentClick = (event: MouseEvent) => {
   if (!props.closeOnOutside || isExpandedLayout.value || !isOpen.value) {
     return;
@@ -102,6 +108,18 @@ const handleKeydown = (event: KeyboardEvent) => {
   }
 
   close();
+};
+
+const handleMouseEnter = () => {
+  if (props.hoverable && !isExpandedLayout.value) {
+    setOpen(true);
+  }
+};
+
+const handleMouseLeave = () => {
+  if (props.hoverable && !isExpandedLayout.value) {
+    close();
+  }
 };
 
 const triggerAttrs = computed(() => ({
@@ -153,6 +171,8 @@ onBeforeUnmount(() => {
       :data-placement="placement"
       :data-hoverable="hoverable && !isExpandedLayout ? 'true' : 'false'"
       :data-expanded="isExpandedLayout ? 'true' : 'false'"
+      @mouseenter="handleMouseEnter"
+      @mouseleave="handleMouseLeave"
   >
     <slot
         :open="isOpen"

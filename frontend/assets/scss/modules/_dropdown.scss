@@ -50,14 +50,12 @@ $dropdown-breakpoint: $tablet-l !default;
   }
 
   [data-dropdown-root][data-placement="bottom-end"] > [data-dropdown-panel] {
-    right: 0;
+    right: rem(8);
     left: auto;
     transform-origin: top right;
   }
 
-  [data-dropdown-root][data-state="open"] > [data-dropdown-panel],
-  [data-dropdown-root][data-hoverable="true"]:hover > [data-dropdown-panel],
-  [data-dropdown-root][data-hoverable="true"]:focus-within > [data-dropdown-panel] {
+  [data-dropdown-root][data-state="open"] > [data-dropdown-panel] {
     visibility: visible;
     opacity: 1;
     pointer-events: auto;
