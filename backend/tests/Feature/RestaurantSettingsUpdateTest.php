@@ -91,6 +91,7 @@ class RestaurantSettingsUpdateTest extends TestCase
             ->assertJsonPath('restaurant.is_active', false)
             ->assertJsonPath('restaurant.prep_time_min', 20)
             ->assertJsonPath('restaurant.prep_time_max', 35)
+            ->assertJsonPath('restaurant.prep_time_avg_minutes', 28)
             ->assertJsonPath('restaurant.logo_media_id', $logo->id)
             ->assertJsonPath('restaurant.address.label', 'Ресторан')
             ->assertJsonPath('restaurant.address.line1', 'Новый адрес, 10')
@@ -109,5 +110,20 @@ class RestaurantSettingsUpdateTest extends TestCase
             ->getJson('/api/v1/addresses')
             ->assertOk()
             ->assertJsonCount(0, 'addresses');
+    }
+
+    public function test_restaurant_prep_time_range_must_be_consistent(): void
+    {
+        $owner = $this->createUser();
+        $restaurant = $this->createRestaurant($owner);
+
+        $this
+            ->actingAs($owner, 'api')
+            ->putJson("/api/v1/restaurants/{$restaurant->id}", [
+                'prep_time_min' => 45,
+                'prep_time_max' => 20,
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('prep_time_max');
     }
 }

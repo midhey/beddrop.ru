@@ -86,6 +86,18 @@ export function useCheckoutPage() {
 
         return Math.max(1, Math.ceil(deliveryQuote.value.duration_seconds / 60));
     });
+    const deliveryTimeBreakdown = computed(() => {
+        const time = deliveryQuote.value?.time;
+
+        if (!time) return [];
+
+        return [
+            { label: 'Готовка ресторана', value: time.prep },
+            { label: 'Буфер на выдачу', value: time.pickup_buffer },
+            { label: 'Маршрут курьера', value: time.delivery },
+            { label: 'Запас доставки', value: time.buffer },
+        ].filter((item) => item.value > 0);
+    });
     const quoteRouteSegments = computed<OrderRouteSegment[]>(() => {
         const quote = deliveryQuote.value;
 
@@ -192,6 +204,7 @@ export function useCheckoutPage() {
         selectedAddress,
         deliveryDistanceKm,
         deliveryDurationMinutes,
+        deliveryTimeBreakdown,
         quoteRouteSegments,
         canSubmit,
         submitOrder,

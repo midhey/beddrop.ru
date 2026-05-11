@@ -27,6 +27,7 @@ const {
   selectedAddress,
   deliveryDistanceKm,
   deliveryDurationMinutes,
+  deliveryTimeBreakdown,
   quoteRouteSegments,
   canSubmit,
   submitOrder,
@@ -213,6 +214,17 @@ const {
                 </div>
               </div>
 
+              <div class="checkout-route__breakdown">
+                <div
+                    v-for="item in deliveryTimeBreakdown"
+                    :key="item.label"
+                    class="checkout-route__breakdown-item"
+                >
+                  <span>{{ item.label }}</span>
+                  <strong>{{ item.value }} мин</strong>
+                </div>
+              </div>
+
               <RouteMap
                   :route-segments="quoteRouteSegments"
                   :restaurant-address="restaurantAddress"
@@ -329,7 +341,7 @@ const {
                   v-if="deliveryQuote"
                   class="checkout-summary__route"
               >
-                {{ deliveryDistanceKm }} км, в пути ~{{ deliveryDurationMinutes }} мин, с готовкой ~{{ deliveryQuote.eta_minutes }} мин
+                {{ deliveryDistanceKm }} км, в пути ~{{ deliveryDurationMinutes }} мин, готовка ~{{ deliveryQuote.time.prep }} мин, итого ~{{ deliveryQuote.eta_minutes }} мин
               </div>
               <div class="checkout-summary__row checkout-summary__row--total">
                 <span>Итого к оплате</span>

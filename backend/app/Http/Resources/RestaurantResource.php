@@ -22,6 +22,7 @@ class RestaurantResource extends JsonResource
             'is_active'     => (bool) $this->is_active,
             'prep_time_min' => $this->prep_time_min,
             'prep_time_max' => $this->prep_time_max,
+            'prep_time_avg_minutes' => $this->prepTimeAverageMinutes(),
 
             'address_id'    => $this->address_id,
             'address'       => new AddressResource($this->whenLoaded('address')),

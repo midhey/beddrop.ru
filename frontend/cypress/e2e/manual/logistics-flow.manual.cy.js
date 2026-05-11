@@ -188,6 +188,8 @@ describe("manual logistics flow", () => {
       expect(response.statusCode).to.eq(200);
       expect(response.body.quote.distance_meters).to.be.greaterThan(0);
       expect(response.body.quote.duration_seconds).to.be.greaterThan(0);
+      expect(response.body.quote.time.prep).to.be.greaterThan(0);
+      expect(response.body.quote.time.total).to.eq(response.body.quote.eta_minutes);
       expect(response.body.quote.delivery_price).to.be.greaterThan(0);
       expect(response.body.quote.price.service).to.be.greaterThan(0);
       expect(response.body.quote.route.encoded_shape).to.be.a("string").and.not.be.empty;
@@ -195,6 +197,8 @@ describe("manual logistics flow", () => {
 
     cy.contains("h1", "Оформление заказа").should("be.visible");
     cy.contains("Маршрут доставки").should("be.visible");
+    cy.contains("Готовка ресторана").should("be.visible");
+    cy.contains("Запас доставки").should("be.visible");
     cy.contains("Сервисный сбор").should("be.visible");
     cy.contains("Доставка").should("be.visible");
     cy.contains(/км/).should("be.visible");
@@ -207,6 +211,7 @@ describe("manual logistics flow", () => {
       expect(response.statusCode).to.eq(201);
       expect(response.body.data.id).to.be.a("number");
       expect(response.body.data.route_segments.length).to.be.greaterThan(0);
+      expect(response.body.data.logistics_snapshot.time.prep).to.be.greaterThan(0);
       createdOrderId = response.body.data.id;
     });
 
@@ -216,6 +221,7 @@ describe("manual logistics flow", () => {
 
     cy.contains("Заказ").should("be.visible");
     cy.contains("Маршрут").should("be.visible");
+    cy.contains("Итого до двери").should("be.visible");
     cy.get(".route-map__canvas", { timeout: 15000 }).should("be.visible");
   });
 });

@@ -9,6 +9,9 @@ const {
   errorMessage,
   id,
   sortedEvents,
+  routeDistanceKm,
+  deliveryDurationMinutes,
+  logisticsTimeBreakdown,
   formatPrice,
   formatDateTime,
   getOrderStatusClass,
@@ -133,11 +136,41 @@ const {
           <div class="order-page__section-header section-head">
             <h2 class="section-title">Маршрут доставки</h2>
             <span
-                v-if="current.delivery_distance_meters"
+                v-if="routeDistanceKm"
                 class="order-page__section-meta section-meta"
             >
-              {{ (current.delivery_distance_meters / 1000).toFixed(1) }} км
+              {{ routeDistanceKm }} км
             </span>
+          </div>
+
+          <div class="order-page__route-summary">
+            <div v-if="deliveryDurationMinutes" class="order-page__route-summary-item">
+              <span>В пути</span>
+              <strong>{{ deliveryDurationMinutes }} мин</strong>
+            </div>
+            <div v-if="current.estimated_pickup_at" class="order-page__route-summary-item">
+              <span>Ожидаемая выдача</span>
+              <strong>{{ formatDateTime(current.estimated_pickup_at) }}</strong>
+            </div>
+            <div v-if="current.estimated_delivery_at" class="order-page__route-summary-item">
+              <span>Ожидаемая доставка</span>
+              <strong>{{ formatDateTime(current.estimated_delivery_at) }}</strong>
+            </div>
+          </div>
+
+          <div
+              v-if="logisticsTimeBreakdown.length"
+              class="order-page__route-breakdown"
+          >
+            <div
+                v-for="item in logisticsTimeBreakdown"
+                :key="item.label"
+                class="order-page__route-breakdown-item"
+                :class="{ 'order-page__route-breakdown-item--total': item.total }"
+            >
+              <span>{{ item.label }}</span>
+              <strong>{{ item.value }} мин</strong>
+            </div>
           </div>
 
           <RouteMap

@@ -15,11 +15,15 @@ const props = withDefaults(
     required?: boolean;
     placeholder?: string;
     mapHeight?: number;
+    label?: string;
+    showDeliveryDetails?: boolean;
   }>(),
   {
     required: false,
     placeholder: 'Город, улица, дом',
     mapHeight: 300,
+    label: 'Адрес',
+    showDeliveryDetails: true,
   },
 );
 
@@ -224,7 +228,7 @@ onBeforeUnmount(() => {
   <div class="address-picker">
     <div class="address-picker__search form-field">
       <label class="form-field__label">
-        Адрес
+        {{ label }}
         <span v-if="required" class="address-picker__required">*</span>
       </label>
       <div class="address-picker__search-control">
@@ -271,7 +275,7 @@ onBeforeUnmount(() => {
       Карта недоступна, но координаты адреса сохранены.
     </div>
 
-    <div class="address-picker__details">
+    <div v-if="showDeliveryDetails" class="address-picker__details">
       <div class="form-field">
         <label class="form-field__label">Название</label>
         <input v-model="model.label" type="text" class="field-input" placeholder="Дом, работа..." >

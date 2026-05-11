@@ -20,6 +20,7 @@ export interface Restaurant {
     is_active: boolean;
     prep_time_min: number | null;
     prep_time_max: number | null;
+    prep_time_avg_minutes: number | null;
     address_id: number | null;
     logo_media_id?: number | null;
     current_user_role?: 'OWNER' | 'MANAGER' | 'STAFF' | null;

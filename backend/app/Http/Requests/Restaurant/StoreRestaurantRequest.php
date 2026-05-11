@@ -4,6 +4,7 @@ namespace App\Http\Requests\Restaurant;
 
 use App\Http\Requests\Concerns\ValidatesAddressPayload;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 class StoreRestaurantRequest extends FormRequest
 {
@@ -27,5 +28,17 @@ class StoreRestaurantRequest extends FormRequest
             'logo_media_id' => ['nullable', 'integer', 'exists:media,id'],
             'owner_id' => ['nullable', 'exists:users,id'],
         ] + $this->addressRules('address.');
+    }
+
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator) {
+            $min = $this->input('prep_time_min');
+            $max = $this->input('prep_time_max');
+
+            if ($min !== null && $max !== null && (int) $max < (int) $min) {
+                $validator->errors()->add('prep_time_max', 'Максимальное время приготовления не может быть меньше минимального.');
+            }
+        });
     }
 }

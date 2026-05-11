@@ -32,12 +32,8 @@ class DeliveryTimeCalculator
 
     public function restaurantPrepTime(Restaurant $restaurant): int
     {
-        if ($restaurant->prep_time_min !== null && $restaurant->prep_time_max !== null) {
-            return (int) ceil(($restaurant->prep_time_min + $restaurant->prep_time_max) / 2);
-        }
-
-        if ($restaurant->prep_time_min !== null) {
-            return (int) $restaurant->prep_time_min;
+        if ($restaurant->prepTimeAverageMinutes() !== null) {
+            return $restaurant->prepTimeAverageMinutes();
         }
 
         return (int) $this->settings->get('delivery.default_prep_time_min', 20);

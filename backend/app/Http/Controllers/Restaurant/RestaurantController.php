@@ -126,11 +126,11 @@ class RestaurantController extends Controller
         $restaurant->fill([
             'name' => $data['name'] ?? $restaurant->name,
             'description' => array_key_exists('description', $data) ? $data['description'] : $restaurant->description,
-            'phone' => $data['phone'] ?? $restaurant->phone,
+            'phone' => array_key_exists('phone', $data) ? $data['phone'] : $restaurant->phone,
             'is_active' => $data['is_active'] ?? $restaurant->is_active,
-            'prep_time_min' => $data['prep_time_min'] ?? $restaurant->prep_time_min,
-            'prep_time_max' => $data['prep_time_max'] ?? $restaurant->prep_time_max,
-            'logo_media_id' => $data['logo_media_id'] ?? $restaurant->logo_media_id,
+            'prep_time_min' => array_key_exists('prep_time_min', $data) ? $data['prep_time_min'] : $restaurant->prep_time_min,
+            'prep_time_max' => array_key_exists('prep_time_max', $data) ? $data['prep_time_max'] : $restaurant->prep_time_max,
+            'logo_media_id' => array_key_exists('logo_media_id', $data) ? $data['logo_media_id'] : $restaurant->logo_media_id,
         ]);
 
         if(!empty($data['slug']) && $data['slug'] !== $restaurant->slug) {
@@ -205,6 +205,7 @@ class RestaurantController extends Controller
             'is_active' => (bool) $restaurant->is_active,
             'prep_time_min' => $restaurant->prep_time_min,
             'prep_time_max' => $restaurant->prep_time_max,
+            'prep_time_avg_minutes' => $restaurant->prepTimeAverageMinutes(),
             'address_id' => $restaurant->address_id,
             'logo_media_id' => $restaurant->logo_media_id,
             'current_user_role' => $currentUserRole,

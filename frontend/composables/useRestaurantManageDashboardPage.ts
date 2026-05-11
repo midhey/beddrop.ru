@@ -129,6 +129,31 @@ export function useRestaurantManageDashboardPage() {
 
     const fullAddress = computed(() => formatRestaurantAddress(restaurant.value));
     const prepTimeText = computed(() => formatRestaurantPrepTime(restaurant.value));
+    const prepTimeFieldValue = (value: string | number | null | undefined): string => {
+        return value == null ? '' : String(value).trim();
+    };
+    const settingsPrepAverageText = computed(() => {
+        const minValue = prepTimeFieldValue(settingsForm.value.prep_time_min);
+        const maxValue = prepTimeFieldValue(settingsForm.value.prep_time_max);
+        const min = Number(minValue);
+        const max = Number(maxValue);
+        const hasMin = minValue !== '' && !Number.isNaN(min);
+        const hasMax = maxValue !== '' && !Number.isNaN(max);
+
+        if (hasMin && hasMax) {
+            return `${Math.ceil((min + max) / 2)} мин`;
+        }
+
+        if (hasMin) {
+            return `${min} мин`;
+        }
+
+        if (hasMax) {
+            return `${max} мин`;
+        }
+
+        return 'будет взято из глобальных настроек';
+    });
     const hasRestaurantLogo = computed(() => Boolean(settingsForm.value.logo_preview_url || restaurant.value?.logo?.url));
 
     const hasProducts = computed(() => products.value.length > 0);
@@ -212,8 +237,8 @@ export function useRestaurantManageDashboardPage() {
 
         const name = settingsForm.value.name.trim();
         const addressValue = (settingsForm.value.address.value || settingsForm.value.address.line1 || '').trim();
-        const prepTimeMin = settingsForm.value.prep_time_min.trim();
-        const prepTimeMax = settingsForm.value.prep_time_max.trim();
+        const prepTimeMin = prepTimeFieldValue(settingsForm.value.prep_time_min);
+        const prepTimeMax = prepTimeFieldValue(settingsForm.value.prep_time_max);
 
         if (!name || !addressValue || settingsForm.value.address.lat == null || settingsForm.value.address.lng == null) {
             feedback.failure('Заполните название ресторана и основной адрес');
@@ -222,6 +247,11 @@ export function useRestaurantManageDashboardPage() {
 
         if ((prepTimeMin && Number(prepTimeMin) < 0) || (prepTimeMax && Number(prepTimeMax) < 0)) {
             feedback.failure('Время приготовления не может быть отрицательным');
+            return;
+        }
+
+        if (prepTimeMin && prepTimeMax && Number(prepTimeMax) < Number(prepTimeMin)) {
+            feedback.failure('Максимальное время приготовления не может быть меньше минимального');
             return;
         }
 
@@ -578,6 +608,7 @@ export function useRestaurantManageDashboardPage() {
         errorMessage,
         fullAddress,
         prepTimeText,
+        settingsPrepAverageText,
         hasRestaurantLogo,
         hasProducts,
         hasOrders,

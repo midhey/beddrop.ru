@@ -41,6 +41,23 @@ export interface OrderRouteSegment {
     updated_at?: string;
 }
 
+export interface OrderLogisticsSnapshot {
+    price?: {
+        base?: number;
+        distance?: number;
+        service?: number;
+        total?: number;
+    };
+    time?: {
+        prep?: number;
+        pickup_buffer?: number;
+        delivery?: number;
+        buffer?: number;
+        total?: number;
+    };
+    settings?: Record<string, any>;
+}
+
 export interface Order {
     id: number;
     status: string;
@@ -57,6 +74,7 @@ export interface Order {
     delivery_price_snapshot?: string | null;
     estimated_pickup_at?: string | null;
     estimated_delivery_at?: string | null;
+    logistics_snapshot?: OrderLogisticsSnapshot | null;
     courier_approach_distance_meters?: number | null;
     delivery_address?: Address | null;
 

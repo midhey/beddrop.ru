@@ -54,4 +54,13 @@ class Restaurant extends Model
     {
         return $this->hasMany(Order::class);
     }
+
+    public function prepTimeAverageMinutes(): ?int
+    {
+        if ($this->prep_time_min !== null && $this->prep_time_max !== null) {
+            return (int) ceil(($this->prep_time_min + $this->prep_time_max) / 2);
+        }
+
+        return $this->prep_time_min;
+    }
 }

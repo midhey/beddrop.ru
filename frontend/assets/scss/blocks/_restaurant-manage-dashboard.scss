@@ -440,6 +440,28 @@
     color: #475467;
   }
 
+  &__eta-preview {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: rem(12);
+    padding: rem(12) rem(14);
+    border-radius: rem(16);
+    border: 1px solid #dbe5f0;
+    background: #ffffff;
+  }
+
+  &__eta-preview-label {
+    font-size: rem(13);
+    color: #667085;
+  }
+
+  &__eta-preview-value {
+    text-align: right;
+    font-size: rem(15);
+    color: #111827;
+  }
+
   &__menu-stat {
     display: grid;
     gap: rem(4);

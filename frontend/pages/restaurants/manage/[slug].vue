@@ -29,6 +29,7 @@ const {
   errorMessage,
   fullAddress,
   prepTimeText,
+  settingsPrepAverageText,
   hasRestaurantLogo,
   hasProducts,
   hasOrders,
@@ -918,7 +919,7 @@ const copyInviteLink = async () => {
                 <div class="restaurant-dashboard__create-product-columns">
                   <div class="restaurant-dashboard__form-row form-field">
                     <label class="restaurant-dashboard__form-label">
-                      Время приготовления от, мин
+                      Минимум готовки, мин
                     </label>
                     <input
                       v-model="settingsForm.prep_time_min"
@@ -932,7 +933,7 @@ const copyInviteLink = async () => {
 
                   <div class="restaurant-dashboard__form-row form-field">
                     <label class="restaurant-dashboard__form-label">
-                      Время приготовления до, мин
+                      Максимум готовки, мин
                     </label>
                     <input
                       v-model="settingsForm.prep_time_max"
@@ -943,6 +944,15 @@ const copyInviteLink = async () => {
                       placeholder="35"
                     />
                   </div>
+                </div>
+
+                <div class="restaurant-dashboard__eta-preview">
+                  <span class="restaurant-dashboard__eta-preview-label">
+                    Среднее время для ETA
+                  </span>
+                  <strong class="restaurant-dashboard__eta-preview-value">
+                    {{ settingsPrepAverageText }}
+                  </strong>
                 </div>
               </div>
 
@@ -960,8 +970,10 @@ const copyInviteLink = async () => {
                 </div>
                 <AddressPicker
                   v-model="settingsForm.address"
-                  placeholder="Улица, дом, корпус"
+                  label="Адрес ресторана"
+                  placeholder="Начните вводить адрес ресторана"
                   required
+                  :show-delivery-details="false"
                 />
               </div>
             </div>

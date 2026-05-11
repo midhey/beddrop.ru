@@ -25,6 +25,29 @@ export function useOrderDetailsPage() {
     }));
 
     const sortedEvents = computed(() => sortOrderEvents(current.value?.events));
+    const routeDistanceKm = computed(() => {
+        if (!current.value?.delivery_distance_meters) return null;
+
+        return (current.value.delivery_distance_meters / 1000).toFixed(1);
+    });
+    const deliveryDurationMinutes = computed(() => {
+        if (!current.value?.delivery_duration_seconds) return null;
+
+        return Math.max(1, Math.ceil(current.value.delivery_duration_seconds / 60));
+    });
+    const logisticsTimeBreakdown = computed(() => {
+        const time = current.value?.logistics_snapshot?.time;
+
+        if (!time) return [];
+
+        return [
+            { label: 'Готовка ресторана', value: time.prep },
+            { label: 'Буфер на выдачу', value: time.pickup_buffer },
+            { label: 'Маршрут курьера', value: time.delivery },
+            { label: 'Запас доставки', value: time.buffer },
+            { label: 'Итого до двери', value: time.total, total: true },
+        ].filter((item) => typeof item.value === 'number' && item.value > 0);
+    });
 
     const loadOrder = async () => {
         if (!id.value || Number.isNaN(id.value)) {
@@ -49,6 +72,9 @@ export function useOrderDetailsPage() {
         errorMessage,
         id,
         sortedEvents,
+        routeDistanceKm,
+        deliveryDurationMinutes,
+        logisticsTimeBreakdown,
         formatPrice,
         formatDateTime,
         getOrderStatusClass,

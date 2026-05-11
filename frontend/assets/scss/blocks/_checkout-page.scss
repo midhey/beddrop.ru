@@ -162,6 +162,31 @@
     color: #6b7280;
     font-size: 12px;
   }
+
+  &__breakdown {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  &__breakdown-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #4b5563;
+    font-size: 12px;
+  }
+
+  &__breakdown-item strong {
+    flex-shrink: 0;
+    color: #111827;
+    font-size: 13px;
+  }
 }
 
 .checkout-cart {
@@ -233,7 +258,8 @@
 }
 
 @media (max-width: 640px) {
-  .checkout-route__stats {
+  .checkout-route__stats,
+  .checkout-route__breakdown {
     grid-template-columns: 1fr;
   }
 }
