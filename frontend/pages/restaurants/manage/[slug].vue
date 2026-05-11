@@ -68,6 +68,7 @@ const {
   settingsUploadInputKey,
   savingSettings,
   handleAccept,
+  handleReady,
   handleCancel,
   handleSettingsLogoChange,
   handleSaveSettings,
@@ -92,6 +93,7 @@ const {
   getPaymentMethodLabel,
   getPaymentStatusLabel,
   canRestaurantAcceptOrder,
+  canRestaurantMarkReadyOrder,
   canRestaurantCancelOrder,
   getRestaurantActivityLabel,
 } = useRestaurantManageDashboardPage();
@@ -578,6 +580,18 @@ const copyInviteLink = async () => {
                       @click="handleAccept(order)"
                     >
                       Принять
+                    </button>
+
+                    <button
+                      type="button"
+                      class="restaurant-dashboard__order-btn"
+                      :disabled="
+                        !canRestaurantMarkReadyOrder(order) ||
+                        actionOrderId === order.id
+                      "
+                      @click="handleReady(order)"
+                    >
+                      Готов к выдаче
                     </button>
 
                     <button

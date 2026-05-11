@@ -20,6 +20,7 @@ const COURIER_VEHICLE_LABELS: Record<CourierVehicle, string> = {
 const COURIER_ORDER_STATUS_LABELS: Record<string, string> = {
     CREATED: 'Создан',
     ACCEPTED_BY_RESTAURANT: 'Принят рестораном',
+    READY_FOR_PICKUP: 'Готов к выдаче',
     COURIER_ASSIGNED: 'Курьер назначен',
     PICKED_UP: 'В пути к клиенту',
     DELIVERED: 'Доставлен',

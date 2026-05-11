@@ -10,6 +10,7 @@ import {
   adminCancelOrder,
   adminMarkDelivered,
   adminMarkPickedUp,
+  adminMarkReady,
   adminUnassignCourier,
   adminUpdatePayment,
   getAdminOrder,
@@ -66,6 +67,7 @@ const runAction = async (action: () => Promise<Order>) => {
 const orderStatuses = [
   'CREATED',
   'ACCEPTED_BY_RESTAURANT',
+  'READY_FOR_PICKUP',
   'COURIER_ASSIGNED',
   'PICKED_UP',
   'DELIVERED',
@@ -158,13 +160,14 @@ onMounted(fetchOrders);
 
           <div class="admin-actions">
             <button class="button" :disabled="actionLoading || selected.status !== 'CREATED'" @click="runAction(() => adminAcceptOrder(selected!.id))">Принять</button>
+            <button class="button" :disabled="actionLoading || selected.status !== 'ACCEPTED_BY_RESTAURANT'" @click="runAction(() => adminMarkReady(selected!.id))">Готов к выдаче</button>
             <button class="button" :disabled="actionLoading || selected.status !== 'COURIER_ASSIGNED'" @click="runAction(() => adminMarkPickedUp(selected!.id))">У курьера</button>
             <button class="button" :disabled="actionLoading || selected.status !== 'PICKED_UP'" @click="runAction(() => adminMarkDelivered(selected!.id))">Доставлен</button>
           </div>
 
           <div class="admin-actions admin-actions--stack">
             <input v-model="courierUserId" class="field-input" type="number" min="1" placeholder="ID курьера">
-            <button class="button" :disabled="actionLoading || !courierUserId || selected.status !== 'ACCEPTED_BY_RESTAURANT'" @click="runAction(() => adminAssignCourier(selected!.id, Number(courierUserId)))">Назначить</button>
+            <button class="button" :disabled="actionLoading || !courierUserId || selected.status !== 'READY_FOR_PICKUP'" @click="runAction(() => adminAssignCourier(selected!.id, Number(courierUserId)))">Назначить</button>
             <button class="button button--ghost" :disabled="actionLoading || selected.status !== 'COURIER_ASSIGNED'" @click="runAction(() => adminUnassignCourier(selected!.id))">Снять курьера</button>
           </div>
 

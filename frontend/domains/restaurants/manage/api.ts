@@ -37,6 +37,18 @@ export const acceptRestaurantOrder = async (
     return data.data;
 };
 
+export const markRestaurantOrderReady = async (
+    restaurantSlug: string,
+    orderId: number,
+): Promise<Order> => {
+    const { $api } = useNuxtApp();
+    const { data } = await $api.post<{ data: Order }>(
+        `/restaurants/${restaurantSlug}/orders/${orderId}/ready`,
+    );
+
+    return data.data;
+};
+
 export const cancelRestaurantOrder = async (
     restaurantSlug: string,
     orderId: number,

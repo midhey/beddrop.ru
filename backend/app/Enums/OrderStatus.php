@@ -6,6 +6,7 @@ enum OrderStatus: string
 {
     case CREATED = 'CREATED';
     case ACCEPTED_BY_RESTAURANT = 'ACCEPTED_BY_RESTAURANT';
+    case READY_FOR_PICKUP = 'READY_FOR_PICKUP';
     case COURIER_ASSIGNED = 'COURIER_ASSIGNED';
     case PICKED_UP = 'PICKED_UP';
     case DELIVERED = 'DELIVERED';

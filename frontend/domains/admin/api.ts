@@ -154,6 +154,7 @@ const postOrderAction = async (id: number, action: string, payload: Record<strin
 };
 
 export const adminAcceptOrder = (id: number) => postOrderAction(id, 'accept');
+export const adminMarkReady = (id: number) => postOrderAction(id, 'ready');
 export const adminCancelOrder = (id: number, reason: string | null) => postOrderAction(id, 'cancel', { reason });
 export const adminAssignCourier = (id: number, courierUserId: number) => postOrderAction(id, 'assign-courier', { courier_user_id: courierUserId });
 export const adminUnassignCourier = (id: number) => postOrderAction(id, 'unassign-courier');

@@ -182,7 +182,7 @@ class GeoLogisticsApiTest extends TestCase
             ->assertCreated();
 
         $order = $this->createAcceptedOrder($customer, $restaurant, $product, [
-            'status' => OrderStatus::ACCEPTED_BY_RESTAURANT->value,
+            'status' => OrderStatus::READY_FOR_PICKUP->value,
         ]);
 
         OrderRouteSegment::create([

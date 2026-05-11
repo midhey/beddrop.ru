@@ -294,7 +294,7 @@ describe("restaurant management dashboard", () => {
   it("edits an existing product and explains the next order step", () => {
     visitDashboard();
 
-    cy.contains(".restaurant-dashboard__order-next-step", "Он уже доступен курьерам").should("be.visible");
+    cy.contains(".restaurant-dashboard__order-next-step", "отметьте готовность к выдаче").should("be.visible");
 
     cy.contains("button", "Меню").click();
     cy.contains(".restaurant-dashboard__product", "Маргарита")

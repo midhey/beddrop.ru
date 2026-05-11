@@ -36,6 +36,35 @@ class CourierOrderTransitionTest extends TestCase
             ->assertJsonPath('message', 'Этот заказ нельзя взять в работу');
     }
 
+    public function test_courier_cannot_assign_order_before_restaurant_marks_ready(): void
+    {
+        $courier = $this->createUser();
+        $customer = $this->createUser();
+        $restaurantOwner = $this->createUser();
+        $restaurant = $this->createRestaurant($restaurantOwner);
+        $product = $this->createProduct($restaurant);
+        $order = $this->createAcceptedOrder($customer, $restaurant, $product);
+
+        $this->createCourierProfile($courier);
+        $this->openShift($courier);
+
+        $this->actingAs($courier, 'api')
+            ->getJson('/api/v1/courier/orders/available')
+            ->assertOk()
+            ->assertJsonMissing(['id' => $order->id]);
+
+        $this->actingAs($courier, 'api')
+            ->postJson("/api/v1/courier/orders/{$order->id}/assign")
+            ->assertStatus(422)
+            ->assertJsonPath('message', 'Этот заказ нельзя взять в работу');
+
+        $this->assertDatabaseHas('orders', [
+            'id' => $order->id,
+            'status' => OrderStatus::ACCEPTED_BY_RESTAURANT->value,
+            'courier_id' => null,
+        ]);
+    }
+
     public function test_assigned_courier_can_mark_order_picked_up(): void
     {
         $courier = $this->createUser();

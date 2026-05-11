@@ -64,6 +64,55 @@ class RestaurantOrderTransitionTest extends TestCase
         $response->assertStatus(422);
     }
 
+    public function test_manager_can_mark_accepted_order_ready_for_pickup(): void
+    {
+        $owner = $this->createUser();
+        $manager = $this->createUser();
+        $customer = $this->createUser();
+        $restaurant = $this->createRestaurant($owner);
+        $this->attachRestaurantUser($restaurant, $manager, RestaurantStaffRole::MANAGER);
+        $order = $this->createAcceptedOrder($customer, $restaurant);
+
+        $response = $this
+            ->actingAs($manager, 'api')
+            ->postJson("/api/v1/restaurants/{$restaurant->slug}/orders/{$order->id}/ready");
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('data.status', OrderStatus::READY_FOR_PICKUP->value);
+
+        $this->assertDatabaseHas('orders', [
+            'id' => $order->id,
+            'status' => OrderStatus::READY_FOR_PICKUP->value,
+        ]);
+
+        $event = OrderEvent::query()
+            ->where('order_id', $order->id)
+            ->where('event', OrderStatus::READY_FOR_PICKUP->value)
+            ->latest('created_at')
+            ->first();
+
+        $this->assertNotNull($event);
+        $this->assertSame($manager->id, $event->payload['by_user_id']);
+    }
+
+    public function test_restaurant_cannot_mark_unaccepted_order_ready_for_pickup(): void
+    {
+        $owner = $this->createUser();
+        $manager = $this->createUser();
+        $customer = $this->createUser();
+        $restaurant = $this->createRestaurant($owner);
+        $this->attachRestaurantUser($restaurant, $manager, RestaurantStaffRole::MANAGER);
+        $order = $this->createAcceptedOrder($customer, $restaurant, null, [
+            'status' => OrderStatus::CREATED->value,
+        ]);
+
+        $this
+            ->actingAs($manager, 'api')
+            ->postJson("/api/v1/restaurants/{$restaurant->slug}/orders/{$order->id}/ready")
+            ->assertStatus(422);
+    }
+
     public function test_manager_can_cancel_restaurant_order_with_reason(): void
     {
         $owner = $this->createUser();

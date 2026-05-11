@@ -100,7 +100,7 @@ const fetchOperationalSnapshot = async () => {
   ]);
 
   activeCouriers.value = couriers.items.filter((courier: any) => courier.open_shift);
-  activeOrders.value = orders.items.filter((order: any) => ['ACCEPTED_BY_RESTAURANT', 'COURIER_ASSIGNED', 'PICKED_UP'].includes(order.status));
+  activeOrders.value = orders.items.filter((order: any) => ['ACCEPTED_BY_RESTAURANT', 'READY_FOR_PICKUP', 'COURIER_ASSIGNED', 'PICKED_UP'].includes(order.status));
   selectedCourier.value = activeCouriers.value.find((courier: any) => courier.latest_location) || null;
 };
 

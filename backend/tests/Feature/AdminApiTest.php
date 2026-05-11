@@ -107,7 +107,9 @@ class AdminApiTest extends TestCase
             'recorded_at' => now(),
         ]);
 
-        $order = $this->createAcceptedOrder($customer, $restaurant);
+        $order = $this->createAcceptedOrder($customer, $restaurant, null, [
+            'status' => OrderStatus::READY_FOR_PICKUP->value,
+        ]);
 
         $this
             ->actingAs($admin, 'api')

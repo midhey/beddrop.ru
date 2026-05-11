@@ -31,7 +31,7 @@ class AssignCourierOrder
         $profile = $this->ensureOpenShift($user);
 
         if (
-            $order->status !== OrderStatus::ACCEPTED_BY_RESTAURANT->value ||
+            $order->status !== OrderStatus::READY_FOR_PICKUP->value ||
             $order->courier_id !== null
         ) {
             throw new HttpResponseException(response()->json([

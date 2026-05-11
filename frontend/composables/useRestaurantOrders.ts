@@ -6,6 +6,7 @@ import {
     acceptRestaurantOrder,
     cancelRestaurantOrder,
     listRestaurantOrders,
+    markRestaurantOrderReady,
 } from '~/domains/restaurants/manage/api';
 import type { PaginationMeta } from '~/utils/api/pagination';
 
@@ -81,6 +82,26 @@ export function useRestaurantOrders() {
         }
     };
 
+    const markReady = async (
+        restaurantSlug: string,
+        orderId: number,
+    ): Promise<Order> => {
+        errorMessage.value = null;
+
+        try {
+            const updated = await markRestaurantOrderReady(restaurantSlug, orderId);
+
+            items.value = items.value.map((o) =>
+                o.id === updated.id ? updated : o,
+            );
+
+            return updated;
+        } catch (e) {
+            handleApiError(e);
+            throw e;
+        }
+    };
+
     return {
         items,
         pagination,
@@ -88,6 +109,7 @@ export function useRestaurantOrders() {
         errorMessage,
         fetchOrders,
         acceptOrder,
+        markReady,
         cancelOrder,
     };
 }

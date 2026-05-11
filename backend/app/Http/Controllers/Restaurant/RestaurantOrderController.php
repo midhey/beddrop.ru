@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Restaurant;
 
 use App\Actions\Restaurant\AcceptRestaurantOrder;
 use App\Actions\Restaurant\CancelRestaurantOrder;
+use App\Actions\Restaurant\MarkRestaurantOrderReady;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
@@ -62,6 +63,22 @@ class RestaurantOrderController extends Controller
         }
 
         return new OrderResource($acceptRestaurantOrder($order, $request->user()));
+    }
+
+    public function ready(
+        Restaurant $restaurant,
+        Order $order,
+        Request $request,
+        MarkRestaurantOrderReady $markRestaurantOrderReady
+    )
+    {
+        $this->authorize('manageOrders', $restaurant);
+
+        if($order->restaurant_id !== $restaurant->id) {
+            abort(404);
+        }
+
+        return new OrderResource($markRestaurantOrderReady($order, $request->user()));
     }
 
     public function cancel(

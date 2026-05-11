@@ -20,7 +20,9 @@ class CourierWorkflowTest extends TestCase
         $restaurantOwner = $this->createUser();
         $restaurant = $this->createRestaurant($restaurantOwner);
         $product = $this->createProduct($restaurant);
-        $order = $this->createAcceptedOrder($customer, $restaurant, $product);
+        $order = $this->createAcceptedOrder($customer, $restaurant, $product, [
+            'status' => OrderStatus::READY_FOR_PICKUP->value,
+        ]);
 
         $this->createCourierProfile($courier);
 

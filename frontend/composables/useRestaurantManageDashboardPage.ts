@@ -22,6 +22,7 @@ import {
 import type { Order } from '~/composables/useOrders';
 import {
     canRestaurantAcceptOrder,
+    canRestaurantMarkReadyOrder,
     canRestaurantCancelOrder,
     getOrderStatusClass,
     getOrderStatusLabel,
@@ -117,6 +118,7 @@ export function useRestaurantManageDashboardPage() {
         errorMessage: ordersError,
         fetchOrders: fetchRestaurantOrders,
         acceptOrder,
+        markReady,
         cancelOrder,
     } = useRestaurantOrders();
 
@@ -354,6 +356,19 @@ export function useRestaurantManageDashboardPage() {
         try {
             await acceptOrder(slug.value, order.id);
             feedback.success('Заказ принят');
+        } catch {
+        } finally {
+            actionOrderId.value = null;
+        }
+    };
+
+    const handleReady = async (order: Order) => {
+        if (!canRestaurantMarkReadyOrder(order) || actionOrderId.value) return;
+
+        actionOrderId.value = order.id;
+        try {
+            await markReady(slug.value, order.id);
+            feedback.success('Заказ готов к выдаче');
         } catch {
         } finally {
             actionOrderId.value = null;
@@ -869,6 +884,7 @@ export function useRestaurantManageDashboardPage() {
         settingsUploadInputKey,
         savingSettings,
         handleAccept,
+        handleReady,
         handleCancel,
         handleSettingsLogoChange,
         handleSaveSettings,
@@ -893,6 +909,7 @@ export function useRestaurantManageDashboardPage() {
         getPaymentMethodLabel,
         getPaymentStatusLabel,
         canRestaurantAcceptOrder,
+        canRestaurantMarkReadyOrder,
         canRestaurantCancelOrder,
         getRestaurantActivityLabel,
         getRestaurantActivityStatus,

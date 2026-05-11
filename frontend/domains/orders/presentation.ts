@@ -6,6 +6,7 @@ const ORDER_STATUS_LABELS: Record<OrderStatusLabelVariant, Record<string, string
     customer: {
         CREATED: 'Создан',
         ACCEPTED_BY_RESTAURANT: 'Принят рестораном',
+        READY_FOR_PICKUP: 'Готов к выдаче',
         COURIER_ASSIGNED: 'Курьер назначен',
         PICKED_UP: 'У курьера',
         DELIVERED: 'Доставлен',
@@ -15,6 +16,7 @@ const ORDER_STATUS_LABELS: Record<OrderStatusLabelVariant, Record<string, string
     restaurant: {
         CREATED: 'Новый',
         ACCEPTED_BY_RESTAURANT: 'Принят рестораном',
+        READY_FOR_PICKUP: 'Готов к выдаче',
         COURIER_ASSIGNED: 'Курьер назначен',
         PICKED_UP: 'У курьера',
         DELIVERED: 'Доставлен',
@@ -24,6 +26,7 @@ const ORDER_STATUS_LABELS: Record<OrderStatusLabelVariant, Record<string, string
     banner: {
         CREATED: 'Заказ создан',
         ACCEPTED_BY_RESTAURANT: 'Ресторан принял заказ',
+        READY_FOR_PICKUP: 'Заказ готов к выдаче',
         COURIER_ASSIGNED: 'Курьер назначен',
         PICKED_UP: 'Заказ у курьера',
         DELIVERED: 'Заказ доставлен',
@@ -35,6 +38,7 @@ const ORDER_STATUS_LABELS: Record<OrderStatusLabelVariant, Record<string, string
 const ORDER_STATUS_CLASS_MAP: Record<string, string> = {
     CREATED: 'order-status--info',
     ACCEPTED_BY_RESTAURANT: 'order-status--info',
+    READY_FOR_PICKUP: 'order-status--info',
     COURIER_ASSIGNED: 'order-status--info',
     PICKED_UP: 'order-status--info',
     DELIVERED: 'order-status--success',
@@ -45,6 +49,7 @@ const ORDER_STATUS_CLASS_MAP: Record<string, string> = {
 const BANNER_STATUS_CLASS_MAP: Record<string, string> = {
     CREATED: 'active-order-banner__status--info',
     ACCEPTED_BY_RESTAURANT: 'active-order-banner__status--info',
+    READY_FOR_PICKUP: 'active-order-banner__status--info',
     COURIER_ASSIGNED: 'active-order-banner__status--info',
     PICKED_UP: 'active-order-banner__status--info',
     DELIVERED: 'active-order-banner__status--success',
@@ -105,6 +110,12 @@ export const canRestaurantAcceptOrder = (
     return order.status === 'CREATED';
 };
 
+export const canRestaurantMarkReadyOrder = (
+    order: Pick<Order, 'status'>,
+): boolean => {
+    return order.status === 'ACCEPTED_BY_RESTAURANT';
+};
+
 export const canRestaurantCancelOrder = (
     order: Pick<Order, 'status'>,
 ): boolean => {
@@ -115,11 +126,15 @@ export const getRestaurantOrderNextStep = (
     order: Pick<Order, 'status' | 'courier_id'>,
 ): string => {
     if (order.status === 'CREATED') {
-        return 'Проверьте состав и примите заказ, чтобы он попал в ленту курьеров.';
+        return 'Проверьте состав и примите заказ в работу.';
     }
 
     if (order.status === 'ACCEPTED_BY_RESTAURANT') {
-        return 'Готовьте заказ. Он уже доступен курьерам, следующий статус появится после назначения курьера.';
+        return 'Готовьте заказ. Когда он будет собран, отметьте готовность к выдаче.';
+    }
+
+    if (order.status === 'READY_FOR_PICKUP') {
+        return 'Заказ доступен курьерам. Ожидайте назначения курьера.';
     }
 
     if (order.status === 'COURIER_ASSIGNED') {

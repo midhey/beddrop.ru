@@ -18,6 +18,7 @@ return new class extends Migration
             $table->enum('event', [
                 'CREATED',
                 'ACCEPTED_BY_RESTAURANT',
+                'READY_FOR_PICKUP',
                 'COURIER_ASSIGNED',
                 'PICKED_UP',
                 'DELIVERED',

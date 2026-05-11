@@ -57,7 +57,7 @@ class CourierOrderController extends Controller
         $profile = $this->ensureOpenShift($request);
 
         $orders = Order::query()
-            ->where('status', OrderStatus::ACCEPTED_BY_RESTAURANT->value)
+            ->where('status', OrderStatus::READY_FOR_PICKUP->value)
             ->whereNull('courier_id')
             ->with([
                 'restaurant.address',

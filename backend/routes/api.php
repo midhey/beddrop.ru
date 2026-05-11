@@ -101,6 +101,7 @@ Route::prefix('/v1')->group(function () {
                 Route::get('/', [RestaurantOrderController::class, 'index']);
                 Route::get('/{order}', [RestaurantOrderController::class, 'show']);
                 Route::post('/{order}/accept', [RestaurantOrderController::class, 'accept']);
+                Route::post('/{order}/ready', [RestaurantOrderController::class, 'ready']);
                 Route::post('/{order}/cancel', [RestaurantOrderController::class, 'cancel']);
             });
         });
@@ -199,6 +200,7 @@ Route::prefix('/v1')->group(function () {
         Route::get('/orders', [AdminOrderController::class, 'index']);
         Route::get('/orders/{order}', [AdminOrderController::class, 'show']);
         Route::post('/orders/{order}/accept', [AdminOrderController::class, 'accept']);
+        Route::post('/orders/{order}/ready', [AdminOrderController::class, 'ready']);
         Route::post('/orders/{order}/cancel', [AdminOrderController::class, 'cancel']);
         Route::post('/orders/{order}/assign-courier', [AdminOrderController::class, 'assign']);
         Route::post('/orders/{order}/unassign-courier', [AdminOrderController::class, 'unassign']);

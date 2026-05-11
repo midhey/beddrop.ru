@@ -105,6 +105,19 @@ class AdminOrderController extends Controller
         }));
     }
 
+    public function ready(Request $request, Order $order): OrderResource
+    {
+        $this->ensureStatus($order, [OrderStatus::ACCEPTED_BY_RESTAURANT]);
+
+        return new OrderResource(DB::transaction(function () use ($request, $order) {
+            $order->status = OrderStatus::READY_FOR_PICKUP->value;
+            $order->save();
+            $this->event($request, $order, OrderStatus::READY_FOR_PICKUP->value);
+
+            return $this->loadOrder($order);
+        }));
+    }
+
     public function assign(
         Request $request,
         Order $order,
@@ -115,7 +128,7 @@ class AdminOrderController extends Controller
             'courier_user_id' => ['required', 'integer', 'exists:courier_profiles,user_id'],
         ]);
 
-        $this->ensureStatus($order, [OrderStatus::ACCEPTED_BY_RESTAURANT]);
+        $this->ensureStatus($order, [OrderStatus::READY_FOR_PICKUP]);
 
         if ($order->courier_id !== null) {
             abort(422, 'У заказа уже назначен курьер.');
@@ -144,13 +157,13 @@ class AdminOrderController extends Controller
         return new OrderResource(DB::transaction(function () use ($request, $order) {
             $previousCourierId = $order->courier_id;
             $order->courier_id = null;
-            $order->status = OrderStatus::ACCEPTED_BY_RESTAURANT->value;
+            $order->status = OrderStatus::READY_FOR_PICKUP->value;
             $order->save();
             OrderRouteSegment::query()
                 ->where('order_id', $order->id)
                 ->where('segment_type', 'courier_to_restaurant')
                 ->delete();
-            $this->event($request, $order, OrderStatus::ACCEPTED_BY_RESTAURANT->value, [
+            $this->event($request, $order, OrderStatus::READY_FOR_PICKUP->value, [
                 'previous_courier_user_id' => $previousCourierId,
                 'admin_action' => 'unassign_courier',
             ]);
