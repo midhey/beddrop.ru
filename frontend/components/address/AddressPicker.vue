@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { LocateFixed, MapPin, Search } from 'lucide-vue-next';
 import { useGeo, type AddressSuggestion } from '~/composables/useGeo';
 import type { AddressPayload } from '~/composables/useAddresses';
@@ -213,6 +213,15 @@ watch(
     }
   },
 );
+
+onMounted(async () => {
+  if (!hasCoordinates.value) return;
+
+  await nextTick();
+  await ensureMap();
+  syncMarker();
+  map?.resize?.();
+});
 
 onBeforeUnmount(() => {
   if (debounceTimer) clearTimeout(debounceTimer);

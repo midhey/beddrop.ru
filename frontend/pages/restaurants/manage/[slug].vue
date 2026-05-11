@@ -44,10 +44,15 @@ const {
   ordersLoading,
   showCreateProductForm,
   createForm,
-  createProductImagePreview,
+  createProductImagePreviews,
   imageUploading,
   creatingProduct,
   productActionId,
+  editingProductId,
+  editForm,
+  editProductImagePreviews,
+  savingProductEdit,
+  productImageLimit,
   inviteRole,
   inviteExpiryMinutes,
   latestStaffInvite,
@@ -63,6 +68,12 @@ const {
   handleSaveSettings,
   handleCreateProduct,
   handleCreateProductImageChange,
+  startEditProduct,
+  cancelEditProduct,
+  handleEditProductImageChange,
+  handleUpdateProduct,
+  handleSetProductCover,
+  handleDeleteProductImage,
   toggleProductActive,
   handleDeleteProduct,
   handleCreateStaffInvite,
@@ -72,6 +83,7 @@ const {
   formatDateTime,
   getOrderStatusClass,
   getOrderStatusLabel,
+  getRestaurantOrderNextStep,
   getPaymentMethodLabel,
   getPaymentStatusLabel,
   canRestaurantAcceptOrder,
@@ -551,6 +563,10 @@ const copyInviteLink = async () => {
                       Отменить
                     </button>
                   </div>
+
+                  <p class="restaurant-dashboard__order-next-step">
+                    {{ getRestaurantOrderNextStep(order) }}
+                  </p>
                 </div>
               </template>
             </BaseAccordion>
@@ -690,28 +706,39 @@ const copyInviteLink = async () => {
 
               <div class="restaurant-dashboard__create-product-aside">
                 <label class="restaurant-dashboard__form-label">
-                  Обложка блюда
+                  Фото блюда
                 </label>
 
                 <label class="restaurant-dashboard__product-upload">
                   <input
                     type="file"
                     accept="image/*"
+                    multiple
                     class="restaurant-dashboard__product-upload-input"
                     @change="handleCreateProductImageChange"
                   />
                   <span class="restaurant-dashboard__product-upload-copy">
-                    Загрузить изображение
+                    Загрузить до {{ productImageLimit }} фото
                   </span>
                   <span class="restaurant-dashboard__product-upload-hint">
                     JPG, PNG или WebP. Первое фото станет обложкой карточки.
                   </span>
                 </label>
 
-                <div class="restaurant-dashboard__product-upload-preview">
+                <div
+                  class="restaurant-dashboard__product-upload-preview"
+                  :class="{
+                    'restaurant-dashboard__product-upload-preview--grid':
+                      createProductImagePreviews.length > 1,
+                  }"
+                >
                   <img
-                    :src="createProductImagePreview || placeholderImg"
-                    alt="Превью блюда"
+                    v-for="(preview, index) in createProductImagePreviews.length
+                      ? createProductImagePreviews
+                      : [placeholderImg]"
+                    :key="preview"
+                    :src="preview"
+                    :alt="index === 0 ? 'Обложка блюда' : 'Фото блюда'"
                     class="restaurant-dashboard__product-upload-preview-image"
                   />
                 </div>
@@ -810,13 +837,216 @@ const copyInviteLink = async () => {
                     Создано: {{ formatDateTime(product.created_at) }}
                   </span>
                 </div>
+
+                <div
+                  v-if="editingProductId === product.id"
+                  class="restaurant-dashboard__product-edit"
+                >
+                  <div class="restaurant-dashboard__create-product-columns">
+                    <div class="restaurant-dashboard__form-row form-field">
+                      <label class="restaurant-dashboard__form-label">
+                        Название
+                      </label>
+                      <input
+                        v-model="editForm.name"
+                        type="text"
+                        class="restaurant-dashboard__form-input field-input"
+                      />
+                    </div>
+
+                    <div class="restaurant-dashboard__form-row form-field">
+                      <label class="restaurant-dashboard__form-label">
+                        Цена (₽)
+                      </label>
+                      <input
+                        v-model="editForm.price"
+                        type="number"
+                        min="0"
+                        step="1"
+                        class="restaurant-dashboard__form-input field-input"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="restaurant-dashboard__create-product-columns">
+                    <div class="restaurant-dashboard__form-row form-field">
+                      <label class="restaurant-dashboard__form-label">
+                        Категория
+                      </label>
+                      <select
+                        v-model="editForm.category_id"
+                        class="restaurant-dashboard__form-input field-select"
+                      >
+                        <option value="" disabled>Выберите категорию</option>
+                        <option
+                          v-for="category in productCategories"
+                          :key="category.id"
+                          :value="String(category.id)"
+                        >
+                          {{ category.name }}
+                        </option>
+                      </select>
+                    </div>
+
+                    <div
+                      class="restaurant-dashboard__form-row restaurant-dashboard__form-row--inline form-field"
+                    >
+                      <label
+                        class="restaurant-dashboard__form-checkbox-label restaurant-dashboard__form-checkbox-label--boxed"
+                      >
+                        <input v-model="editForm.is_active" type="checkbox" />
+                        <span>Показывать в меню</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div class="restaurant-dashboard__form-row form-field">
+                    <label class="restaurant-dashboard__form-label">
+                      Описание
+                    </label>
+                    <textarea
+                      v-model="editForm.description"
+                      rows="3"
+                      class="restaurant-dashboard__form-textarea field-textarea"
+                    ></textarea>
+                  </div>
+
+                  <div class="restaurant-dashboard__product-gallery">
+                    <div class="restaurant-dashboard__product-gallery-head">
+                      <span class="restaurant-dashboard__form-label">
+                        Фото блюда
+                      </span>
+                      <span class="restaurant-dashboard__product-gallery-count">
+                        {{ product.images?.length || 0 }} / {{ productImageLimit }}
+                      </span>
+                    </div>
+
+                    <div
+                      v-if="product.images?.length"
+                      class="restaurant-dashboard__product-gallery-grid"
+                    >
+                      <div
+                        v-for="image in product.images"
+                        :key="image.id"
+                        class="restaurant-dashboard__product-gallery-item"
+                      >
+                        <img
+                          :src="image.media.url"
+                          :alt="product.name"
+                          class="restaurant-dashboard__product-gallery-image"
+                        />
+                        <span
+                          v-if="image.is_cover"
+                          class="restaurant-dashboard__product-gallery-cover"
+                        >
+                          Обложка
+                        </span>
+                        <div class="restaurant-dashboard__product-gallery-actions">
+                          <button
+                            type="button"
+                            class="restaurant-dashboard__gallery-btn"
+                            :disabled="
+                              image.is_cover || productActionId === product.id
+                            "
+                            @click="handleSetProductCover(product, image)"
+                          >
+                            Обложка
+                          </button>
+                          <button
+                            type="button"
+                            class="restaurant-dashboard__gallery-btn restaurant-dashboard__gallery-btn--danger"
+                            :disabled="productActionId === product.id"
+                            @click="handleDeleteProductImage(product, image)"
+                          >
+                            Удалить
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <label
+                      v-if="(product.images?.length || 0) < productImageLimit"
+                      class="restaurant-dashboard__product-upload restaurant-dashboard__product-upload--compact"
+                    >
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        class="restaurant-dashboard__product-upload-input"
+                        @change="handleEditProductImageChange(product, $event)"
+                      />
+                      <span class="restaurant-dashboard__product-upload-copy">
+                        Добавить фото
+                      </span>
+                      <span class="restaurant-dashboard__product-upload-hint">
+                        Можно добавить ещё
+                        {{ productImageLimit - (product.images?.length || 0) }}.
+                      </span>
+                    </label>
+
+                    <div
+                      v-if="editProductImagePreviews.length"
+                      class="restaurant-dashboard__product-upload-preview restaurant-dashboard__product-upload-preview--grid restaurant-dashboard__product-upload-preview--compact"
+                    >
+                      <img
+                        v-for="preview in editProductImagePreviews"
+                        :key="preview"
+                        :src="preview"
+                        alt="Новое фото блюда"
+                        class="restaurant-dashboard__product-upload-preview-image"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="restaurant-dashboard__form-actions form-actions">
+                    <button
+                      type="button"
+                      class="restaurant-dashboard__order-btn"
+                      :disabled="
+                        savingProductEdit ||
+                        imageUploading ||
+                        productActionId === product.id
+                      "
+                      @click="handleUpdateProduct(product)"
+                    >
+                      {{
+                        savingProductEdit || imageUploading
+                          ? "Сохраняем..."
+                          : "Сохранить"
+                      }}
+                    </button>
+                    <button
+                      type="button"
+                      class="restaurant-dashboard__order-btn"
+                      :disabled="savingProductEdit"
+                      @click="cancelEditProduct"
+                    >
+                      Отмена
+                    </button>
+                  </div>
+                </div>
               </div>
 
               <div class="restaurant-dashboard__product-actions">
                 <button
                   type="button"
                   class="restaurant-dashboard__order-btn"
-                  :disabled="productActionId === product.id"
+                  :disabled="
+                    productActionId === product.id ||
+                    editingProductId === product.id
+                  "
+                  @click="startEditProduct(product)"
+                >
+                  Редактировать
+                </button>
+
+                <button
+                  type="button"
+                  class="restaurant-dashboard__order-btn"
+                  :disabled="
+                    productActionId === product.id ||
+                    editingProductId === product.id
+                  "
                   @click="toggleProductActive(product)"
                 >
                   {{ product.is_active ? "Скрыть из меню" : "Вернуть в меню" }}
@@ -825,7 +1055,10 @@ const copyInviteLink = async () => {
                 <button
                   type="button"
                   class="restaurant-dashboard__order-btn restaurant-dashboard__order-btn--danger"
-                  :disabled="productActionId === product.id"
+                  :disabled="
+                    productActionId === product.id ||
+                    editingProductId === product.id
+                  "
                   @click="handleDeleteProduct(product)"
                 >
                   Удалить блюдо

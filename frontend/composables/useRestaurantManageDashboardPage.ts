@@ -1,4 +1,4 @@
-import { computed, onMounted, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from '#app';
 import { useSeoMeta } from '#imports';
 import { useFeedback } from '~/composables/useFeedback';
@@ -9,6 +9,7 @@ import { useMediaUpload } from '~/composables/useMediaUpload';
 import {
     useRestaurantProducts,
     type Product,
+    type ProductImageRef,
     type ProductPayload,
 } from '~/composables/useRestaurantProducts';
 import { useRestaurantOrders } from '~/composables/useRestaurantOrders';
@@ -24,6 +25,7 @@ import {
     canRestaurantCancelOrder,
     getOrderStatusClass,
     getOrderStatusLabel,
+    getRestaurantOrderNextStep,
     getPaymentMethodLabel,
     getPaymentStatusLabel,
 } from '~/domains/orders/presentation';
@@ -36,6 +38,29 @@ import {
 import { formatDateTime, formatPrice } from '~/utils/formatting';
 
 type TabKey = 'orders' | 'menu' | 'staff' | 'settings';
+type ProductFormState = {
+    name: string;
+    price: string;
+    category_id: string;
+    description: string;
+    is_active: boolean;
+};
+
+const PRODUCT_IMAGE_LIMIT = 5;
+
+const emptyProductForm = (): ProductFormState => ({
+    name: '',
+    price: '',
+    category_id: '',
+    description: '',
+    is_active: true,
+});
+
+const revokeObjectUrls = (urls: string[]) => {
+    for (const url of urls) {
+        URL.revokeObjectURL(url);
+    }
+};
 
 export function useRestaurantManageDashboardPage() {
     const route = useRoute();
@@ -61,6 +86,8 @@ export function useRestaurantManageDashboardPage() {
         updateProduct,
         deleteProduct,
         addProductImage,
+        updateProductImage,
+        deleteProductImage,
     } = useRestaurantProducts();
 
     const {
@@ -317,56 +344,37 @@ export function useRestaurantManageDashboardPage() {
 
     const showCreateProductForm = ref(false);
 
-    const createForm = ref<{
-        name: string;
-        price: string;
-        category_id: string;
-        description: string;
-        is_active: boolean;
-    }>({
-        name: '',
-        price: '',
-        category_id: '',
-        description: '',
-        is_active: true,
-    });
-    const createProductImageFile = ref<File | null>(null);
-    const createProductImagePreview = ref<string | null>(null);
+    const createForm = ref<ProductFormState>(emptyProductForm());
+    const createProductImageFiles = ref<File[]>([]);
+    const createProductImagePreviews = ref<string[]>([]);
 
     const creatingProduct = ref(false);
     const productActionId = ref<number | null>(null);
+    const editingProductId = ref<number | null>(null);
+    const editForm = ref<ProductFormState>(emptyProductForm());
+    const editProductImageFiles = ref<File[]>([]);
+    const editProductImagePreviews = ref<string[]>([]);
+    const savingProductEdit = ref(false);
 
     const resetCreateForm = () => {
-        createForm.value = {
-            name: '',
-            price: '',
-            category_id: '',
-            description: '',
-            is_active: true,
-        };
-        createProductImageFile.value = null;
-
-        if (createProductImagePreview.value) {
-            URL.revokeObjectURL(createProductImagePreview.value);
-        }
-
-        createProductImagePreview.value = null;
+        createForm.value = emptyProductForm();
+        createProductImageFiles.value = [];
+        revokeObjectUrls(createProductImagePreviews.value);
+        createProductImagePreviews.value = [];
     };
 
     const handleCreateProductImageChange = (event: Event) => {
         const input = event.target as HTMLInputElement | null;
-        const file = input?.files?.[0] ?? null;
+        const files = Array.from(input?.files ?? []);
 
-        createProductImageFile.value = file;
-
-        if (createProductImagePreview.value) {
-            URL.revokeObjectURL(createProductImagePreview.value);
-            createProductImagePreview.value = null;
+        if (files.length > PRODUCT_IMAGE_LIMIT) {
+            feedback.failure(`Можно загрузить не больше ${PRODUCT_IMAGE_LIMIT} фото`);
         }
 
-        if (file) {
-            createProductImagePreview.value = URL.createObjectURL(file);
-        }
+        createProductImageFiles.value = files.slice(0, PRODUCT_IMAGE_LIMIT);
+
+        revokeObjectUrls(createProductImagePreviews.value);
+        createProductImagePreviews.value = createProductImageFiles.value.map((file) => URL.createObjectURL(file));
     };
 
     const handleCreateProduct = async () => {
@@ -396,17 +404,22 @@ export function useRestaurantManageDashboardPage() {
 
             let nextProduct = newProduct;
 
-            if (createProductImageFile.value) {
-                const media = await uploadMedia(createProductImageFile.value);
-                const image = await addProductImage(slug.value, newProduct.id, {
-                    media_id: media.id,
-                    is_cover: true,
-                    sort_order: 0,
-                });
+            if (createProductImageFiles.value.length) {
+                const images: ProductImageRef[] = [];
+
+                for (const [index, file] of createProductImageFiles.value.entries()) {
+                    const media = await uploadMedia(file);
+                    const image = await addProductImage(slug.value, newProduct.id, {
+                        media_id: media.id,
+                        is_cover: index === 0,
+                        sort_order: index,
+                    });
+                    images.push(image);
+                }
 
                 nextProduct = {
                     ...newProduct,
-                    images: [image],
+                    images,
                 };
             }
 
@@ -417,6 +430,181 @@ export function useRestaurantManageDashboardPage() {
         } catch {
         } finally {
             creatingProduct.value = false;
+        }
+    };
+
+    const productToForm = (product: Product): ProductFormState => ({
+        name: product.name,
+        price: String(product.price),
+        category_id: String(product.category?.id ?? product.category_id ?? ''),
+        description: product.description ?? '',
+        is_active: product.is_active,
+    });
+
+    const replaceProduct = (updated: Product) => {
+        products.value = products.value.map((item) =>
+            item.id === updated.id
+                ? {
+                    ...item,
+                    ...updated,
+                    category: updated.category ?? item.category,
+                    images: updated.images ?? item.images,
+                }
+                : item,
+        );
+    };
+
+    const startEditProduct = (product: Product) => {
+        if (savingProductEdit.value || productActionId.value) return;
+
+        editingProductId.value = product.id;
+        editForm.value = productToForm(product);
+        editProductImageFiles.value = [];
+        revokeObjectUrls(editProductImagePreviews.value);
+        editProductImagePreviews.value = [];
+        showCreateProductForm.value = false;
+    };
+
+    const cancelEditProduct = () => {
+        editingProductId.value = null;
+        editForm.value = emptyProductForm();
+        editProductImageFiles.value = [];
+        revokeObjectUrls(editProductImagePreviews.value);
+        editProductImagePreviews.value = [];
+    };
+
+    const handleEditProductImageChange = (product: Product, event: Event) => {
+        const input = event.target as HTMLInputElement | null;
+        const files = Array.from(input?.files ?? []);
+        const currentImageCount = product.images?.length ?? 0;
+        const availableSlots = Math.max(PRODUCT_IMAGE_LIMIT - currentImageCount, 0);
+
+        if (files.length > availableSlots) {
+            feedback.failure(
+                availableSlots > 0
+                    ? `Можно добавить ещё ${availableSlots} фото`
+                    : `У блюда уже есть ${PRODUCT_IMAGE_LIMIT} фото`,
+            );
+        }
+
+        editProductImageFiles.value = files.slice(0, availableSlots);
+
+        revokeObjectUrls(editProductImagePreviews.value);
+        editProductImagePreviews.value = editProductImageFiles.value.map((file) => URL.createObjectURL(file));
+    };
+
+    const handleUpdateProduct = async (product: Product) => {
+        if (savingProductEdit.value || productActionId.value) return;
+
+        const name = editForm.value.name.trim();
+        const priceNum = Number(editForm.value.price);
+        const catIdNum = Number(editForm.value.category_id) || 0;
+
+        if (!name || Number.isNaN(priceNum) || priceNum <= 0 || !catIdNum) {
+            feedback.failure('Заполните название, цену и категорию');
+            return;
+        }
+
+        savingProductEdit.value = true;
+        productActionId.value = product.id;
+
+        try {
+            const updated = await updateProduct(slug.value, product.id, {
+                name,
+                price: priceNum,
+                category_id: catIdNum,
+                description: editForm.value.description.trim() || null,
+                is_active: editForm.value.is_active,
+            });
+
+            const existingImages = updated.images?.length ? updated.images : product.images ?? [];
+            const uploadedImages: ProductImageRef[] = [];
+
+            if (editProductImageFiles.value.length) {
+                for (const [index, file] of editProductImageFiles.value.entries()) {
+                    const media = await uploadMedia(file);
+                    const image = await addProductImage(slug.value, product.id, {
+                        media_id: media.id,
+                        is_cover: existingImages.length === 0 && index === 0,
+                        sort_order: existingImages.length + index,
+                    });
+                    uploadedImages.push(image);
+                }
+            }
+
+            replaceProduct({
+                ...updated,
+                images: [...existingImages, ...uploadedImages],
+            });
+
+            feedback.success('Блюдо обновлено');
+            cancelEditProduct();
+        } catch {
+        } finally {
+            savingProductEdit.value = false;
+            productActionId.value = null;
+        }
+    };
+
+    const handleSetProductCover = async (product: Product, image: ProductImageRef) => {
+        if (productActionId.value || image.is_cover) return;
+
+        productActionId.value = product.id;
+
+        try {
+            const updatedImage = await updateProductImage(slug.value, product.id, image.id, {
+                is_cover: true,
+            });
+
+            replaceProduct({
+                ...product,
+                images: (product.images ?? []).map((item) =>
+                    item.id === updatedImage.id
+                        ? updatedImage
+                        : {
+                            ...item,
+                            is_cover: false,
+                        },
+                ),
+            });
+            feedback.success('Обложка обновлена');
+        } catch {
+        } finally {
+            productActionId.value = null;
+        }
+    };
+
+    const handleDeleteProductImage = async (product: Product, image: ProductImageRef) => {
+        if (productActionId.value) return;
+
+        productActionId.value = product.id;
+
+        try {
+            await deleteProductImage(slug.value, product.id, image.id);
+            let nextImages = (product.images ?? []).filter((item) => item.id !== image.id);
+
+            if (image.is_cover && nextImages.length) {
+                const nextCover = await updateProductImage(slug.value, product.id, nextImages[0].id, {
+                    is_cover: true,
+                });
+                nextImages = nextImages.map((item) =>
+                    item.id === nextCover.id
+                        ? nextCover
+                        : {
+                            ...item,
+                            is_cover: false,
+                        },
+                );
+            }
+
+            replaceProduct({
+                ...product,
+                images: nextImages,
+            });
+            feedback.success('Фото удалено');
+        } catch {
+        } finally {
+            productActionId.value = null;
         }
     };
 
@@ -594,6 +782,10 @@ export function useRestaurantManageDashboardPage() {
     };
 
     onMounted(init);
+    onBeforeUnmount(() => {
+        revokeObjectUrls(createProductImagePreviews.value);
+        revokeObjectUrls(editProductImagePreviews.value);
+    });
 
     return {
         restaurant,
@@ -623,10 +815,15 @@ export function useRestaurantManageDashboardPage() {
         ordersLoading,
         showCreateProductForm,
         createForm,
-        createProductImagePreview,
+        createProductImagePreviews,
         imageUploading,
         creatingProduct,
         productActionId,
+        editingProductId,
+        editForm,
+        editProductImagePreviews,
+        savingProductEdit,
+        productImageLimit: PRODUCT_IMAGE_LIMIT,
         inviteRole,
         inviteExpiryMinutes,
         latestStaffInvite,
@@ -642,6 +839,12 @@ export function useRestaurantManageDashboardPage() {
         handleSaveSettings,
         handleCreateProduct,
         handleCreateProductImageChange,
+        startEditProduct,
+        cancelEditProduct,
+        handleEditProductImageChange,
+        handleUpdateProduct,
+        handleSetProductCover,
+        handleDeleteProductImage,
         toggleProductActive,
         handleDeleteProduct,
         handleCreateStaffInvite,
@@ -651,6 +854,7 @@ export function useRestaurantManageDashboardPage() {
         formatDateTime,
         getOrderStatusClass,
         getOrderStatusLabel,
+        getRestaurantOrderNextStep,
         getPaymentMethodLabel,
         getPaymentStatusLabel,
         canRestaurantAcceptOrder,

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ArrowLeft } from 'lucide-vue-next';
-import RouteMap from '~/components/map/RouteMap.vue';
-import { useOrderDetailsPage } from '~/composables/useOrderDetailsPage';
+import { ArrowLeft } from "lucide-vue-next";
+import RouteMap from "~/components/map/RouteMap.vue";
+import { useOrderDetailsPage } from "~/composables/useOrderDetailsPage";
 
 const {
   current,
@@ -25,11 +25,16 @@ const {
   <section class="order-page page-shell">
     <div class="order-page__container container">
       <button
-          type="button"
-          class="order-page__back page-back"
-          @click="$router.back()"
+        type="button"
+        class="order-page__back page-back"
+        @click="$router.back()"
       >
-        <ArrowLeft class="ui-icon" :size="16" :stroke-width="1.9" aria-hidden="true" />
+        <ArrowLeft
+          class="ui-icon"
+          :size="16"
+          :stroke-width="1.9"
+          aria-hidden="true"
+        />
         <span>Назад</span>
       </button>
 
@@ -39,54 +44,47 @@ const {
         </h1>
 
         <span
-            v-if="current"
-            class="order-status status-chip"
-            :class="getOrderStatusClass(current.status)"
+          v-if="current"
+          class="order-status status-chip"
+          :class="getOrderStatusClass(current.status)"
         >
           {{ getOrderStatusLabel(current.status) }}
         </span>
       </div>
 
       <div
-          v-if="currentLoading"
-          class="order-page__loading state-message state-message--loading"
+        v-if="currentLoading"
+        class="order-page__loading state-message state-message--loading"
       >
         Загрузка заказа...
       </div>
 
       <div
-          v-else-if="errorMessage"
-          class="order-page__error state-message state-message--error"
+        v-else-if="errorMessage"
+        class="order-page__error state-message state-message--error"
       >
         {{ errorMessage }}
       </div>
 
       <div
-          v-else-if="!current"
-          class="order-page__empty state-message state-message--empty"
+        v-else-if="!current"
+        class="order-page__empty state-message state-message--empty"
       >
         Заказ не найден.
       </div>
 
-      <div
-        v-else
-        class="order-page__content"
-      >
+      <div v-else class="order-page__content">
         <!-- Блок ресторана и общая информация -->
         <div class="order-page__card surface-card">
           <div class="order-page__row">
             <div class="order-page__col">
-              <div class="order-page__label">
-                Ресторан
-              </div>
+              <div class="order-page__label">Ресторан</div>
               <div class="order-page__value">
-                {{ current.restaurant?.name || 'Неизвестно' }}
+                {{ current.restaurant?.name || "Неизвестно" }}
               </div>
             </div>
             <div class="order-page__col">
-              <div class="order-page__label">
-                Создан
-              </div>
+              <div class="order-page__label">Создан</div>
               <div class="order-page__value">
                 {{ formatDateTime(current.created_at) }}
               </div>
@@ -95,9 +93,7 @@ const {
 
           <div class="order-page__row">
             <div class="order-page__col">
-              <div class="order-page__label">
-                Оплата
-              </div>
+              <div class="order-page__label">Оплата</div>
               <div class="order-page__value">
                 {{ getPaymentMethodLabel(current.payment_method) }}
                 ·
@@ -105,23 +101,16 @@ const {
               </div>
             </div>
             <div class="order-page__col">
-              <div class="order-page__label">
-                Сумма заказа
-              </div>
+              <div class="order-page__label">Сумма заказа</div>
               <div class="order-page__value order-page__value--price">
                 {{ formatPrice(current.total_price) }}
               </div>
             </div>
           </div>
 
-          <div
-              v-if="current.comment"
-              class="order-page__row"
-          >
+          <div v-if="current.comment" class="order-page__row">
             <div class="order-page__col order-page__col--full">
-              <div class="order-page__label">
-                Комментарий к заказу
-              </div>
+              <div class="order-page__label">Комментарий к заказу</div>
               <div class="order-page__value">
                 {{ current.comment }}
               </div>
@@ -130,43 +119,54 @@ const {
         </div>
 
         <div
-            v-if="current.route_segments?.length"
-            class="order-page__card surface-card"
+          v-if="current.route_segments?.length"
+          class="order-page__card surface-card"
         >
           <div class="order-page__section-header section-head">
-            <h2 class="section-title">Маршрут доставки</h2>
+            <h2 class="section-title">Ожидаемое время и маршрут доставки</h2>
             <span
-                v-if="routeDistanceKm"
-                class="order-page__section-meta section-meta"
+              v-if="routeDistanceKm"
+              class="order-page__section-meta section-meta"
             >
               {{ routeDistanceKm }} км
             </span>
           </div>
 
           <div class="order-page__route-summary">
-            <div v-if="deliveryDurationMinutes" class="order-page__route-summary-item">
+            <div
+              v-if="deliveryDurationMinutes"
+              class="order-page__route-summary-item"
+            >
               <span>В пути</span>
               <strong>{{ deliveryDurationMinutes }} мин</strong>
             </div>
-            <div v-if="current.estimated_pickup_at" class="order-page__route-summary-item">
+            <div
+              v-if="current.estimated_pickup_at"
+              class="order-page__route-summary-item"
+            >
               <span>Ожидаемая выдача</span>
               <strong>{{ formatDateTime(current.estimated_pickup_at) }}</strong>
             </div>
-            <div v-if="current.estimated_delivery_at" class="order-page__route-summary-item">
+            <div
+              v-if="current.estimated_delivery_at"
+              class="order-page__route-summary-item"
+            >
               <span>Ожидаемая доставка</span>
-              <strong>{{ formatDateTime(current.estimated_delivery_at) }}</strong>
+              <strong>{{
+                formatDateTime(current.estimated_delivery_at)
+              }}</strong>
             </div>
           </div>
 
           <div
-              v-if="logisticsTimeBreakdown.length"
-              class="order-page__route-breakdown"
+            v-if="logisticsTimeBreakdown.length"
+            class="order-page__route-breakdown"
           >
             <div
-                v-for="item in logisticsTimeBreakdown"
-                :key="item.label"
-                class="order-page__route-breakdown-item"
-                :class="{ 'order-page__route-breakdown-item--total': item.total }"
+              v-for="item in logisticsTimeBreakdown"
+              :key="item.label"
+              class="order-page__route-breakdown-item"
+              :class="{ 'order-page__route-breakdown-item--total': item.total }"
             >
               <span>{{ item.label }}</span>
               <strong>{{ item.value }} мин</strong>
@@ -174,10 +174,10 @@ const {
           </div>
 
           <RouteMap
-              :route-segments="current.route_segments"
-              :restaurant-address="current.restaurant?.address"
-              :delivery-address="current.delivery_address"
-              :height="320"
+            :route-segments="current.route_segments"
+            :restaurant-address="current.restaurant?.address"
+            :delivery-address="current.delivery_address"
+            :height="320"
           />
         </div>
 
@@ -186,27 +186,23 @@ const {
           <div class="order-page__section-header section-head">
             <h2 class="section-title">Состав заказа</h2>
             <span class="order-page__section-meta section-meta">
-              {{ current.items_count ?? '—' }} позиций
+              {{ current.items_count ?? "—" }} позиций
             </span>
           </div>
 
           <ul class="order-page__items">
-            <li
-                v-for="item in current.items"
-                :key="item.id"
-                class="order-item"
-            >
+            <li v-for="item in current.items" :key="item.id" class="order-item">
               <div class="order-item__image-wrapper">
                 <img
-                    v-if="item.product?.images && item.product.images.length"
-                    :src="item.product.images[0].media.url"
-                    :alt="item.name_snapshot"
-                    class="order-item__image"
-                    loading="lazy"
-                >
+                  v-if="item.product?.images && item.product.images.length"
+                  :src="item.product.images[0].media.url"
+                  :alt="item.name_snapshot"
+                  class="order-item__image"
+                  loading="lazy"
+                />
                 <div
-                    v-else
-                    class="order-item__image order-item__image--placeholder"
+                  v-else
+                  class="order-item__image order-item__image--placeholder"
                 >
                   Без изображения
                 </div>
@@ -223,9 +219,7 @@ const {
                 </div>
 
                 <div class="order-item__bottom">
-                  <span class="order-item__qty">
-                    {{ item.quantity }} шт.
-                  </span>
+                  <span class="order-item__qty"> {{ item.quantity }} шт. </span>
                   <span class="order-item__subtotal">
                     {{ formatPrice(item.subtotal) }}
                   </span>
@@ -236,19 +230,16 @@ const {
         </div>
 
         <!-- Таймлайн событий -->
-        <div
-            v-if="sortedEvents.length"
-            class="order-page__card surface-card"
-        >
+        <div v-if="sortedEvents.length" class="order-page__card surface-card">
           <div class="order-page__section-header section-head">
             <h2 class="section-title">Статус заказа</h2>
           </div>
 
           <ul class="order-page__timeline">
             <li
-                v-for="event in sortedEvents"
-                :key="event.id"
-                class="timeline-item"
+              v-for="event in sortedEvents"
+              :key="event.id"
+              class="timeline-item"
             >
               <div class="timeline-item__dot"></div>
               <div class="timeline-item__content">
@@ -262,7 +253,6 @@ const {
             </li>
           </ul>
         </div>
-
       </div>
     </div>
   </section>

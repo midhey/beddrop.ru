@@ -125,12 +125,12 @@ export const addRestaurantProductImage = async (
     payload: ProductImagePayload,
 ): Promise<ProductImageRef> => {
     const { $api } = useNuxtApp();
-    const { data } = await $api.post<{ image: ProductImageRef }>(
+    const { data } = await $api.post<{ image?: ProductImageRef; data?: ProductImageRef }>(
         `/restaurants/${restaurantSlug}/products/${productId}/images`,
         payload,
     );
 
-    return data.image;
+    return data.image ?? data.data!;
 };
 
 export const updateRestaurantProductImage = async (
@@ -140,12 +140,12 @@ export const updateRestaurantProductImage = async (
     payload: Partial<ProductImagePayload>,
 ): Promise<ProductImageRef> => {
     const { $api } = useNuxtApp();
-    const { data } = await $api.put<{ image: ProductImageRef }>(
+    const { data } = await $api.put<{ image?: ProductImageRef; data?: ProductImageRef }>(
         `/restaurants/${restaurantSlug}/products/${productId}/images/${imageId}`,
         payload,
     );
 
-    return data.image;
+    return data.image ?? data.data!;
 };
 
 export const deleteRestaurantProductImage = async (

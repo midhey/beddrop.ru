@@ -111,6 +111,40 @@ export const canRestaurantCancelOrder = (
     return !isFinalOrderStatus(order.status);
 };
 
+export const getRestaurantOrderNextStep = (
+    order: Pick<Order, 'status' | 'courier_id'>,
+): string => {
+    if (order.status === 'CREATED') {
+        return 'Проверьте состав и примите заказ, чтобы он попал в ленту курьеров.';
+    }
+
+    if (order.status === 'ACCEPTED_BY_RESTAURANT') {
+        return 'Готовьте заказ. Он уже доступен курьерам, следующий статус появится после назначения курьера.';
+    }
+
+    if (order.status === 'COURIER_ASSIGNED') {
+        return 'Курьер назначен и едет в ресторан. Подготовьте выдачу заказа.';
+    }
+
+    if (order.status === 'PICKED_UP') {
+        return 'Заказ у курьера. Следующий шаг выполняется курьером после доставки клиенту.';
+    }
+
+    if (order.status === 'DELIVERED') {
+        return 'Заказ доставлен и закрыт.';
+    }
+
+    if (order.status === 'CANCELED_BY_USER') {
+        return 'Заказ отменён клиентом.';
+    }
+
+    if (order.status === 'CANCELED_BY_RESTAURANT') {
+        return 'Заказ отменён рестораном.';
+    }
+
+    return order.courier_id ? 'Заказ в работе у курьера.' : 'Следите за сменой статуса заказа.';
+};
+
 export const sortOrderEvents = <T extends Pick<OrderEvent, 'created_at'>>(
     events: T[] | null | undefined,
 ): T[] => {
