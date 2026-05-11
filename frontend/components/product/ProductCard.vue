@@ -122,10 +122,11 @@ const imageSrc = computed(() => {
         <h3 class="product-card__title">
           {{ product.name }}
         </h3>
-        <span class="product-card__price">
-          {{ priceLabel }}
-        </span>
       </div>
+
+      <span class="product-card__price">
+        {{ priceLabel }}
+      </span>
 
       <p
           v-if="product.description"

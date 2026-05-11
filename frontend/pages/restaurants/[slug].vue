@@ -80,6 +80,10 @@ const {
             {{ fullAddress }}
           </p>
 
+          <p v-if="restaurant?.description" class="restaurant-page__description">
+            {{ restaurant.description }}
+          </p>
+
           <div class="restaurant-page__meta">
             <span v-if="prepTimeText" class="restaurant-page__meta-item">
               <Clock3
