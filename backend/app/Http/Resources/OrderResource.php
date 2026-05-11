@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Services\Logistics\CourierPayoutCalculator;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -19,6 +20,7 @@ class OrderResource extends JsonResource
 
         $itemsCount = array_sum(array_column($itemsArray, 'quantity'));
         $totalPrice = array_sum(array_column($itemsArray, 'subtotal'));
+        $courierEstimatedFee = app(CourierPayoutCalculator::class)->calculate($this->resource);
 
         return [
             'id' => $this->id,
@@ -27,6 +29,7 @@ class OrderResource extends JsonResource
             'payment_method' => $this->payment_method,
             'total_price' => $this->total_price,
             'courier_fee' => $this->courier_fee,
+            'courier_estimated_fee' => number_format($courierEstimatedFee, 2, '.', ''),
             'comment' => $this->comment,
             'delivery_address_id' => $this->delivery_address_id,
             'delivery_lat' => $this->delivery_lat,

@@ -10,12 +10,16 @@ use App\Models\CourierShift;
 use App\Models\Order;
 use App\Models\OrderEvent;
 use App\Models\User;
+use App\Services\Logistics\CourierPayoutCalculator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\DB;
 
 class MarkOrderDelivered
 {
-    private const BASE_COURIER_FEE = 150.00;
+    public function __construct(
+        private readonly CourierPayoutCalculator $payouts,
+    ) {
+    }
 
     public function __invoke(User $user, Order $order): Order
     {
@@ -33,7 +37,7 @@ class MarkOrderDelivered
 
         return DB::transaction(function () use ($order, $profile) {
             $order->status = OrderStatus::DELIVERED->value;
-            $order->courier_fee = self::BASE_COURIER_FEE;
+            $order->courier_fee = $this->payouts->calculate($order);
             $order->save();
 
             OrderEvent::create([

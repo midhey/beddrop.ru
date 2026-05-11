@@ -45,6 +45,7 @@ class MarkOrderPickedUp
                 'restaurant.address',
                 'items.product',
                 'deliveryAddress',
+                'routeSegments',
             ]);
         });
     }

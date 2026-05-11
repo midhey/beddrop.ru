@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Enums\CourierShiftStatus;
+use App\Enums\OrderStatus;
 use App\Models\CourierShift;
 use App\Models\OrderRouteSegment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -130,6 +131,81 @@ class GeoLogisticsApiTest extends TestCase
         $response->assertCreated();
         $this->assertDatabaseHas('courier_locations', [
             'courier_user_id' => $courier->id,
+        ]);
+    }
+
+    public function test_available_courier_orders_include_full_preview_route(): void
+    {
+        config([
+            'services.valhalla.url' => 'https://valhalla.test',
+        ]);
+
+        Http::fake([
+            'valhalla.test/route' => Http::response([
+                'trip' => [
+                    'summary' => [
+                        'length' => 1.2,
+                        'time' => 360,
+                    ],
+                    'legs' => [
+                        ['shape' => 'approach-shape'],
+                    ],
+                ],
+            ]),
+        ]);
+
+        $courier = $this->createUser();
+        $customer = $this->createUser();
+        $restaurantOwner = $this->createUser();
+        $restaurantAddress = $this->createAddress(null, [
+            'lat' => 58.52,
+            'lng' => 31.27,
+        ]);
+        $restaurant = $this->createRestaurant($restaurantOwner, [
+            'address' => $restaurantAddress,
+        ]);
+        $product = $this->createProduct($restaurant);
+
+        $this->createCourierProfile($courier);
+
+        CourierShift::create([
+            'courier_user_id' => $courier->id,
+            'status' => CourierShiftStatus::OPEN->value,
+        ]);
+
+        $this
+            ->actingAs($courier, 'api')
+            ->postJson('/api/v1/courier/location', [
+                'lat' => 58.51,
+                'lng' => 31.26,
+            ])
+            ->assertCreated();
+
+        $order = $this->createAcceptedOrder($customer, $restaurant, $product, [
+            'status' => OrderStatus::ACCEPTED_BY_RESTAURANT->value,
+        ]);
+
+        OrderRouteSegment::create([
+            'order_id' => $order->id,
+            'segment_type' => 'restaurant_to_client',
+            'mode' => 'auto',
+            'distance_meters' => 4200,
+            'duration_seconds' => 780,
+            'encoded_shape' => 'delivery-shape',
+        ]);
+
+        $this
+            ->actingAs($courier, 'api')
+            ->getJson('/api/v1/courier/orders/available')
+            ->assertOk()
+            ->assertJsonPath('data.0.route_segments.0.segment_type', 'courier_to_restaurant')
+            ->assertJsonPath('data.0.route_segments.0.encoded_shape', 'approach-shape')
+            ->assertJsonPath('data.0.route_segments.1.segment_type', 'restaurant_to_client')
+            ->assertJsonPath('data.0.route_segments.1.encoded_shape', 'delivery-shape');
+
+        $this->assertDatabaseMissing('order_route_segments', [
+            'order_id' => $order->id,
+            'segment_type' => 'courier_to_restaurant',
         ]);
     }
 

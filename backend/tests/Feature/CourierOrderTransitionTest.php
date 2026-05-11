@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Enums\CourierShiftStatus;
 use App\Enums\OrderStatus;
 use App\Models\CourierShift;
+use App\Models\LogisticsSetting;
+use App\Models\OrderRouteSegment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Concerns\CreatesApiData;
 use Tests\TestCase;
@@ -65,6 +67,40 @@ class CourierOrderTransitionTest extends TestCase
             'order_id' => $order->id,
             'event' => OrderStatus::PICKED_UP->value,
         ]);
+    }
+
+    public function test_picked_up_order_response_keeps_delivery_route_segment(): void
+    {
+        $courier = $this->createUser();
+        $customer = $this->createUser();
+        $restaurantOwner = $this->createUser();
+        $restaurant = $this->createRestaurant($restaurantOwner);
+        $product = $this->createProduct($restaurant);
+
+        $this->createCourierProfile($courier);
+
+        $order = $this->createAcceptedOrder($customer, $restaurant, $product, [
+            'courier_id' => $courier->id,
+            'status' => OrderStatus::COURIER_ASSIGNED->value,
+        ]);
+
+        OrderRouteSegment::create([
+            'order_id' => $order->id,
+            'segment_type' => 'restaurant_to_client',
+            'mode' => 'auto',
+            'distance_meters' => 4200,
+            'duration_seconds' => 780,
+            'encoded_shape' => 'delivery-shape',
+        ]);
+
+        $this->openShift($courier);
+
+        $this->actingAs($courier, 'api')
+            ->postJson("/api/v1/courier/orders/{$order->id}/picked-up")
+            ->assertOk()
+            ->assertJsonPath('data.status', OrderStatus::PICKED_UP->value)
+            ->assertJsonPath('data.route_segments.0.segment_type', 'restaurant_to_client')
+            ->assertJsonPath('data.route_segments.0.encoded_shape', 'delivery-shape');
     }
 
     public function test_other_courier_cannot_mark_order_picked_up(): void
@@ -146,6 +182,40 @@ class CourierOrderTransitionTest extends TestCase
         $this->assertDatabaseHas('order_events', [
             'order_id' => $order->id,
             'event' => OrderStatus::DELIVERED->value,
+        ]);
+    }
+
+    public function test_courier_fee_uses_delivery_price_minus_service_commission(): void
+    {
+        $courier = $this->createUser();
+        $customer = $this->createUser();
+        $restaurantOwner = $this->createUser();
+        $restaurant = $this->createRestaurant($restaurantOwner);
+        $product = $this->createProduct($restaurant);
+
+        LogisticsSetting::query()
+            ->where('key', 'delivery.service_commission_percent')
+            ->update(['value' => '25']);
+
+        $this->createCourierProfile($courier);
+
+        $order = $this->createAcceptedOrder($customer, $restaurant, $product, [
+            'courier_id' => $courier->id,
+            'status' => OrderStatus::PICKED_UP->value,
+            'delivery_price_snapshot' => 240,
+        ]);
+
+        $this->openShift($courier);
+
+        $this->actingAs($courier, 'api')
+            ->postJson("/api/v1/courier/orders/{$order->id}/delivered")
+            ->assertOk()
+            ->assertJsonPath('data.courier_fee', '180.00')
+            ->assertJsonPath('data.courier_estimated_fee', '180.00');
+
+        $this->assertDatabaseHas('orders', [
+            'id' => $order->id,
+            'courier_fee' => 180,
         ]);
     }
 

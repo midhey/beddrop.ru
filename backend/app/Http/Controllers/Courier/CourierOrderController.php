@@ -13,7 +13,11 @@ use App\Http\Resources\OrderResource;
 use App\Models\CourierLocation;
 use App\Models\CourierShift;
 use App\Models\Order;
+use App\Models\OrderRouteSegment;
+use App\Services\Logistics\LogisticsSettingsService;
+use App\Services\Logistics\ValhallaRouteService;
 use Illuminate\Http\Request;
+use Throwable;
 
 class CourierOrderController extends Controller
 {
@@ -44,7 +48,11 @@ class CourierOrderController extends Controller
         return $profile;
     }
 
-    public function available(Request $request)
+    public function available(
+        Request $request,
+        ValhallaRouteService $routes,
+        LogisticsSettingsService $settings,
+    )
     {
         $profile = $this->ensureOpenShift($request);
 
@@ -69,7 +77,7 @@ class CourierOrderController extends Controller
         if ($latestLocation) {
             $orders->setCollection(
                 $orders->getCollection()
-                    ->map(function (Order $order) use ($latestLocation) {
+                    ->map(function (Order $order) use ($latestLocation, $profile, $routes, $settings) {
                         $restaurantAddress = $order->restaurant?->address;
 
                         if ($restaurantAddress?->lat !== null && $restaurantAddress?->lng !== null) {
@@ -79,6 +87,14 @@ class CourierOrderController extends Controller
                                 $restaurantAddress->lat,
                                 $restaurantAddress->lng,
                             ));
+
+                            $this->appendApproachRoutePreview(
+                                $order,
+                                $latestLocation,
+                                $profile->vehicle,
+                                $routes,
+                                $settings,
+                            );
                         }
 
                         return $order;
@@ -157,5 +173,69 @@ class CourierOrderController extends Controller
             + cos(deg2rad($fromLat)) * cos(deg2rad($toLat)) * sin($lngDelta / 2) ** 2;
 
         return (int) round($earthRadius * 2 * atan2(sqrt($a), sqrt(1 - $a)));
+    }
+
+    private function appendApproachRoutePreview(
+        Order $order,
+        CourierLocation $latestLocation,
+        ?string $vehicle,
+        ValhallaRouteService $routes,
+        LogisticsSettingsService $settings,
+    ): void {
+        if (!config('services.valhalla.url')) {
+            return;
+        }
+
+        $restaurantAddress = $order->restaurant?->address;
+
+        if (
+            !$restaurantAddress ||
+            $restaurantAddress->lat === null ||
+            $restaurantAddress->lng === null ||
+            $order->routeSegments->contains('segment_type', 'courier_to_restaurant')
+        ) {
+            return;
+        }
+
+        $mode = $this->modeForVehicle($vehicle);
+
+        try {
+            $route = $routes->route(
+                ['lat' => $latestLocation->lat, 'lng' => $latestLocation->lng],
+                ['lat' => $restaurantAddress->lat, 'lng' => $restaurantAddress->lng],
+                $mode,
+            );
+        } catch (Throwable) {
+            return;
+        }
+
+        $previewSegment = new OrderRouteSegment();
+        $previewSegment->forceFill([
+            'id' => -1 * (int) $order->id,
+            'order_id' => $order->id,
+            'segment_type' => 'courier_to_restaurant',
+            'mode' => $mode,
+            'distance_meters' => $route['distance_meters'],
+            'duration_seconds' => $route['duration_seconds'],
+            'encoded_shape' => $route['encoded_shape'],
+            'raw_response_json' => null,
+            'settings_snapshot_json' => $settings->snapshot(),
+        ]);
+
+        $order->setRelation(
+            'routeSegments',
+            collect([$previewSegment])
+                ->concat($order->routeSegments)
+                ->values(),
+        );
+    }
+
+    private function modeForVehicle(?string $vehicle): string
+    {
+        return match ($vehicle) {
+            'FOOT' => 'pedestrian',
+            'BIKE' => 'bicycle',
+            default => 'auto',
+        };
     }
 }
