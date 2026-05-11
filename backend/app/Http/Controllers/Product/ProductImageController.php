@@ -10,10 +10,13 @@ use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\Restaurant;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class ProductImageController extends Controller
 {
     use AuthorizesRequests;
+
+    private const MAX_IMAGES_PER_PRODUCT = 5;
 
     protected function ensureSameRestaurant(Restaurant $restaurant, Product $product): void
     {
@@ -38,6 +41,12 @@ class ProductImageController extends Controller
         $this->authorize('update', $restaurant);
 
         $data = $request->validated();
+
+        if ($product->images()->count() >= self::MAX_IMAGES_PER_PRODUCT) {
+            throw new HttpResponseException(response()->json([
+                'message' => 'У блюда может быть не больше 5 фотографий.',
+            ], 422));
+        }
 
         if (!empty($data['is_cover'])) {
             ProductImage::where('product_id', $product->id)
