@@ -18,6 +18,9 @@ const {
   selectedCategorySlug,
   fullAddress,
   prepTimeText,
+  workingHoursText,
+  availabilityText,
+  availabilityStatus,
 } = await useRestaurantPage(slug);
 </script>
 
@@ -96,16 +99,19 @@ const {
               {{ restaurant.phone }}
             </span>
             <span
-                v-if="restaurant && restaurant.is_active"
+                v-if="restaurant"
                 class="restaurant-page__meta-item restaurant-page__meta-item--success"
+                :class="{
+                  'restaurant-page__meta-item--muted': availabilityStatus === 'inactive',
+                }"
             >
-              Открыт для заказов
+              {{ availabilityText }}
             </span>
             <span
-                v-else-if="restaurant"
-                class="restaurant-page__meta-item restaurant-page__meta-item--muted"
+                v-if="workingHoursText"
+                class="restaurant-page__meta-item"
             >
-              Временно недоступен
+              {{ workingHoursText }}
             </span>
           </div>
         </div>

@@ -32,8 +32,11 @@ import {
 import {
     formatRestaurantAddress,
     formatRestaurantPrepTime,
+    formatRestaurantWorkingHours,
     getRestaurantActivityLabel,
     getRestaurantActivityStatus,
+    getRestaurantAvailabilityLabel,
+    getRestaurantAvailabilityStatus,
 } from '~/domains/restaurants/presentation';
 import { formatDateTime, formatPrice } from '~/utils/formatting';
 
@@ -47,6 +50,16 @@ type ProductFormState = {
 };
 
 const PRODUCT_IMAGE_LIMIT = 5;
+const RESTAURANT_TIMEZONES = [
+    'Europe/Moscow',
+    'Europe/Samara',
+    'Asia/Yekaterinburg',
+    'Asia/Novosibirsk',
+    'Asia/Krasnoyarsk',
+    'Asia/Irkutsk',
+    'Asia/Yakutsk',
+    'Asia/Vladivostok',
+];
 
 const emptyProductForm = (): ProductFormState => ({
     name: '',
@@ -156,6 +169,9 @@ export function useRestaurantManageDashboardPage() {
 
     const fullAddress = computed(() => formatRestaurantAddress(restaurant.value));
     const prepTimeText = computed(() => formatRestaurantPrepTime(restaurant.value));
+    const workingHoursText = computed(() => formatRestaurantWorkingHours(restaurant.value));
+    const availabilityText = computed(() => getRestaurantAvailabilityLabel(restaurant.value));
+    const availabilityStatus = computed(() => getRestaurantAvailabilityStatus(restaurant.value));
     const prepTimeFieldValue = (value: string | number | null | undefined): string => {
         return value == null ? '' : String(value).trim();
     };
@@ -208,6 +224,11 @@ export function useRestaurantManageDashboardPage() {
         prep_time_min: '',
         prep_time_max: '',
         is_active: true,
+        accepts_orders: true,
+        timezone: 'Europe/Moscow',
+        opens_at: '',
+        closes_at: '',
+        closed_reason: '',
         logo_media_id: null as number | null,
         logo_preview_url: '',
         address: {
@@ -237,6 +258,11 @@ export function useRestaurantManageDashboardPage() {
             prep_time_min: source?.prep_time_min != null ? String(source.prep_time_min) : '',
             prep_time_max: source?.prep_time_max != null ? String(source.prep_time_max) : '',
             is_active: source?.is_active ?? true,
+            accepts_orders: source?.accepts_orders ?? true,
+            timezone: source?.timezone ?? 'Europe/Moscow',
+            opens_at: source?.opens_at ?? '',
+            closes_at: source?.closes_at ?? '',
+            closed_reason: source?.closed_reason ?? '',
             logo_media_id: source?.logo_media_id ?? null,
             logo_preview_url: source?.logo?.url ?? '',
             address: {
@@ -298,6 +324,11 @@ export function useRestaurantManageDashboardPage() {
                 description: settingsForm.value.description.trim() || null,
                 phone: settingsForm.value.phone.trim() || null,
                 is_active: settingsForm.value.is_active,
+                accepts_orders: settingsForm.value.accepts_orders,
+                timezone: settingsForm.value.timezone || 'Europe/Moscow',
+                opens_at: settingsForm.value.opens_at || null,
+                closes_at: settingsForm.value.closes_at || null,
+                closed_reason: settingsForm.value.closed_reason.trim() || null,
                 prep_time_min: prepTimeMin ? Number(prepTimeMin) : null,
                 prep_time_max: prepTimeMax ? Number(prepTimeMax) : null,
                 logo_media_id: logoMediaId,
@@ -800,7 +831,11 @@ export function useRestaurantManageDashboardPage() {
         errorMessage,
         fullAddress,
         prepTimeText,
+        workingHoursText,
+        availabilityText,
+        availabilityStatus,
         settingsPrepAverageText,
+        restaurantTimezones: RESTAURANT_TIMEZONES,
         hasRestaurantLogo,
         hasProducts,
         hasOrders,

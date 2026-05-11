@@ -7,6 +7,7 @@ import { useOrders, type CreateOrderPayload } from '~/composables/useOrders';
 import type { OrderRouteSegment } from '~/composables/useOrders';
 import { useDeliveryQuote } from '~/composables/useDeliveryQuote';
 import { useCartStore } from '~/stores/cart';
+import { getRestaurantAvailabilityLabel } from '~/domains/restaurants/presentation';
 import { formatPrice } from '~/utils/formatting';
 
 export function useCheckoutPage() {
@@ -72,6 +73,13 @@ export function useCheckoutPage() {
     const restaurantName = computed(
         () => cartStore.restaurant?.name || 'Ресторан',
     );
+    const restaurantAvailability = computed(() => cartStore.restaurant?.availability ?? null);
+    const isRestaurantOpenForOrders = computed(() => restaurantAvailability.value?.is_open ?? true);
+    const restaurantClosedText = computed(() => {
+        if (isRestaurantOpenForOrders.value) return null;
+
+        return getRestaurantAvailabilityLabel(cartStore.restaurant);
+    });
     const restaurantAddress = computed(() => cartStore.restaurant?.address ?? null);
     const selectedAddress = computed(() => {
         return addresses.value.find((address) => address.id === selectedAddressId.value) ?? null;
@@ -121,6 +129,7 @@ export function useCheckoutPage() {
             !isCartEmpty.value &&
             !!selectedAddressId.value &&
             !!deliveryQuote.value &&
+            isRestaurantOpenForOrders.value &&
             !quoteLoading.value &&
             !submitting.value &&
             !ordersLoading.value,
@@ -200,6 +209,7 @@ export function useCheckoutPage() {
         checkoutTotal,
         cartItemsCount,
         restaurantName,
+        restaurantClosedText,
         restaurantAddress,
         selectedAddress,
         deliveryDistanceKm,

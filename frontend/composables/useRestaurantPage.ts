@@ -5,6 +5,11 @@ import { getRestaurantBySlug } from '~/domains/restaurants/api';
 import { listRestaurantProducts } from '~/domains/restaurants/manage/api';
 import type { Product } from '~/composables/useRestaurantProducts';
 import type { Restaurant } from '~/composables/useRestaurants';
+import {
+    formatRestaurantWorkingHours,
+    getRestaurantAvailabilityLabel,
+    getRestaurantAvailabilityStatus,
+} from '~/domains/restaurants/presentation';
 
 type RestaurantPageData = {
     slug: string;
@@ -146,6 +151,10 @@ export async function useRestaurantPage(slugRef: Readonly<Ref<string>>) {
         return null;
     });
 
+    const workingHoursText = computed(() => formatRestaurantWorkingHours(restaurant.value));
+    const availabilityText = computed(() => getRestaurantAvailabilityLabel(restaurant.value));
+    const availabilityStatus = computed(() => getRestaurantAvailabilityStatus(restaurant.value));
+
     // категории из продуктов
     type CategoryTab = {
         id: number;
@@ -238,6 +247,9 @@ export async function useRestaurantPage(slugRef: Readonly<Ref<string>>) {
 
         fullAddress,
         prepTimeText,
+        workingHoursText,
+        availabilityText,
+        availabilityStatus,
 
         // methods
         refresh,

@@ -53,6 +53,12 @@
     color: #b45309;
   }
 
+  &__hint--strong {
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: #fffbeb;
+  }
+
   &__link {
     display: inline-block;
     margin-top: 8px;

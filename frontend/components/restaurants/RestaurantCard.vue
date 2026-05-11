@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import type { Restaurant } from "~/composables/useRestaurants";
+import {
+  formatRestaurantWorkingHours,
+  getRestaurantAvailabilityLabel,
+  getRestaurantAvailabilityStatus,
+} from "~/domains/restaurants/presentation";
 
 import placeholderImg from "~/assets/images/placeholder.png";
 
@@ -34,6 +39,10 @@ const prepTimeText = computed(() => {
 
   return "Время приготовления не указано";
 });
+
+const workingHoursText = computed(() => formatRestaurantWorkingHours(props.restaurant));
+const availabilityLabel = computed(() => getRestaurantAvailabilityLabel(props.restaurant));
+const availabilityStatus = computed(() => getRestaurantAvailabilityStatus(props.restaurant));
 
 // вычисляем, какую картинку показывать
 const imageSrc = computed(() => {
@@ -81,17 +90,20 @@ const imageSrc = computed(() => {
         <span v-if="restaurant.phone" class="restaurant-card__meta-item">
           {{ restaurant.phone }}
         </span>
+
+        <span v-if="workingHoursText" class="restaurant-card__meta-item">
+          {{ workingHoursText }}
+        </span>
       </div>
     </div>
 
     <div class="restaurant-card__footer">
       <span
         class="restaurant-card__status"
-        :data-status="restaurant.is_active ? 'active' : 'inactive'"
+        :data-status="availabilityStatus"
       >
-        {{ restaurant.is_active ? "Открыт" : "Закрыт" }}
+        {{ availabilityLabel }}
       </span>
     </div>
   </article>
 </template>
-

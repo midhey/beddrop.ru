@@ -18,6 +18,12 @@ export interface Restaurant {
     slug: string;
     phone: string | null;
     is_active: boolean;
+    accepts_orders: boolean;
+    timezone: string;
+    opens_at: string | null;
+    closes_at: string | null;
+    closed_reason: string | null;
+    availability: RestaurantAvailability;
     prep_time_min: number | null;
     prep_time_max: number | null;
     prep_time_avg_minutes: number | null;
@@ -33,12 +39,27 @@ export interface Restaurant {
     } | null;
 }
 
+export interface RestaurantAvailability {
+    is_open: boolean;
+    accepts_orders: boolean;
+    timezone: string;
+    opens_at: string | null;
+    closes_at: string | null;
+    closed_reason: string | null;
+    status: 'open' | 'closed_by_schedule' | 'manually_closed' | 'inactive';
+}
+
 export interface RestaurantPayload {
     name: string;
     description?: string | null;
     slug?: string | null;
     phone?: string | null;
     is_active?: boolean;
+    accepts_orders?: boolean;
+    timezone?: string;
+    opens_at?: string | null;
+    closes_at?: string | null;
+    closed_reason?: string | null;
     prep_time_min?: number | null;
     prep_time_max?: number | null;
     logo_media_id?: number | null;

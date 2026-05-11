@@ -86,6 +86,11 @@
   &__status {
     position: absolute;
     top: rem(8);
+    right: rem(16);
+    max-width: calc(100% - #{rem(32)});
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     font-size: rem(12);
     padding: rem(4) rem(12);
     border-radius: 999px;
@@ -101,4 +106,3 @@
     color: #b91c1c;
   }
 }
-

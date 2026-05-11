@@ -13,6 +13,7 @@ import {
 import AddressPicker from "~/components/address/AddressPicker.vue";
 import RouteMap from "~/components/map/RouteMap.vue";
 import BaseAccordion from "~/components/ui/BaseAccordion.vue";
+import BaseSwitch from "~/components/ui/BaseSwitch.vue";
 import { useRestaurantManageDashboardPage } from "~/composables/useRestaurantManageDashboardPage";
 import placeholderImg from "~/assets/images/placeholder.png";
 
@@ -29,7 +30,11 @@ const {
   errorMessage,
   fullAddress,
   prepTimeText,
+  workingHoursText,
+  availabilityText,
+  availabilityStatus,
   settingsPrepAverageText,
+  restaurantTimezones,
   hasRestaurantLogo,
   hasProducts,
   hasOrders,
@@ -201,7 +206,18 @@ const copyInviteLink = async () => {
                   : 'status-chip--danger'
               "
             >
-              {{ getRestaurantActivityLabel(restaurant.is_active) }}
+              Публикация: {{ getRestaurantActivityLabel(restaurant.is_active) }}
+            </span>
+
+            <span
+              class="restaurant-dashboard__status status-chip"
+              :class="
+                availabilityStatus === 'active'
+                  ? 'status-chip--success'
+                  : 'status-chip--danger'
+              "
+            >
+              Новые заказы: {{ availabilityText }}
             </span>
 
             <span
@@ -215,6 +231,19 @@ const copyInviteLink = async () => {
                 aria-hidden="true"
               />
               {{ prepTimeText }}
+            </span>
+
+            <span
+              v-if="workingHoursText"
+              class="restaurant-dashboard__badge status-chip status-chip--info"
+            >
+              <Clock3
+                class="ui-icon"
+                :size="14"
+                :stroke-width="1.9"
+                aria-hidden="true"
+              />
+              {{ workingHoursText }}
             </span>
 
             <span
@@ -694,13 +723,10 @@ const copyInviteLink = async () => {
                   ></textarea>
                 </div>
 
-                <div
-                  class="restaurant-dashboard__form-row restaurant-dashboard__form-row--inline form-field"
-                >
-                  <label class="restaurant-dashboard__form-checkbox-label">
-                    <input v-model="createForm.is_active" type="checkbox" />
-                    <span>Сразу показывать в меню</span>
-                  </label>
+                <div class="restaurant-dashboard__form-row form-field">
+                  <BaseSwitch v-model="createForm.is_active">
+                    Сразу показывать в меню
+                  </BaseSwitch>
                 </div>
               </div>
 
@@ -888,15 +914,13 @@ const copyInviteLink = async () => {
                       </select>
                     </div>
 
-                    <div
-                      class="restaurant-dashboard__form-row restaurant-dashboard__form-row--inline form-field"
-                    >
-                      <label
-                        class="restaurant-dashboard__form-checkbox-label restaurant-dashboard__form-checkbox-label--boxed"
+                    <div class="restaurant-dashboard__form-row form-field">
+                      <BaseSwitch
+                        v-model="editForm.is_active"
+                        class="base-switch--boxed"
                       >
-                        <input v-model="editForm.is_active" type="checkbox" />
-                        <span>Показывать в меню</span>
-                      </label>
+                        Показывать в меню
+                      </BaseSwitch>
                     </div>
                   </div>
 
@@ -1140,12 +1164,12 @@ const copyInviteLink = async () => {
                     <label class="restaurant-dashboard__form-label">
                       Статус
                     </label>
-                    <label
-                      class="restaurant-dashboard__form-checkbox-label restaurant-dashboard__form-checkbox-label--boxed"
+                    <BaseSwitch
+                      v-model="settingsForm.is_active"
+                      class="base-switch--boxed"
                     >
-                      <input v-model="settingsForm.is_active" type="checkbox" />
-                      <span>Ресторан активен и доступен клиентам</span>
-                    </label>
+                      Ресторан опубликован в каталоге
+                    </BaseSwitch>
                   </div>
                 </div>
 
@@ -1185,6 +1209,92 @@ const copyInviteLink = async () => {
                   </span>
                   <strong class="restaurant-dashboard__eta-preview-value">
                     {{ settingsPrepAverageText }}
+                  </strong>
+                </div>
+              </div>
+
+              <div
+                class="restaurant-dashboard__settings-card surface-card--soft"
+              >
+                <div class="restaurant-dashboard__settings-card-head">
+                  <h3 class="restaurant-dashboard__settings-card-title">
+                    Приём заказов
+                  </h3>
+                  <p class="restaurant-dashboard__settings-card-text">
+                    График закрывает ресторан автоматически в конце рабочего дня. Пауза останавливает только новые заказы, меню остаётся доступным.
+                  </p>
+                </div>
+
+                <div class="restaurant-dashboard__form-row form-field">
+                  <BaseSwitch
+                    v-model="settingsForm.accepts_orders"
+                    class="base-switch--boxed"
+                  >
+                    Принимать новые заказы сейчас
+                  </BaseSwitch>
+                </div>
+
+                <div class="restaurant-dashboard__create-product-columns">
+                  <div class="restaurant-dashboard__form-row form-field">
+                    <label class="restaurant-dashboard__form-label">
+                      Открывается
+                    </label>
+                    <input
+                      v-model="settingsForm.opens_at"
+                      type="time"
+                      class="restaurant-dashboard__form-input field-input"
+                    />
+                  </div>
+
+                  <div class="restaurant-dashboard__form-row form-field">
+                    <label class="restaurant-dashboard__form-label">
+                      Закрывается
+                    </label>
+                    <input
+                      v-model="settingsForm.closes_at"
+                      type="time"
+                      class="restaurant-dashboard__form-input field-input"
+                    />
+                  </div>
+                </div>
+
+                <div class="restaurant-dashboard__form-row form-field">
+                  <label class="restaurant-dashboard__form-label">
+                    Часовой пояс
+                  </label>
+                  <select
+                    v-model="settingsForm.timezone"
+                    class="restaurant-dashboard__form-input field-select"
+                  >
+                    <option
+                      v-for="timezone in restaurantTimezones"
+                      :key="timezone"
+                      :value="timezone"
+                    >
+                      {{ timezone }}
+                    </option>
+                  </select>
+                </div>
+
+                <div class="restaurant-dashboard__form-row form-field">
+                  <label class="restaurant-dashboard__form-label">
+                    Комментарий к паузе
+                  </label>
+                  <input
+                    v-model="settingsForm.closed_reason"
+                    type="text"
+                    maxlength="255"
+                    class="restaurant-dashboard__form-input field-input"
+                    placeholder="Например, кухня перегружена"
+                  />
+                </div>
+
+                <div class="restaurant-dashboard__eta-preview">
+                  <span class="restaurant-dashboard__eta-preview-label">
+                    Текущий статус новых заказов
+                  </span>
+                  <strong class="restaurant-dashboard__eta-preview-value">
+                    {{ availabilityText }}
                   </strong>
                 </div>
               </div>

@@ -23,6 +23,7 @@ const {
   checkoutTotal,
   cartItemsCount,
   restaurantName,
+  restaurantClosedText,
   restaurantAddress,
   selectedAddress,
   deliveryDistanceKm,
@@ -297,6 +298,13 @@ const {
               Заказ в "{{ restaurantName }}"
             </h2>
 
+            <p
+                v-if="restaurantClosedText"
+                class="checkout-card__hint checkout-card__hint--warning checkout-card__hint--strong"
+            >
+              {{ restaurantClosedText }}
+            </p>
+
             <ul class="checkout-cart">
               <li
                   v-for="item in cart?.items || []"
@@ -363,6 +371,13 @@ const {
                 class="checkout-card__hint checkout-card__hint--warning"
             >
               Не удалось рассчитать доставку. Проверьте адрес или попробуйте позже.
+            </p>
+
+            <p
+                v-if="restaurantClosedText"
+                class="checkout-card__hint checkout-card__hint--warning"
+            >
+              Новые заказы сейчас недоступны.
             </p>
 
             <p

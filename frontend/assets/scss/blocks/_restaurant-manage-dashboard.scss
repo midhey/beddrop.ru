@@ -254,21 +254,6 @@
     min-height: rem(88);
   }
 
-  &__form-checkbox-label {
-    display: flex;
-    align-items: center;
-    gap: rem(8);
-    font-size: rem(14);
-  }
-
-  &__form-checkbox-label--boxed {
-    min-height: rem(48);
-    padding: rem(12) rem(14);
-    border: 1px solid #dbe5f0;
-    border-radius: rem(16);
-    background: #ffffff;
-  }
-
   &__form-actions {
     margin-top: rem(4);
   }
