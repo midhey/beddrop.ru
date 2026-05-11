@@ -12,17 +12,17 @@ class MediaSeeder extends Seeder
     {
         $mediaItems = [
 
-            // --- Логотипы ресторанов --- //
-            'media/restaurants/pizza_na_rayone_logo_1.png',
-            'media/restaurants/sushi_rolls_logo_1.png',
-            'media/restaurants/burger_dvor_logo_1.png',
-            'media/restaurants/shaurma_street_logo_1.png',
-            'media/restaurants/testo_sous_logo_1.png',
-            'media/restaurants/pelmeni_one_logo_1.png',
-            'media/restaurants/chebureki_bratcy_logo_1.png',
-            'media/restaurants/wok_wok_logo_1.png',
-            'media/restaurants/grill_mangal_logo_1.png',
-            'media/restaurants/home_cooking_logo_1.png',
+            // --- Логотипы ресторанов (WebP) --- //
+            'media/restaurants/detinec_gril.webp',
+            'media/restaurants/ganza_burger.webp',
+            'media/restaurants/ilmen_sushi.webp',
+            'media/restaurants/lapsha_sadko.webp',
+            'media/restaurants/novgorod_dvorik.webp',
+            'media/restaurants/pelmeni_master.webp',
+            'media/restaurants/pryanik_domik.webp',
+            'media/restaurants/sofiyskaya_pizza.webp',
+            'media/restaurants/vityaz_kebab.webp',
+            'media/restaurants/volhov_trapeza.webp',
 
             // --- Пицца --- //
             'media/products/pizza/margarita_1.png',
