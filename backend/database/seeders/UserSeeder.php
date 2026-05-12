@@ -2,6 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Enums\CourierProfileStatus;
+use App\Enums\CourierVehicle;
+use App\Models\CourierProfile;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -40,6 +43,26 @@ class UserSeeder extends Seeder
                 'is_admin'  => false,
                 'is_banned' => false,
                 'password'  => Hash::make('customer123'),
+            ]
+        );
+
+        $courier = User::updateOrCreate(
+            ['email' => 'courier@mail.com'],
+            [
+                'phone'     => '79990000005',
+                'name'      => 'Курьер',
+                'is_admin'  => false,
+                'is_banned' => false,
+                'password'  => Hash::make('courier123'),
+            ]
+        );
+
+        CourierProfile::updateOrCreate(
+            ['user_id' => $courier->id],
+            [
+                'status' => CourierProfileStatus::ACTIVE->value,
+                'vehicle' => CourierVehicle::CAR->value,
+                'rating' => 5.0,
             ]
         );
 
