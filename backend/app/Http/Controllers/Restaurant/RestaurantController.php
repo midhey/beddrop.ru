@@ -108,7 +108,10 @@ class RestaurantController extends Controller
             'logo_media_id' => $data['logo_media_id'] ?? null,
         ]);
 
-        $ownerId = $data['owner_id'] ?? $request->user()->id;
+        $user = $request->user();
+        $ownerId = ($user->is_admin && !empty($data['owner_id']))
+            ? $data['owner_id']
+            : $user->id;
 
         $restaurant->users()->attach($ownerId, [
             'role' => RestaurantStaffRole::OWNER->value,

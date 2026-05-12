@@ -40,10 +40,14 @@ class CourierProfileController extends Controller
             'vehicle' => ['nullable', Rule::enum(CourierVehicle::class)],
         ]);
 
-        $profile = CourierProfile::updateOrCreate(
-            ['user_id' => $user->id],
-            array_merge($data, ['status' => CourierProfileStatus::ACTIVE->value])
-        );
+        $profile = CourierProfile::firstOrNew(['user_id' => $user->id]);
+
+        if (! $profile->exists) {
+            $profile->status = CourierProfileStatus::SUSPENDED->value;
+        }
+
+        $profile->fill($data);
+        $profile->save();
 
         return response()->json([
             'profile' => $profile,
