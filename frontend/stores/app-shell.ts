@@ -64,7 +64,7 @@ export const useAppShellStore = defineStore('app-shell', () => {
         hasCourierAccess.value = !!data.has_courier_access;
         activeOrder.value = data.active_order;
         activeOrderLoading.value = false;
-        cartStore.setCart(data.cart_summary);
+        cartStore.setCartSummary(data.cart_summary);
         cartStore.setError(null);
         bootstrappedForAuth.value = true;
     };

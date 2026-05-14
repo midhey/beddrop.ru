@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { computed, TransitionGroup } from "vue";
+import { computed, onMounted, TransitionGroup } from "vue";
 import { ArrowLeft, Clock3, Phone } from "lucide-vue-next";
 import { useRoute } from "#app";
 import { useRestaurantPage } from "~/composables/useRestaurantPage";
 import ProductCard from "~/components/product/ProductCard.vue";
+import { useCartStore } from "~/stores/cart";
 
 const route = useRoute();
 const slug = computed(() => route.params.slug as string);
+const cartStore = useCartStore();
 
 const {
   restaurant,
@@ -22,6 +24,12 @@ const {
   availabilityText,
   availabilityStatus,
 } = await useRestaurantPage(slug);
+
+onMounted(async () => {
+  try {
+    await cartStore.ensureFullCart();
+  } catch {}
+});
 </script>
 
 <template>
@@ -80,7 +88,10 @@ const {
             {{ fullAddress }}
           </p>
 
-          <p v-if="restaurant?.description" class="restaurant-page__description">
+          <p
+            v-if="restaurant?.description"
+            class="restaurant-page__description"
+          >
             {{ restaurant.description }}
           </p>
 

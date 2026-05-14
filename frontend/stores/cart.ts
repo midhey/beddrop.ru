@@ -104,8 +104,41 @@ export const useCartStore = defineStore('cart', {
             this.cart = cart;
         },
 
+        setCartSummary(cart: Cart | null) {
+            if (!cart) {
+                this.cart = null;
+                return;
+            }
+
+            if (
+                cart.is_summary &&
+                this.cart &&
+                !this.cart.is_summary &&
+                this.cart.id === cart.id &&
+                Array.isArray(this.cart.items)
+            ) {
+                this.cart = {
+                    ...this.cart,
+                    ...cart,
+                    is_summary: false,
+                    items: this.cart.items,
+                };
+                return;
+            }
+
+            this.cart = cart;
+        },
+
         setError(message: string | null) {
             this.error = message;
+        },
+
+        async ensureFullCart() {
+            if (this.cart && !this.cart.is_summary && Array.isArray(this.cart.items)) {
+                return;
+            }
+
+            await this.fetchCart();
         },
 
         async fetchCart() {
