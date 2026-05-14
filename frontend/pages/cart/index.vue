@@ -27,6 +27,8 @@ const totalPrice = computed(() => cartStore.totalPrice);
 const totalCount = computed(() => cartStore.totalCount);
 const restaurant = computed(() => cartStore.restaurant);
 const positionsCount = computed(() => items.value.length);
+const isRestaurantOpen = computed(() => cartStore.isRestaurantOpen);
+const restaurantClosedText = computed(() => cartStore.restaurantClosedText);
 
 const formatPrice = (value: number | string) =>
   new Intl.NumberFormat("ru-RU", {
@@ -350,10 +352,17 @@ const changeQuantity = async (item: CartItem, nextQuantity: number) => {
               </div>
             </div>
 
+            <p
+              v-if="restaurantClosedText"
+              class="cart__summary-warning"
+            >
+              {{ restaurantClosedText }}
+            </p>
+
             <button
               type="button"
               class="button cart__checkout-btn"
-              :disabled="!items.length"
+              :disabled="!items.length || !isRestaurantOpen"
               @click="goToCheckout"
             >
               К оформлению

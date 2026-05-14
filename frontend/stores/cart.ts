@@ -3,6 +3,7 @@ import { useNuxtApp } from '#app';
 import { useFeedback } from '~/composables/useFeedback';
 import type { Product } from '~/composables/useRestaurantProducts';
 import type { Restaurant } from '~/composables/useRestaurants';
+import { getRestaurantAvailabilityLabel } from '~/domains/restaurants/presentation';
 
 export interface CartItem {
     id: number;
@@ -72,6 +73,25 @@ export const useCartStore = defineStore('cart', {
 
         restaurant: (state): Restaurant | null =>
             (state.cart?.restaurant as Restaurant | null) ?? null,
+
+        isRestaurantOpen: (state): boolean => {
+            return state.cart?.restaurant?.availability?.is_open ?? true;
+        },
+
+        restaurantClosedText: (state): string | null => {
+            const restaurant = state.cart?.restaurant;
+            if (!restaurant) return null;
+            if (restaurant.availability?.is_open) return null;
+
+            const statusText = getRestaurantAvailabilityLabel(restaurant);
+            const opensAt = restaurant.availability?.opens_at;
+
+            if (opensAt) {
+                return `${statusText}. Вы можете заказать с ${opensAt}`;
+            }
+
+            return statusText;
+        },
 
         getQuantity: (state) => (productId: number): number => {
             const found = state.cart?.items?.find((i) => i.product_id === productId);

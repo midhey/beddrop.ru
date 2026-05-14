@@ -7,43 +7,43 @@
     linear-gradient(180deg, #f7fbff 0%, #f4f7fb 100%);
 
   &__head {
-    margin-bottom: 20px;
+    margin-bottom: rem(20);
   }
 
   &__subtitle {
-    max-width: 720px;
+    max-width: rem(720);
   }
 
   &__head-action {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: rem(8);
   }
 
   &__loading,
   &__empty {
-    border-radius: 28px;
+    border-radius: rem(28);
   }
 
   &__loading {
-    padding: 22px 24px;
+    padding: rem(22) rem(24);
   }
 
   &__empty {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 18px;
-    padding: 32px;
+    gap: rem(18);
+    padding: rem(32);
   }
 
   &__empty-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 56px;
-    height: 56px;
-    border-radius: 18px;
+    width: rem(56);
+    height: rem(56);
+    border-radius: rem(18);
     background: linear-gradient(135deg, rgba(0, 188, 240, 0.18), rgba(80, 26, 204, 0.08));
     color: var(--color-primary);
   }
@@ -51,45 +51,45 @@
   &__empty-copy {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: rem(8);
   }
 
   &__empty-title {
     margin: 0;
-    font-size: 24px;
+    font-size: rem(24);
     font-weight: 700;
     line-height: 1.2;
   }
 
   &__empty-text {
     margin: 0;
-    max-width: 520px;
-    font-size: 15px;
+    max-width: rem(520);
+    font-size: rem(15);
     line-height: 1.5;
     color: var(--color-text-muted);
   }
 
   &__content {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 340px;
-    gap: 24px;
+    grid-template-columns: minmax(0, 1fr) rem(340);
+    gap: rem(24);
     align-items: start;
   }
 
   &__main {
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: rem(18);
     min-width: 0;
   }
 
   &__restaurant-card {
     display: flex;
     justify-content: space-between;
-    gap: 18px;
+    gap: rem(18);
     align-items: center;
-    padding: 22px 24px;
-    border-radius: 28px;
+    padding: rem(22) rem(24);
+    border-radius: rem(28);
     background: linear-gradient(135deg, #ffffff 0%, #f7fbff 100%);
   }
 
@@ -97,7 +97,7 @@
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: rem(10);
   }
 
   &__restaurant-badge {
@@ -106,15 +106,15 @@
 
   &__restaurant-title {
     margin: 0;
-    font-size: 24px;
+    font-size: rem(24);
     font-weight: 700;
     line-height: 1.2;
   }
 
   &__restaurant-note {
     margin: 0;
-    max-width: 560px;
-    font-size: 14px;
+    max-width: rem(560);
+    font-size: rem(14);
     line-height: 1.5;
     color: var(--color-text-muted);
   }
@@ -129,22 +129,22 @@
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: rem(16);
   }
 
   &__item {
     display: grid;
-    grid-template-columns: 112px minmax(0, 1fr);
-    gap: 18px;
-    padding: 20px;
-    border-radius: 28px;
+    grid-template-columns: rem(112) minmax(0, 1fr);
+    gap: rem(18);
+    padding: rem(20);
+    border-radius: rem(28);
     background: linear-gradient(180deg, #ffffff 0%, #fcfdff 100%);
   }
 
   &__item-media {
-    width: 112px;
-    height: 112px;
-    border-radius: 22px;
+    width: rem(112);
+    height: rem(112);
+    border-radius: rem(22);
     overflow: hidden;
     background: linear-gradient(135deg, #eef6ff 0%, #f8fafc 100%);
     box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.14);
@@ -160,14 +160,14 @@
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: rem(18);
   }
 
   &__item-top {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 16px;
+    gap: rem(16);
   }
 
   &__item-copy {
@@ -176,14 +176,14 @@
 
   &__item-title {
     margin: 0;
-    font-size: 18px;
+    font-size: rem(18);
     font-weight: 700;
     line-height: 1.25;
   }
 
   &__item-description {
-    margin: 8px 0 0;
-    font-size: 14px;
+    margin: rem(8) 0 0;
+    font-size: rem(14);
     line-height: 1.5;
     color: var(--color-text-muted);
     display: -webkit-box;
@@ -193,20 +193,20 @@
   }
 
   &__item-meta {
-    margin-top: 12px;
+    margin-top: rem(12);
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: rem(8);
   }
 
   &__item-price {
     display: inline-flex;
     align-items: center;
-    border-radius: 999px;
-    padding: 7px 11px;
+    border-radius: rem(999);
+    padding: rem(7) rem(11);
     background: #eef5ff;
     color: #0f172a;
-    font-size: 13px;
+    font-size: rem(13);
     font-weight: 600;
   }
 
@@ -215,10 +215,10 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 42px;
-    height: 42px;
+    width: rem(42);
+    height: rem(42);
     border: 1px solid #e2e8f0;
-    border-radius: 14px;
+    border-radius: rem(14);
     background: #f8fafc;
     color: #94a3b8;
     cursor: pointer;
@@ -238,15 +238,15 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    gap: 16px;
+    gap: rem(16);
   }
 
   &__item-controls {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    padding: 6px;
-    border-radius: 999px;
+    gap: rem(10);
+    padding: rem(6);
+    border-radius: rem(999);
     background: #eef4ff;
   }
 
@@ -254,14 +254,14 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    width: rem(36);
+    height: rem(36);
     border: none;
     border-radius: 50%;
     background: #ffffff;
     color: #0f172a;
     cursor: pointer;
-    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+    box-shadow: 0 rem(2) rem(6) rgba(15, 23, 42, 0.08);
     transition:
       background-color 0.2s ease,
       color 0.2s ease,
@@ -271,7 +271,7 @@
   &__qty-btn:hover:not(:disabled) {
     background: var(--color-primary);
     color: #ffffff;
-    transform: translateY(-1px);
+    transform: translateY(rem(-1));
   }
 
   &__qty-btn:disabled {
@@ -281,9 +281,9 @@
   }
 
   &__qty-value {
-    min-width: 32px;
+    min-width: rem(32);
     text-align: center;
-    font-size: 16px;
+    font-size: rem(16);
     font-weight: 700;
   }
 
@@ -291,19 +291,19 @@
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 4px;
+    gap: rem(4);
     text-align: right;
   }
 
   &__item-total-label {
-    font-size: 11px;
+    font-size: rem(11);
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--color-text-muted);
   }
 
   &__item-total-value {
-    font-size: 24px;
+    font-size: rem(24);
     line-height: 1;
     font-weight: 700;
   }
@@ -314,32 +314,32 @@
 
   &__summary {
     position: sticky;
-    top: 96px;
+    top: rem(96);
     display: flex;
     flex-direction: column;
-    gap: 18px;
-    padding: 22px;
-    border-radius: 28px;
+    gap: rem(18);
+    padding: rem(22);
+    border-radius: rem(28);
     background: linear-gradient(180deg, #ffffff 0%, #f5f9ff 100%);
-    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+    box-shadow: 0 rem(18) rem(40) rgba(15, 23, 42, 0.08);
   }
 
   &__summary-top {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: rem(6);
   }
 
   &__summary-title {
     margin: 0;
-    font-size: 22px;
+    font-size: rem(22);
     font-weight: 700;
     line-height: 1.2;
   }
 
   &__summary-subtitle {
     margin: 0;
-    font-size: 14px;
+    font-size: rem(14);
     line-height: 1.4;
     color: var(--color-text-muted);
   }
@@ -347,8 +347,8 @@
   &__summary-rows {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding: 16px 0;
+    gap: rem(12);
+    padding: rem(16) 0;
     border-top: 1px solid rgba(148, 163, 184, 0.2);
     border-bottom: 1px solid rgba(148, 163, 184, 0.2);
   }
@@ -356,16 +356,28 @@
   &__summary-row {
     display: flex;
     justify-content: space-between;
-    gap: 16px;
-    font-size: 14px;
+    gap: rem(16);
+    font-size: rem(14);
     line-height: 1.4;
     color: var(--color-text-subtle);
   }
 
   &__summary-row--total {
-    font-size: 19px;
+    font-size: rem(19);
     font-weight: 700;
     color: var(--color-text);
+  }
+
+  &__summary-warning {
+    margin: 0;
+    padding: rem(12) rem(14);
+    border-radius: rem(14);
+    background: #fef2f2;
+    border: 1px solid #f87171;
+    color: #b91c1c;
+    font-size: rem(14);
+    font-weight: 500;
+    line-height: 1.4;
   }
 
   &__checkout-btn {
@@ -375,12 +387,12 @@
   &__summary-note {
     display: flex;
     align-items: flex-start;
-    gap: 10px;
-    padding: 13px 14px;
-    border-radius: 18px;
+    gap: rem(10);
+    padding: rem(13) rem(14);
+    border-radius: rem(18);
     background: rgba(0, 188, 240, 0.08);
     color: var(--color-text-subtle);
-    font-size: 13px;
+    font-size: rem(13);
     line-height: 1.45;
   }
 
@@ -388,7 +400,7 @@
     align-self: flex-start;
   }
 
-  @media (max-width: 1080px) {
+  @media (max-width: rem(1080)) {
     &__content {
       grid-template-columns: 1fr;
     }
@@ -398,7 +410,7 @@
     }
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: rem(768)) {
     &__head {
       flex-direction: column;
       align-items: flex-start;
@@ -413,19 +425,19 @@
     &__restaurant-card {
       flex-direction: column;
       align-items: flex-start;
-      padding: 20px;
+      padding: rem(20);
     }
 
     &__item {
-      grid-template-columns: 88px minmax(0, 1fr);
-      padding: 16px;
-      border-radius: 24px;
+      grid-template-columns: rem(88) minmax(0, 1fr);
+      padding: rem(16);
+      border-radius: rem(24);
     }
 
     &__item-media {
-      width: 88px;
-      height: 88px;
-      border-radius: 18px;
+      width: rem(88);
+      height: rem(88);
+      border-radius: rem(18);
     }
 
     &__item-bottom {
@@ -439,14 +451,14 @@
     }
 
     &__summary {
-      padding: 20px;
-      border-radius: 24px;
+      padding: rem(20);
+      border-radius: rem(24);
     }
   }
 
-  @media (max-width: 540px) {
+  @media (max-width: rem(540)) {
     &__empty {
-      padding: 24px;
+      padding: rem(24);
     }
 
     &__item {
@@ -455,7 +467,7 @@
 
     &__item-media {
       width: 100%;
-      height: 180px;
+      height: rem(180);
     }
 
     &__item-top {
