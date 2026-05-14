@@ -102,7 +102,7 @@ const goToOrder = () => {
             {{ formatPrice(appShellStore.activeOrder.total_price) }}
           </span>
             <span class="active-order-banner__cta">
-            Отслеживать
+            <span>Отслеживать</span>
             <ArrowRight class="ui-icon" :size="14" :stroke-width="1.9" aria-hidden="true" />
           </span>
           </div>
