@@ -49,6 +49,41 @@ export function useOrderDetailsPage() {
         ].filter((item) => typeof item.value === 'number' && item.value > 0);
     });
 
+    const isDelayed = computed(() => {
+        if (
+            !current.value?.estimated_delivery_at ||
+            current.value.payment_status !== 'PAID' ||
+            ['DELIVERED', 'CANCELED_BY_USER', 'CANCELED_BY_RESTAURANT'].includes(current.value.status)
+        ) {
+            return false;
+        }
+
+        const eta = new Date(current.value.estimated_delivery_at).getTime();
+        const now = new Date().getTime();
+        return now > eta;
+    });
+
+    const isFinal = computed(() => {
+        if (!current.value) return false;
+        return ['DELIVERED', 'CANCELED_BY_USER', 'CANCELED_BY_RESTAURANT'].includes(current.value.status);
+    });
+
+    const getDeliveryProgress = (status: string, paymentStatus?: string) => {
+        if (paymentStatus === 'PENDING') return 5;
+
+        const stages: Record<string, number> = {
+            'CREATED': 15,
+            'ACCEPTED_BY_RESTAURANT': 35,
+            'READY_FOR_PICKUP': 60,
+            'COURIER_ASSIGNED': 75,
+            'PICKED_UP': 90,
+            'DELIVERED': 100,
+            'CANCELED_BY_USER': 0,
+            'CANCELED_BY_RESTAURANT': 0,
+        };
+        return stages[status] || 15;
+    };
+
     const loadOrder = async () => {
         if (!id.value || Number.isNaN(id.value)) {
             await router.push('/orders');
@@ -75,11 +110,14 @@ export function useOrderDetailsPage() {
         routeDistanceKm,
         deliveryDurationMinutes,
         logisticsTimeBreakdown,
+        isDelayed,
+        isFinal,
         formatPrice,
         formatDateTime,
         getOrderStatusClass,
         getOrderStatusLabel,
         getPaymentMethodLabel,
         getPaymentStatusLabel,
+        getDeliveryProgress,
     };
 }

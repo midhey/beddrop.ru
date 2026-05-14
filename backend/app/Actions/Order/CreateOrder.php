@@ -67,8 +67,6 @@ class CreateOrder
             $quote = $this->tryBuildQuote($cart, $data);
             $deliveryPrice = (float) ($quote['delivery_price'] ?? 0);
             $deliveryAddress = $quote['delivery_address'] ?? null;
-            $estimatedPickupAt = $quote ? now()->addMinutes($quote['time']['prep'] + $quote['time']['pickup_buffer']) : null;
-            $estimatedDeliveryAt = $quote ? now()->addMinutes($quote['eta_minutes']) : null;
 
             $order = Order::create([
                 'user_id' => $user->id,
@@ -85,8 +83,8 @@ class CreateOrder
                 'delivery_distance_meters' => $quote['distance_meters'] ?? null,
                 'delivery_duration_seconds' => $quote['duration_seconds'] ?? null,
                 'delivery_price_snapshot' => $quote['delivery_price'] ?? null,
-                'estimated_pickup_at' => $estimatedPickupAt,
-                'estimated_delivery_at' => $estimatedDeliveryAt,
+                'estimated_pickup_at' => null,
+                'estimated_delivery_at' => null,
                 'logistics_snapshot_json' => $quote ? [
                     'price' => $quote['price'],
                     'time' => $quote['time'],

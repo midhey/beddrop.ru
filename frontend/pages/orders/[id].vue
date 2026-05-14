@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowLeft } from "lucide-vue-next";
+import { ArrowLeft, CreditCard, Clock, MapPin, ClipboardList, Info } from "lucide-vue-next";
 import RouteMap from "~/components/map/RouteMap.vue";
 import { useOrderDetailsPage } from "~/composables/useOrderDetailsPage";
 
@@ -14,12 +14,15 @@ const {
   routeDistanceKm,
   deliveryDurationMinutes,
   logisticsTimeBreakdown,
+  isDelayed,
+  isFinal,
   formatPrice,
   formatDateTime,
   getOrderStatusClass,
   getOrderStatusLabel,
   getPaymentMethodLabel,
   getPaymentStatusLabel,
+  getDeliveryProgress,
 } = useOrderDetailsPage();
 </script>
 
@@ -80,13 +83,19 @@ const {
         <div class="order-page__card surface-card">
           <div class="order-page__row">
             <div class="order-page__col">
-              <div class="order-page__label">Ресторан</div>
+              <div class="order-page__label">
+                <MapPin :size="12" class="ui-icon" />
+                <span>Ресторан</span>
+              </div>
               <div class="order-page__value">
                 {{ current.restaurant?.name || "Неизвестно" }}
               </div>
             </div>
             <div class="order-page__col">
-              <div class="order-page__label">Создан</div>
+              <div class="order-page__label">
+                <Clock :size="12" class="ui-icon" />
+                <span>Создан</span>
+              </div>
               <div class="order-page__value">
                 {{ formatDateTime(current.created_at) }}
               </div>
@@ -95,15 +104,23 @@ const {
 
           <div class="order-page__row">
             <div class="order-page__col">
-              <div class="order-page__label">Оплата</div>
+              <div class="order-page__label">
+                <CreditCard :size="12" class="ui-icon" />
+                <span>Оплата</span>
+              </div>
               <div class="order-page__value">
                 {{ getPaymentMethodLabel(current.payment_method) }}
                 ·
-                {{ getPaymentStatusLabel(current.payment_status) }}
+                <span :class="current.payment_status === 'PAID' ? 'order-status--success' : 'order-status--info'" class="status-chip">
+                  {{ getPaymentStatusLabel(current.payment_status) }}
+                </span>
               </div>
             </div>
             <div class="order-page__col">
-              <div class="order-page__label">Сумма заказа</div>
+              <div class="order-page__label">
+                <ClipboardList :size="12" class="ui-icon" />
+                <span>Сумма заказа</span>
+              </div>
               <div class="order-page__value order-page__value--price">
                 {{ formatPrice(current.total_price) }}
               </div>
@@ -112,7 +129,10 @@ const {
 
           <div v-if="current.comment" class="order-page__row">
             <div class="order-page__col order-page__col--full">
-              <div class="order-page__label">Комментарий к заказу</div>
+              <div class="order-page__label">
+                <Info :size="12" class="ui-icon" />
+                <span>Комментарий к заказу</span>
+              </div>
               <div class="order-page__value">
                 {{ current.comment }}
               </div>
@@ -120,13 +140,20 @@ const {
           </div>
         </div>
 
+        <!-- Плейсхолдер для оплаты (вызывающий блок) -->
         <div
           v-if="current.payment_status === 'PENDING'"
-          class="order-page__card surface-card"
+          class="order-page__payment-alert"
         >
-          <div class="order-page__section-header section-head">
-            <h2 class="section-title">Оплатить заказ</h2>
+          <div class="order-page__payment-alert-head">
+            <div class="order-page__payment-alert-icon">
+              <CreditCard :size="20" class="ui-icon" />
+            </div>
+            <h2 class="order-page__payment-alert-title">Ожидаем оплату</h2>
           </div>
+          <p class="order-page__payment-alert-text">
+            Заказ поступит в ресторан сразу после подтверждения платежа:
+          </p>
 
           <img
             :src="
@@ -144,7 +171,7 @@ const {
         </div>
 
         <div
-          v-if="current.route_segments?.length"
+          v-if="current.route_segments?.length && current.payment_status !== 'PENDING'"
           class="order-page__card surface-card"
         >
           <div class="order-page__section-header section-head">
@@ -157,44 +184,36 @@ const {
             </span>
           </div>
 
-          <div class="order-page__route-summary">
-            <div
-              v-if="deliveryDurationMinutes"
-              class="order-page__route-summary-item"
-            >
-              <span>В пути</span>
-              <strong>{{ deliveryDurationMinutes }} мин</strong>
-            </div>
-            <div
-              v-if="current.estimated_pickup_at"
-              class="order-page__route-summary-item"
-            >
-              <span>Ожидаемая выдача</span>
-              <strong>{{ formatDateTime(current.estimated_pickup_at) }}</strong>
-            </div>
-            <div
-              v-if="current.estimated_delivery_at"
-              class="order-page__route-summary-item"
-            >
-              <span>Ожидаемая доставка</span>
-              <strong>{{
-                formatDateTime(current.estimated_delivery_at)
-              }}</strong>
-            </div>
-          </div>
-
           <div
-            v-if="logisticsTimeBreakdown.length"
-            class="order-page__route-breakdown"
+            v-if="!isFinal"
+            class="order-page__delivery-status"
+            :class="{ 'order-page__delivery-status--delayed': current.payment_status === 'PAID' && isDelayed }"
           >
-            <div
-              v-for="item in logisticsTimeBreakdown"
-              :key="item.label"
-              class="order-page__route-breakdown-item"
-              :class="{ 'order-page__route-breakdown-item--total': item.total }"
-            >
-              <span>{{ item.label }}</span>
-              <strong>{{ item.value }} мин</strong>
+            <div class="order-page__delivery-main">
+              <div class="order-page__delivery-info">
+                <span class="order-page__delivery-label">
+                  {{ isDelayed ? 'Опаздываем' : 'Ожидаемое время доставки' }}
+                </span>
+                <strong v-if="current.estimated_delivery_at" class="order-page__delivery-time">
+                  {{ formatDateTime(current.estimated_delivery_at).split(',')[1].trim() }}
+                </strong>
+                <strong v-else class="order-page__delivery-time">Считаем...</strong>
+              </div>
+              <div v-if="current.logistics_snapshot?.time?.total" class="order-page__delivery-badge">
+                <Clock :size="14" />
+                <span>~{{ current.logistics_snapshot.time.total }} мин</span>
+              </div>
+            </div>
+            
+            <p v-if="current.payment_status === 'PAID' && isDelayed" class="order-page__delivery-apology">
+              Извините, мы немного задерживаемся. Курьер уже спешит к вам!
+            </p>
+
+            <div v-if="current.payment_status === 'PAID'" class="order-page__delivery-progress">
+              <div 
+                class="order-page__delivery-progress-bar" 
+                :style="{ width: getDeliveryProgress(current.status, current.payment_status) + '%' }"
+              ></div>
             </div>
           </div>
 
@@ -262,9 +281,10 @@ const {
 
           <ul class="order-page__timeline">
             <li
-              v-for="event in sortedEvents"
+              v-for="(event, index) in sortedEvents"
               :key="event.id"
               class="timeline-item"
+              :class="{ 'timeline-item--completed': index < sortedEvents.length - 1 }"
             >
               <div class="timeline-item__dot"></div>
               <div class="timeline-item__content">
