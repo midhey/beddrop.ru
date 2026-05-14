@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowLeft } from 'lucide-vue-next';
+import { ArrowLeft, MapPin, Clock, ShoppingBag } from 'lucide-vue-next';
 import { useOrdersListPage } from '~/composables/useOrdersListPage';
 
 const {
@@ -28,11 +28,9 @@ const {
       </button>
 
       <div class="page-head">
-        <div>
-          <h1 class="orders__title page-title">
-            Мои заказы
-          </h1>
-        </div>
+        <h1 class="orders__title page-title">
+          Мои заказы
+        </h1>
       </div>
 
       <div
@@ -74,7 +72,7 @@ const {
           <div class="orders__item-main">
             <div class="orders__item-top">
               <span class="orders__item-number">
-                Заказ #{{ order.id }}
+                #{{ order.id }}
               </span>
               <span
                   class="order-status status-chip"
@@ -90,9 +88,11 @@ const {
 
             <div class="orders__item-meta">
               <span>
-                {{ order.items_count ?? '—' }} позиций
+                <ShoppingBag :size="12" class="ui-icon" />
+                {{ order.items_count ?? '—' }} поз.
               </span>
               <span>
+                <Clock :size="12" class="ui-icon" />
                 {{ formatDateTime(order.created_at) }}
               </span>
             </div>
