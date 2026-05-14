@@ -38,7 +38,6 @@ export function useCheckoutPage() {
     } = useDeliveryQuote();
 
     const selectedAddressId = ref<number | null>(null);
-    const paymentMethod = ref<'CASH' | 'CARD' | 'ONLINE'>('CASH');
     const comment = ref('');
     const submitting = ref(false);
 
@@ -152,7 +151,7 @@ export function useCheckoutPage() {
         try {
             await feedback.withBlock('.checkout-page__layout', async () => {
                 const payload: CreateOrderPayload = {
-                    payment_method: paymentMethod.value,
+                    payment_method: 'ONLINE',
                     comment: comment.value || null,
                     delivery_address_id: selectedAddressId.value,
                 };
@@ -192,7 +191,6 @@ export function useCheckoutPage() {
         pageLoading,
         isCartEmpty,
         selectedAddressId,
-        paymentMethod,
         comment,
         cartTotal,
         deliveryQuote,

@@ -13,7 +13,6 @@ const {
   pageLoading,
   isCartEmpty,
   selectedAddressId,
-  paymentMethod,
   comment,
   cartTotal,
   deliveryQuote,
@@ -235,20 +234,9 @@ const {
             <h2 class="checkout-card__title section-title">Способ оплаты</h2>
 
             <div class="checkout-payment">
-              <label class="checkout-payment__option">
-                <input v-model="paymentMethod" type="radio" value="CASH" />
-                <span>Наличными курьеру</span>
-              </label>
-
-              <label class="checkout-payment__option">
-                <input v-model="paymentMethod" type="radio" value="CARD" />
-                <span>Картой курьеру</span>
-              </label>
-
-              <label class="checkout-payment__option">
-                <input v-model="paymentMethod" type="radio" value="ONLINE" />
-                <span>Онлайн-оплата (не работает)</span>
-              </label>
+              <div class="checkout-payment__option">
+                <span>Онлайн оплата</span>
+              </div>
             </div>
 
             <div class="checkout-comment form-field">

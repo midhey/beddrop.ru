@@ -3,6 +3,8 @@ import { ArrowLeft } from "lucide-vue-next";
 import RouteMap from "~/components/map/RouteMap.vue";
 import { useOrderDetailsPage } from "~/composables/useOrderDetailsPage";
 
+const config = useRuntimeConfig();
+
 const {
   current,
   currentLoading,
@@ -116,6 +118,29 @@ const {
               </div>
             </div>
           </div>
+        </div>
+
+        <div
+          v-if="current.payment_status === 'PENDING'"
+          class="order-page__card surface-card"
+        >
+          <div class="order-page__section-header section-head">
+            <h2 class="section-title">Оплатить заказ</h2>
+          </div>
+
+          <img
+            :src="
+              'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' +
+              encodeURIComponent(
+                config.public.apiBase.replace('/api/v1', '') +
+                  '/api/v1/orders/' +
+                  current.id +
+                  '/mock-pay',
+              )
+            "
+            alt="Оплатить по QR"
+            class="order-page__payment-qr"
+          />
         </div>
 
         <div

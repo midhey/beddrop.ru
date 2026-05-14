@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Enums\OrderStatus;
+use App\Enums\PaymentStatus;
 use App\Enums\RestaurantStaffRole;
 use App\Models\OrderEvent;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -23,6 +24,7 @@ class RestaurantOrderTransitionTest extends TestCase
         $this->attachRestaurantUser($restaurant, $manager, RestaurantStaffRole::MANAGER);
         $order = $this->createAcceptedOrder($customer, $restaurant, null, [
             'status' => OrderStatus::CREATED->value,
+            'payment_status' => PaymentStatus::PAID->value,
         ]);
 
         $response = $this
@@ -62,6 +64,33 @@ class RestaurantOrderTransitionTest extends TestCase
             ->postJson("/api/v1/restaurants/{$restaurant->slug}/orders/{$order->id}/accept");
 
         $response->assertStatus(422);
+    }
+
+    public function test_restaurant_cannot_accept_unpaid_created_order(): void
+    {
+        $owner = $this->createUser();
+        $manager = $this->createUser();
+        $customer = $this->createUser();
+        $restaurant = $this->createRestaurant($owner);
+        $this->attachRestaurantUser($restaurant, $manager, RestaurantStaffRole::MANAGER);
+        $order = $this->createAcceptedOrder($customer, $restaurant, null, [
+            'status' => OrderStatus::CREATED->value,
+            'payment_status' => PaymentStatus::PENDING->value,
+        ]);
+
+        $response = $this
+            ->actingAs($manager, 'api')
+            ->postJson("/api/v1/restaurants/{$restaurant->slug}/orders/{$order->id}/accept");
+
+        $response
+            ->assertStatus(422)
+            ->assertJsonPath('message', 'Заказ еще не оплачен.');
+
+        $this->assertDatabaseHas('orders', [
+            'id' => $order->id,
+            'status' => OrderStatus::CREATED->value,
+            'payment_status' => PaymentStatus::PENDING->value,
+        ]);
     }
 
     public function test_manager_can_mark_accepted_order_ready_for_pickup(): void

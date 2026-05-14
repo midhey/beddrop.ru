@@ -22,6 +22,7 @@ use App\Http\Controllers\Courier\CourierOrderController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\OrderActiveController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderMockPayController;
 use App\Http\Controllers\Product\ProductCategoryController;
 use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\Product\ProductImageController;
@@ -129,6 +130,10 @@ Route::prefix('/v1')->group(function () {
         Route::put('/items/{item}', [CartController::class, 'updateItem']);
         Route::delete('/items/{item}', [CartController::class, 'removeItem']);
         Route::delete('/', [CartController::class, 'clear']);
+    });
+
+    Route::prefix('/orders')->group(function () {
+        Route::get('/{order}/mock-pay', OrderMockPayController::class);
     });
 
     Route::middleware('auth:api')->prefix('/orders')->group(function () {

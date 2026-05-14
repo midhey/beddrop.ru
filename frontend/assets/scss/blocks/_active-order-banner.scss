@@ -1,11 +1,11 @@
-@use '../core' as *;
+@use "../core" as *;
 
 .active-order-banner {
   width: 100%;
   background: linear-gradient(
-                  90deg,
-                  rgba(0, 188, 240, 0.08),
-                  rgba(124, 58, 237, 0.04)
+    90deg,
+    rgba(0, 188, 240, 0.08),
+    rgba(124, 58, 237, 0.04)
   );
   border-bottom: 1px solid rgba(148, 163, 184, 0.3);
 
@@ -43,8 +43,8 @@
   }
 
   &__dot {
-    width: 8px;
-    height: 8px;
+    width: rem(8);
+    height: rem(8);
     border-radius: 999px;
     background: $primary;
     box-shadow: 0 0 0 4px rgba(0, 188, 240, 0.3);
@@ -53,8 +53,8 @@
   &__info {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-    font-size: 12px;
+    gap: rem(8);
+    font-size: rem(12);
     color: #4b5563;
   }
 
@@ -63,7 +63,7 @@
   }
 
   &__status {
-    padding: 2px 8px;
+    padding: rem(2) rem(8);
     border-radius: 999px;
     background: #e5e7eb;
     color: #374151;
@@ -92,12 +92,12 @@
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 2px;
+    gap: rem(2);
     flex-shrink: 0;
   }
 
   &__price {
-    font-size: 13px;
+    font-size: rem(13);
     font-weight: 600;
     color: #0f172a;
   }
@@ -105,8 +105,8 @@
   &__cta {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    font-size: 12px;
+    gap: rem(4);
+    font-size: rem(12);
     color: $primary;
     text-decoration: underline;
     text-underline-offset: 2px;
@@ -142,7 +142,7 @@
 
   @media (max-width: 640px) {
     &__inner {
-      padding-inline: 12px;
+      padding-inline: rem(12);
       flex-direction: column;
       align-items: flex-start;
     }

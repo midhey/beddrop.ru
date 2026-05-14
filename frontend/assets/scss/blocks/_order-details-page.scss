@@ -1,20 +1,22 @@
+@use "../core" as *;
+
 .order-page {
   &__loading,
   &__error,
   &__empty {
-    font-size: 15px;
+    font-size: rem(15);
   }
 
   &__content {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: rem(16);
   }
 
   &__row {
     display: flex;
-    gap: 16px;
-    margin-bottom: 8px;
+    gap: rem(16);
+    margin-bottom: rem(8);
 
     &:last-child {
       margin-bottom: 0;
@@ -30,13 +32,13 @@
   }
 
   &__label {
-    margin-bottom: 2px;
-    font-size: 12px;
+    margin-bottom: rem(2);
+    font-size: rem(12);
     color: #9ca3af;
   }
 
   &__value {
-    font-size: 14px;
+    font-size: rem(14);
     color: #111827;
   }
 
@@ -45,15 +47,23 @@
   }
 
   &__section-header {
-    margin-bottom: 8px;
+    margin-bottom: rem(8);
+  }
+
+  &__payment-qr {
+    display: block;
+    width: rem(200);
+    height: rem(200);
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
   }
 
   &__route-summary,
   &__route-breakdown {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
-    margin-bottom: 10px;
+    gap: rem(8);
+    margin-bottom: rem(10);
   }
 
   &__route-breakdown {
@@ -63,20 +73,20 @@
   &__route-summary-item,
   &__route-breakdown-item {
     display: grid;
-    gap: 3px;
+    gap: rem(3);
     min-width: 0;
-    padding: 9px 10px;
+    padding: rem(9) rem(10);
     border: 1px solid #e5e7eb;
-    border-radius: 8px;
+    border-radius: rem(8);
     background: #f8fafc;
-    font-size: 12px;
+    font-size: rem(12);
     color: #6b7280;
   }
 
   &__route-summary-item strong,
   &__route-breakdown-item strong {
     color: #111827;
-    font-size: 13px;
+    font-size: rem(13);
   }
 
   &__route-breakdown-item--total {
@@ -90,7 +100,7 @@
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: rem(10);
   }
 
   &__timeline {
@@ -112,12 +122,12 @@
 
 .order-item {
   display: flex;
-  gap: 12px;
+  gap: rem(12);
 
   &__image-wrapper {
-    width: 64px;
-    height: 64px;
-    border-radius: 12px;
+    width: rem(64);
+    height: rem(64);
+    border-radius: rem(12);
     overflow: hidden;
     flex-shrink: 0;
   }
@@ -133,7 +143,7 @@
     align-items: center;
     justify-content: center;
     background: #f3f4f6;
-    font-size: 11px;
+    font-size: rem(11);
     color: #9ca3af;
   }
 
@@ -145,24 +155,24 @@
   &__top {
     display: flex;
     justify-content: space-between;
-    gap: 8px;
-    margin-bottom: 4px;
+    gap: rem(8);
+    margin-bottom: rem(4);
   }
 
   &__name {
-    font-size: 14px;
+    font-size: rem(14);
     font-weight: 500;
   }
 
   &__price {
-    font-size: 14px;
+    font-size: rem(14);
     font-weight: 600;
   }
 
   &__bottom {
     display: flex;
     justify-content: space-between;
-    font-size: 13px;
+    font-size: rem(13);
     color: #6b7280;
   }
 
@@ -174,33 +184,33 @@
 .timeline-item {
   display: flex;
   position: relative;
-  padding-left: 20px;
-  margin-bottom: 10px;
+  padding-left: rem(20);
+  margin-bottom: rem(10);
 
   &:last-child {
     margin-bottom: 0;
   }
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
-    left: 7px;
+    left: rem(7);
     top: 0;
-    bottom: -10px;
-    width: 2px;
+    bottom: rem(-10);
+    width: rem(2);
     background: #e5e7eb;
   }
 
   &:last-child::before {
-    bottom: 6px;
+    bottom: rem(6);
   }
 
   &__dot {
     position: absolute;
-    left: 3px;
-    top: 2px;
-    width: 10px;
-    height: 10px;
+    left: rem(3);
+    top: rem(2);
+    width: rem(10);
+    height: rem(10);
     border-radius: 999px;
     background: #e5e7eb;
   }
@@ -210,7 +220,7 @@
   }
 
   &__content {
-    font-size: 13px;
+    font-size: rem(13);
     color: #4b5563;
   }
 
@@ -220,7 +230,7 @@
   }
 
   &__time {
-    font-size: 12px;
+    font-size: rem(12);
     color: #9ca3af;
   }
 }

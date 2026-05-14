@@ -105,9 +105,9 @@ export const isFinalOrderStatus = (status: string): boolean => {
 };
 
 export const canRestaurantAcceptOrder = (
-    order: Pick<Order, 'status'>,
+    order: Pick<Order, 'status' | 'payment_status'>,
 ): boolean => {
-    return order.status === 'CREATED';
+    return order.status === 'CREATED' && order.payment_status === 'PAID';
 };
 
 export const canRestaurantMarkReadyOrder = (

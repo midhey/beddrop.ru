@@ -3,6 +3,7 @@
 namespace App\Actions\Restaurant;
 
 use App\Enums\OrderStatus;
+use App\Enums\PaymentStatus;
 use App\Models\Order;
 use App\Models\OrderEvent;
 use App\Models\User;
@@ -16,6 +17,12 @@ class AcceptRestaurantOrder
         if ($order->status !== OrderStatus::CREATED->value) {
             throw new HttpResponseException(response()->json([
                 'message' => 'Этот заказ уже обработан и не может быть принят.',
+            ], 422));
+        }
+
+        if ($order->payment_status !== PaymentStatus::PAID->value) {
+            throw new HttpResponseException(response()->json([
+                'message' => 'Заказ еще не оплачен.',
             ], 422));
         }
 
