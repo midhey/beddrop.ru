@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowLeft, Plus } from "lucide-vue-next";
+import { ArrowLeft, Plus, CreditCard } from "lucide-vue-next";
 import RouteMap from "~/components/map/RouteMap.vue";
 import { useCheckoutPage } from "~/composables/useCheckoutPage";
 
@@ -110,9 +110,7 @@ const {
           <!-- Адреса -->
           <section class="checkout-card surface-card">
             <div class="checkout-card__header section-head">
-              <h2 class="checkout-card__title section-title">
-                Адрес доставки
-              </h2>
+              <h2 class="checkout-card__title section-title">Адрес доставки</h2>
 
               <NuxtLink
                 to="/profile/addresses"
@@ -231,10 +229,18 @@ const {
 
           <!-- Оплата + комментарий -->
           <section class="checkout-card surface-card">
-            <h2 class="checkout-card__title section-title">Способ оплаты</h2>
+            <h2 class="checkout-card__title section-title">Оплата</h2>
 
             <div class="checkout-payment">
-              <div class="checkout-payment__option">
+              <div
+                class="checkout-payment__option checkout-payment__option--active"
+              >
+                <CreditCard
+                  class="ui-icon"
+                  :size="18"
+                  :stroke-width="2"
+                  aria-hidden="true"
+                />
                 <span>Онлайн оплата</span>
               </div>
             </div>
@@ -257,7 +263,8 @@ const {
         <aside class="checkout-page__sidebar">
           <section class="checkout-card checkout-card--sticky surface-card">
             <h2 class="checkout-card__title section-title">
-              Заказ в "{{ restaurantName }}"
+              Заказ в <br />
+              «{{ restaurantName }}»
             </h2>
 
             <p

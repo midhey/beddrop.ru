@@ -263,7 +263,7 @@ onBeforeUnmount(() => {
     <div
       ref="mapEl"
       class="route-map__canvas"
-      :style="{ minHeight: `${height}px` }"
+      :style="{ minHeight: `calc(${height} / 20 * 1rem)` }"
     />
     <p v-if="mapLoadError" class="route-map__fallback state-message state-message--empty">
       Карта маршрута недоступна.
