@@ -33,9 +33,9 @@ const appName = 'BedDrop';
             <h3 class="footer__nav-title">
               Сервис
             </h3>
-            <span class="footer__nav-link" aria-disabled="true">
+            <NuxtLink to="/" class="footer__nav-link">
               Рестораны
-            </span>
+            </NuxtLink>
             <NuxtLink to="/orders" class="footer__nav-link">
               Мои заказы
             </NuxtLink>
@@ -51,30 +51,27 @@ const appName = 'BedDrop';
             <h3 class="footer__nav-title">
               О компании
             </h3>
-            <span class="footer__nav-link" aria-disabled="true">
+            <NuxtLink to="/about" class="footer__nav-link">
               О сервисе
-            </span>
-            <span class="footer__nav-link" aria-disabled="true">
+            </NuxtLink>
+            <NuxtLink to="/contacts" class="footer__nav-link">
               Контакты
-            </span>
-            <span class="footer__nav-link" aria-disabled="true">
-              Вакансии
-            </span>
+            </NuxtLink>
           </div>
 
           <div class="footer__nav-column">
             <h3 class="footer__nav-title">
               Документы
             </h3>
-            <span class="footer__nav-link" aria-disabled="true">
+            <NuxtLink to="/legal/offer" class="footer__nav-link">
               Публичная оферта
-            </span>
-            <span class="footer__nav-link" aria-disabled="true">
+            </NuxtLink>
+            <NuxtLink to="/legal/privacy" class="footer__nav-link">
               Политика конфиденциальности
-            </span>
-            <span class="footer__nav-link" aria-disabled="true">
+            </NuxtLink>
+            <NuxtLink to="/legal/courier-terms" class="footer__nav-link">
               Условия для курьеров
-            </span>
+            </NuxtLink>
           </div>
         </nav>
 
@@ -125,12 +122,12 @@ const appName = 'BedDrop';
         </span>
 
         <div class="footer__bottom-links">
-          <span class="footer__bottom-link" aria-disabled="true">
+          <NuxtLink to="/legal/privacy" class="footer__bottom-link">
             Конфиденциальность
-          </span>
-          <span class="footer__bottom-link" aria-disabled="true">
+          </NuxtLink>
+          <NuxtLink to="/legal/cookies" class="footer__bottom-link">
             Cookies
-          </span>
+          </NuxtLink>
           <button
               type="button"
               class="footer__bottom-link footer__bottom-link--button"
