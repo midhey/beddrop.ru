@@ -42,13 +42,23 @@ export default defineNuxtPlugin(() => {
         Notiflix.Notify[level](message);
     };
 
+    const canResolveTarget = (target: FeedbackTarget): boolean => {
+        if (typeof target !== 'string') {
+            return true;
+        }
+
+        return document.querySelector(target) !== null;
+    };
+
     const block = (target: FeedbackTarget, message = 'Подождите...') => {
         if (!target) return;
+        if (!canResolveTarget(target)) return;
         Notiflix.Block.circle(target, message);
     };
 
     const unblock = (target: FeedbackTarget) => {
         if (!target) return;
+        if (!canResolveTarget(target)) return;
         Notiflix.Block.remove(target);
     };
 

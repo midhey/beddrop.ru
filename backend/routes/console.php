@@ -64,3 +64,57 @@ Artisan::command('orders:cancel-stale-restaurant-acceptance', function () {
 Schedule::command('orders:cancel-stale-restaurant-acceptance')
     ->everyFiveMinutes()
     ->withoutOverlapping();
+
+Artisan::command('orders:expire-stale-pending-payments', function () {
+    $ttlMinutes = max(1, (int) config('orders.pending_payment_ttl_minutes', 30));
+    $deadline = now()->subMinutes($ttlMinutes);
+    $expired = 0;
+
+    Order::query()
+        ->where('status', OrderStatus::CREATED->value)
+        ->where('payment_status', PaymentStatus::PENDING->value)
+        ->where('updated_at', '<=', $deadline)
+        ->orderBy('id')
+        ->chunkById(100, function ($orders) use (&$expired) {
+            foreach ($orders as $staleOrder) {
+                $wasExpired = DB::transaction(function () use ($staleOrder) {
+                    $order = Order::query()
+                        ->whereKey($staleOrder->id)
+                        ->lockForUpdate()
+                        ->first();
+
+                    if (
+                        ! $order ||
+                        $order->status !== OrderStatus::CREATED->value ||
+                        $order->payment_status !== PaymentStatus::PENDING->value
+                    ) {
+                        return false;
+                    }
+
+                    $order->status = OrderStatus::CANCELED_BY_USER->value;
+                    $order->payment_status = PaymentStatus::FAILED->value;
+                    $order->save();
+
+                    OrderEvent::create([
+                        'order_id' => $order->id,
+                        'event' => OrderStatus::CANCELED_BY_USER->value,
+                        'payload' => [
+                            'reason' => 'Автоматическая отмена: истекло время ожидания оплаты',
+                        ],
+                    ]);
+
+                    return true;
+                });
+
+                if ($wasExpired) {
+                    $expired++;
+                }
+            }
+        });
+
+    $this->info("Expired {$expired} stale pending payment orders.");
+})->purpose('Expire created orders that stayed pending payment past the payment TTL');
+
+Schedule::command('orders:expire-stale-pending-payments')
+    ->everyFiveMinutes()
+    ->withoutOverlapping();

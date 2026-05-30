@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\CourierProfileStatus;
 use App\Enums\CourierShiftStatus;
 use App\Enums\OrderStatus;
+use App\Enums\PaymentStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\OrderResource;
 use App\Models\CourierLocation;
@@ -74,6 +75,9 @@ class AdminOrderController extends Controller
     public function accept(Request $request, Order $order): OrderResource
     {
         $this->ensureStatus($order, [OrderStatus::CREATED]);
+        if ($order->payment_status !== PaymentStatus::PAID->value) {
+            abort(422, 'Заказ еще не оплачен.');
+        }
 
         return new OrderResource(DB::transaction(function () use ($request, $order) {
             $order->status = OrderStatus::ACCEPTED_BY_RESTAURANT->value;

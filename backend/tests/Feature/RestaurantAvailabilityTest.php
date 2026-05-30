@@ -37,7 +37,7 @@ class RestaurantAvailabilityTest extends TestCase
         $this
             ->actingAs($customer, 'api')
             ->postJson('/api/v1/orders', [
-                'payment_method' => 'CASH',
+                'payment_method' => 'ONLINE',
             ])
             ->assertCreated();
     }
@@ -59,7 +59,7 @@ class RestaurantAvailabilityTest extends TestCase
         $this
             ->actingAs($customer, 'api')
             ->postJson('/api/v1/orders', [
-                'payment_method' => 'CASH',
+                'payment_method' => 'ONLINE',
             ])
             ->assertUnprocessable()
             ->assertJsonPath('message', 'Ресторан сейчас закрыт для заказов.');
@@ -84,7 +84,7 @@ class RestaurantAvailabilityTest extends TestCase
         $this
             ->actingAs($customer, 'api')
             ->postJson('/api/v1/orders', [
-                'payment_method' => 'CASH',
+                'payment_method' => 'ONLINE',
             ])
             ->assertUnprocessable()
             ->assertJsonPath('message', 'Ресторан сейчас не принимает заказы: Технический перерыв');
@@ -108,7 +108,7 @@ class RestaurantAvailabilityTest extends TestCase
         $this
             ->actingAs($customer, 'api')
             ->postJson('/api/v1/orders', [
-                'payment_method' => 'CASH',
+                'payment_method' => 'ONLINE',
             ])
             ->assertUnprocessable()
             ->assertJsonPath('message', 'Ресторан сейчас недоступен для заказов.');

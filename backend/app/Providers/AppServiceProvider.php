@@ -12,12 +12,15 @@ use App\Observers\ProductCategoryObserver;
 use App\Observers\ProductImageObserver;
 use App\Observers\ProductObserver;
 use App\Observers\RestaurantObserver;
+use App\Services\Payments\PaymentProvider;
+use App\Services\Payments\YooKassaPaymentProvider;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        $this->app->bind(PaymentProvider::class, YooKassaPaymentProvider::class);
     }
 
     public function boot(): void

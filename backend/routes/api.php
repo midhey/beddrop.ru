@@ -22,7 +22,8 @@ use App\Http\Controllers\Courier\CourierOrderController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\OrderActiveController;
 use App\Http\Controllers\OrderController;
-use App\Http\Controllers\OrderMockPayController;
+use App\Http\Controllers\Payment\OrderPaymentController;
+use App\Http\Controllers\Payment\YooKassaWebhookController;
 use App\Http\Controllers\Product\ProductCategoryController;
 use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\Product\ProductImageController;
@@ -132,15 +133,16 @@ Route::prefix('/v1')->group(function () {
         Route::delete('/', [CartController::class, 'clear']);
     });
 
-    Route::prefix('/orders')->group(function () {
-        Route::get('/{order}/mock-pay', OrderMockPayController::class);
-    });
+    Route::post('/payments/yookassa/webhook', YooKassaWebhookController::class);
 
     Route::middleware('auth:api')->prefix('/orders')->group(function () {
         Route::get('/', [OrderController::class, 'index']);
         Route::get('/active', OrderActiveController::class);
         Route::get('/{order}', [OrderController::class, 'show']);
         Route::post('/', [OrderController::class, 'store']);
+        Route::post('/{order}/payment', [OrderPaymentController::class, 'store']);
+        Route::post('/{order}/payment/status', [OrderPaymentController::class, 'status']);
+        Route::post('/{order}/payment/sync', [OrderPaymentController::class, 'sync']);
     });
 
     Route::middleware('auth:api')->prefix('/geo')->group(function () {

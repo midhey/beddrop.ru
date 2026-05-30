@@ -98,4 +98,62 @@ class OrderTimingAndAutoCancelTest extends TestCase
         $this->assertNotNull($event);
         $this->assertSame('Автоматическая отмена: ресторан не принял заказ', $event->payload['reason']);
     }
+
+    public function test_command_expires_stale_pending_created_orders(): void
+    {
+        config(['orders.pending_payment_ttl_minutes' => 30]);
+
+        $customer = $this->createUser();
+        $owner = $this->createUser();
+        $restaurant = $this->createRestaurant($owner);
+        $staleOrder = $this->createAcceptedOrder($customer, $restaurant, null, [
+            'status' => OrderStatus::CREATED->value,
+            'payment_status' => PaymentStatus::PENDING->value,
+        ]);
+        $recentOrder = $this->createAcceptedOrder($customer, $restaurant, null, [
+            'status' => OrderStatus::CREATED->value,
+            'payment_status' => PaymentStatus::PENDING->value,
+        ]);
+        $paidOrder = $this->createAcceptedOrder($customer, $restaurant, null, [
+            'status' => OrderStatus::CREATED->value,
+            'payment_status' => PaymentStatus::PAID->value,
+        ]);
+
+        $this->travelTo('2026-05-14 12:00:00');
+
+        DB::table('orders')
+            ->whereIn('id', [$staleOrder->id, $paidOrder->id])
+            ->update(['updated_at' => now()->subMinutes(31)]);
+        DB::table('orders')
+            ->where('id', $recentOrder->id)
+            ->update(['updated_at' => now()->subMinutes(10)]);
+
+        $this->artisan('orders:expire-stale-pending-payments')
+            ->expectsOutput('Expired 1 stale pending payment orders.')
+            ->assertExitCode(0);
+
+        $this->assertDatabaseHas('orders', [
+            'id' => $staleOrder->id,
+            'status' => OrderStatus::CANCELED_BY_USER->value,
+            'payment_status' => PaymentStatus::FAILED->value,
+        ]);
+        $this->assertDatabaseHas('orders', [
+            'id' => $recentOrder->id,
+            'status' => OrderStatus::CREATED->value,
+            'payment_status' => PaymentStatus::PENDING->value,
+        ]);
+        $this->assertDatabaseHas('orders', [
+            'id' => $paidOrder->id,
+            'status' => OrderStatus::CREATED->value,
+            'payment_status' => PaymentStatus::PAID->value,
+        ]);
+
+        $event = OrderEvent::query()
+            ->where('order_id', $staleOrder->id)
+            ->where('event', OrderStatus::CANCELED_BY_USER->value)
+            ->first();
+
+        $this->assertNotNull($event);
+        $this->assertSame('Автоматическая отмена: истекло время ожидания оплаты', $event->payload['reason']);
+    }
 }

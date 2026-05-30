@@ -1,7 +1,9 @@
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from '#app';
 import { useSeoMeta } from '#imports';
+import { useFeedback } from '~/composables/useFeedback';
 import { useOrders } from '~/composables/useOrders';
+import { checkOrderPaymentStatusRequest } from '~/domains/orders/api';
 import {
     getOrderStatusClass,
     getOrderStatusLabel,
@@ -14,7 +16,15 @@ import { formatDateTime, formatPrice } from '~/utils/formatting';
 export function useOrderDetailsPage() {
     const route = useRoute();
     const router = useRouter();
-    const { current, currentLoading, errorMessage, fetchOrder } = useOrders();
+    const {
+        current,
+        currentLoading,
+        errorMessage,
+        fetchOrder,
+        initiatePayment,
+    } = useOrders();
+    const feedback = useFeedback();
+    const paymentLoading = ref(false);
 
     const id = computed(() => Number(route.params.id));
 
@@ -99,11 +109,72 @@ export function useOrderDetailsPage() {
         }
     };
 
+    const payOrder = async () => {
+        if (!current.value || paymentLoading.value) return;
+
+        paymentLoading.value = true;
+        try {
+            const response = await initiatePayment(current.value.id);
+            if (response.payment.confirmation_url) {
+                window.location.href = response.payment.confirmation_url;
+                return;
+            }
+
+            await fetchOrder(current.value.id);
+        } catch {
+        } finally {
+            paymentLoading.value = false;
+        }
+    };
+
+    const refreshPayment = async () => {
+        if (!current.value || paymentLoading.value) return;
+
+        paymentLoading.value = true;
+        try {
+            const response = await checkOrderPaymentStatusRequest(current.value.id);
+
+            current.value = {
+                ...current.value,
+                status: response.order.status,
+                payment_status: response.order.payment_status,
+            };
+
+            if (response.result === 'missing') {
+                feedback.info(response.message);
+                return;
+            }
+
+            if (response.order.payment_status === 'PAID') {
+                feedback.success(response.message);
+                await fetchOrder(response.order.id);
+                return;
+            }
+
+            if (response.order.payment_status === 'FAILED') {
+                feedback.warning(response.message);
+                return;
+            }
+
+            feedback.info(response.message);
+        } catch (error: any) {
+            const status = error?.response?.status;
+            const message = status >= 500
+                ? 'Сервис оплаты временно недоступен. Попробуйте еще раз через пару минут.'
+                : error?.response?.data?.message || 'Не удалось проверить оплату. Попробуйте еще раз.';
+
+            feedback.failure(message);
+        } finally {
+            paymentLoading.value = false;
+        }
+    };
+
     onMounted(loadOrder);
 
     return {
         current,
         currentLoading,
+        paymentLoading,
         errorMessage,
         id,
         sortedEvents,
@@ -119,5 +190,7 @@ export function useOrderDetailsPage() {
         getPaymentMethodLabel,
         getPaymentStatusLabel,
         getDeliveryProgress,
+        payOrder,
+        refreshPayment,
     };
 }

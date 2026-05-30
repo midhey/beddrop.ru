@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\CourierShiftStatus;
 use App\Enums\OrderStatus;
+use App\Enums\PaymentStatus;
 use App\Models\AdminActionLog;
 use App\Models\CourierLocation;
 use App\Models\CourierShift;
@@ -154,6 +155,29 @@ class AdminApiTest extends TestCase
         $this->assertDatabaseHas('order_events', [
             'order_id' => $order->id,
             'event' => OrderStatus::CANCELED_BY_RESTAURANT->value,
+        ]);
+    }
+
+    public function test_admin_default_accept_rejects_unpaid_order(): void
+    {
+        $admin = $this->createUser(['is_admin' => true]);
+        $customer = $this->createUser();
+        $restaurant = $this->createRestaurant();
+        $order = $this->createAcceptedOrder($customer, $restaurant, null, [
+            'status' => OrderStatus::CREATED->value,
+            'payment_status' => PaymentStatus::PENDING->value,
+        ]);
+
+        $this
+            ->actingAs($admin, 'api')
+            ->postJson("/api/v1/admin/orders/{$order->id}/accept")
+            ->assertStatus(422)
+            ->assertJsonPath('message', 'Заказ еще не оплачен.');
+
+        $this->assertDatabaseHas('orders', [
+            'id' => $order->id,
+            'status' => OrderStatus::CREATED->value,
+            'payment_status' => PaymentStatus::PENDING->value,
         ]);
     }
 

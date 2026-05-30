@@ -26,7 +26,7 @@ class OrderAddressOwnershipTest extends TestCase
             ->actingAs($customer, 'api')
             ->postJson('/api/v1/orders', [
                 'delivery_address_id' => $address->id,
-                'payment_method' => PaymentMethod::CASH->value,
+                'payment_method' => PaymentMethod::ONLINE->value,
             ]);
 
         $response->assertCreated();
@@ -51,7 +51,7 @@ class OrderAddressOwnershipTest extends TestCase
             ->actingAs($customer, 'api')
             ->postJson('/api/v1/orders', [
                 'delivery_address_id' => $foreignAddress->id,
-                'payment_method' => PaymentMethod::CASH->value,
+                'payment_method' => PaymentMethod::ONLINE->value,
             ]);
 
         $response->assertStatus(422);

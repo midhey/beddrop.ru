@@ -22,7 +22,14 @@ class StoreOrderRequest extends FormRequest
                 Rule::exists('addresses', 'id')->where(fn ($query) => $query->where('user_id', $this->user()->id)),
             ],
             'comment' => ['nullable', 'string', 'max:500'],
-            'payment_method' => ['required', Rule::enum(PaymentMethod::class)],
+            'payment_method' => ['required', Rule::in([PaymentMethod::ONLINE->value])],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'payment_method.in' => 'Сейчас доступна только онлайн-оплата. Оплата наличными и картой курьеру временно отключены.',
         ];
     }
 }

@@ -3,7 +3,9 @@ import { useApiHelpers } from '~/composables/useApiHelpers';
 import {
     createOrderRequest,
     getOrderById,
+    initiateOrderPaymentRequest,
     listOrders,
+    syncOrderPaymentRequest,
 } from '~/domains/orders/api';
 import type { Restaurant } from '~/composables/useRestaurants';
 import type { Address } from '~/composables/useAddresses';
@@ -164,6 +166,37 @@ export function useOrders() {
         }
     };
 
+    const initiatePayment = async (id: number) => {
+        errorMessage.value = null;
+
+        try {
+            return await initiateOrderPaymentRequest(id);
+        } catch (e) {
+            handleApiError(e);
+            throw e;
+        }
+    };
+
+    const syncPayment = async (id: number, options: { notify?: boolean } = {}) => {
+        errorMessage.value = null;
+
+        try {
+            const response = await syncOrderPaymentRequest(id);
+            if (current.value?.id === id) {
+                current.value = {
+                    ...current.value,
+                    status: response.order.status,
+                    payment_status: response.order.payment_status,
+                };
+            }
+
+            return response;
+        } catch (e) {
+            handleApiError(e, options.notify ?? true);
+            throw e;
+        }
+    };
+
     return {
         // список
         items,
@@ -181,5 +214,7 @@ export function useOrders() {
         fetchOrders,
         fetchOrder,
         createOrder,
+        initiatePayment,
+        syncPayment,
     };
 }

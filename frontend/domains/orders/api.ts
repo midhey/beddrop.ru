@@ -33,6 +33,63 @@ export const createOrderRequest = async (
     return data.data;
 };
 
+export interface OrderPaymentResponse {
+    payment: {
+        id: number;
+        provider: string;
+        provider_payment_id: string | null;
+        provider_status: string | null;
+        confirmation_url: string | null;
+        amount_value: string;
+        currency: string;
+        synced_at: string | null;
+        confirmed_at: string | null;
+        failed_at: string | null;
+    };
+    order: {
+        id: number;
+        status: string;
+        payment_status: string;
+    };
+}
+
+export interface OrderPaymentStatusResponse extends Partial<OrderPaymentResponse> {
+    result: 'missing' | 'synced';
+    message: string;
+    order: {
+        id: number;
+        status: string;
+        payment_status: string;
+    };
+}
+
+export const initiateOrderPaymentRequest = async (
+    id: number,
+): Promise<OrderPaymentResponse> => {
+    const { $api } = useNuxtApp();
+    const { data } = await $api.post<OrderPaymentResponse>(`/orders/${id}/payment`);
+
+    return data;
+};
+
+export const syncOrderPaymentRequest = async (
+    id: number,
+): Promise<OrderPaymentResponse> => {
+    const { $api } = useNuxtApp();
+    const { data } = await $api.post<OrderPaymentResponse>(`/orders/${id}/payment/sync`);
+
+    return data;
+};
+
+export const checkOrderPaymentStatusRequest = async (
+    id: number,
+): Promise<OrderPaymentStatusResponse> => {
+    const { $api } = useNuxtApp();
+    const { data } = await $api.post<OrderPaymentStatusResponse>(`/orders/${id}/payment/status`);
+
+    return data;
+};
+
 export const getActiveOrder = async (): Promise<Order | null> => {
     const response = await listOrders({ per_page: 20 });
 

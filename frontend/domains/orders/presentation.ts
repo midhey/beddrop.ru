@@ -12,6 +12,7 @@ const ORDER_STATUS_LABELS: Record<OrderStatusLabelVariant, Record<string, string
         DELIVERED: 'Доставлен',
         CANCELED_BY_USER: 'Отменён пользователем',
         CANCELED_BY_RESTAURANT: 'Отменён рестораном',
+        PAYMENT_PAID: 'Оплачен',
     },
     restaurant: {
         CREATED: 'Новый',
@@ -22,6 +23,7 @@ const ORDER_STATUS_LABELS: Record<OrderStatusLabelVariant, Record<string, string
         DELIVERED: 'Доставлен',
         CANCELED_BY_USER: 'Отменён пользователем',
         CANCELED_BY_RESTAURANT: 'Отменён рестораном',
+        PAYMENT_PAID: 'Оплачен',
     },
     banner: {
         CREATED: 'Заказ создан',
@@ -32,6 +34,7 @@ const ORDER_STATUS_LABELS: Record<OrderStatusLabelVariant, Record<string, string
         DELIVERED: 'Заказ доставлен',
         CANCELED_BY_USER: 'Заказ отменён',
         CANCELED_BY_RESTAURANT: 'Заказ отменён рестораном',
+        PAYMENT_PAID: 'Заказ оплачен',
     },
 };
 

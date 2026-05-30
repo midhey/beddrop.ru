@@ -10,6 +10,19 @@ export function useApiHelpers() {
         let message = 'Произошла ошибка при запросе к серверу';
 
         const axiosError = error as AxiosError<any>;
+        const status = axiosError?.response?.status;
+
+        if (!status && axiosError?.isAxiosError) {
+            return 'Не удалось подключиться к серверу. Проверьте соединение и попробуйте еще раз.';
+        }
+
+        if (status === 401) {
+            return 'Сессия истекла. Войдите снова.';
+        }
+
+        if (status && status >= 500) {
+            return 'Сервис временно недоступен. Попробуйте еще раз через пару минут.';
+        }
 
         const respData = axiosError?.response?.data as any;
 
@@ -34,7 +47,10 @@ export function useApiHelpers() {
         if (notify) {
             feedback.failure(msg);
         }
-        console.error('[API ERROR]', error);
+
+        if (import.meta.dev) {
+            console.error('[API ERROR]', error);
+        }
     };
 
     return {

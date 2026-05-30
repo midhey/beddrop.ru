@@ -3,11 +3,10 @@ import { ArrowLeft, CreditCard, Clock, MapPin, ClipboardList, Info } from "lucid
 import RouteMap from "~/components/map/RouteMap.vue";
 import { useOrderDetailsPage } from "~/composables/useOrderDetailsPage";
 
-const config = useRuntimeConfig();
-
 const {
   current,
   currentLoading,
+  paymentLoading,
   errorMessage,
   id,
   sortedEvents,
@@ -23,6 +22,8 @@ const {
   getPaymentMethodLabel,
   getPaymentStatusLabel,
   getDeliveryProgress,
+  payOrder,
+  refreshPayment,
 } = useOrderDetailsPage();
 </script>
 
@@ -140,34 +141,49 @@ const {
           </div>
         </div>
 
-        <!-- Плейсхолдер для оплаты (вызывающий блок) -->
         <div
           v-if="current.payment_status === 'PENDING'"
           class="order-page__payment-alert"
         >
-          <div class="order-page__payment-alert-head">
+          <div class="order-page__payment-alert-main">
             <div class="order-page__payment-alert-icon">
-              <CreditCard :size="20" class="ui-icon" />
+              <CreditCard :size="20" class="ui-icon" aria-hidden="true" />
             </div>
-            <h2 class="order-page__payment-alert-title">Ожидаем оплату</h2>
-          </div>
-          <p class="order-page__payment-alert-text">
-            Заказ поступит в ресторан сразу после подтверждения платежа:
-          </p>
 
-          <img
-            :src="
-              'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' +
-              encodeURIComponent(
-                config.public.apiBase.replace('/api/v1', '') +
-                  '/api/v1/orders/' +
-                  current.id +
-                  '/mock-pay',
-              )
-            "
-            alt="Оплатить по QR"
-            class="order-page__payment-qr"
-          />
+            <div class="order-page__payment-alert-copy">
+              <span class="order-page__payment-alert-badge">
+                Безопасная оплата
+              </span>
+              <h2 class="order-page__payment-alert-title">Ожидаем оплату</h2>
+              <p class="order-page__payment-alert-text">
+                После оплаты заказ автоматически уйдет в ресторан. Если статус не
+                обновится сразу, проверьте его вручную.
+              </p>
+            </div>
+          </div>
+
+          <div class="order-page__payment-actions">
+            <button
+              type="button"
+              class="button order-page__payment-button"
+              :disabled="paymentLoading"
+              @click="payOrder"
+            >
+              {{ paymentLoading ? 'Открываем оплату...' : 'Оплатить' }}
+            </button>
+            <button
+              type="button"
+              class="button button--ghost order-page__payment-button order-page__payment-button--secondary"
+              :disabled="paymentLoading"
+              @click="refreshPayment"
+            >
+              Проверить статус
+            </button>
+          </div>
+
+          <p class="order-page__payment-note">
+            Платеж создается на сервере, данные карты вводятся только на стороне YooKassa.
+          </p>
         </div>
 
         <div

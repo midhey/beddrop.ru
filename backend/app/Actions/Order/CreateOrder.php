@@ -62,7 +62,13 @@ class CreateOrder
         return DB::transaction(function () use ($cart, $user, $data, $total) {
             $paymentMethod = isset($data['payment_method'])
                 ? PaymentMethod::from($data['payment_method'])
-                : PaymentMethod::CASH;
+                : PaymentMethod::ONLINE;
+
+            if ($paymentMethod !== PaymentMethod::ONLINE) {
+                throw new HttpResponseException(response()->json([
+                    'message' => 'Сейчас доступна только онлайн-оплата. Оплата наличными и картой курьеру временно отключены.',
+                ], 422));
+            }
 
             $quote = $this->tryBuildQuote($cart, $data);
             $deliveryPrice = (float) ($quote['delivery_price'] ?? 0);

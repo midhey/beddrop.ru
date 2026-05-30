@@ -24,6 +24,7 @@ return new class extends Migration
                 'DELIVERED',
                 'CANCELED_BY_USER',
                 'CANCELED_BY_RESTAURANT',
+                'PAYMENT_PAID',
             ]);
 
             $table->json('payload')->nullable();

@@ -44,4 +44,13 @@ return [
         'url' => env('VALHALLA_URL'),
     ],
 
+    'yookassa' => [
+        'shop_id' => env('YOOKASSA_SHOP_ID'),
+        'secret_key' => env('YOOKASSA_SECRET_KEY'),
+        'return_url' => env('YOOKASSA_RETURN_URL'),
+        'webhook_url' => env('YOOKASSA_WEBHOOK_URL'),
+        'capture' => filter_var(env('YOOKASSA_CAPTURE', true), FILTER_VALIDATE_BOOL),
+        'currency' => env('YOOKASSA_CURRENCY', 'RUB'),
+    ],
+
 ];
