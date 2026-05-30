@@ -92,7 +92,7 @@ $burger-breakpoint: $tablet-l !default;
     position: fixed;
     top: var(--header-h, 0);
     right: 0;
-    width: min(420px, 100vw);
+    width: min(rem(420), 100vw);
     height: calc(100dvb - var(--header-h, 0));
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;

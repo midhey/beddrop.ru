@@ -1,54 +1,56 @@
+@use "../core" as *;
+
 .cards {
-  padding: 32px 0;
+  padding: rem(32) 0;
 
   &__header {
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 24px;
+    gap: rem(16);
+    margin-bottom: rem(24);
   }
 
   &__title-block {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: rem(4);
   }
 
   &__title {
     margin: 0;
-    font-size: 28px;
+    font-size: rem(28);
     line-height: 1.2;
     font-weight: 700;
   }
 
   &__subtitle {
     margin: 0;
-    font-size: 14px;
+    font-size: rem(14);
     color: #6b7280;
   }
 
   &__header-actions {
     display: flex;
-    gap: 8px;
+    gap: rem(8);
   }
 
   &__before-content {
-    margin-bottom: 20px;
+    margin-bottom: rem(20);
   }
 
   &__filters-wrap {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: rem(8);
   }
 
   &__filters {
     display: flex;
-    gap: 10px;
+    gap: rem(10);
     overflow-x: auto;
     flex-wrap: nowrap;
-    padding-bottom: 4px;
+    padding-bottom: rem(4);
     scrollbar-width: none;
     -ms-overflow-style: none;
     scroll-snap-type: x proximity;
@@ -65,8 +67,8 @@
     border-radius: 999px;
     border: 1px solid #e5e7eb;
     background: #ffffff;
-    padding: 8px 14px;
-    font-size: 13px;
+    padding: rem(8) rem(14);
+    font-size: rem(13);
     line-height: 1.2;
     color: #4b5563;
     cursor: pointer;
@@ -89,30 +91,30 @@
   }
 
   &__filters-message {
-    padding: 0 4px;
+    padding: 0 rem(4);
   }
 
   &__loading {
-    padding: 40px 0;
+    padding: rem(40) 0;
     text-align: center;
-    font-size: 16px;
+    font-size: rem(16);
   }
 
   &__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(rem(260), 1fr));
+    gap: rem(16);
   }
 
   &__grid--loading {
-    min-height: 240px;
+    min-height: rem(240);
   }
 
   &__skeleton-card {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding: 16px;
+    gap: rem(12);
+    padding: rem(16);
     border-radius: 16px;
     background-color: #ffffff;
     box-shadow:
@@ -122,20 +124,20 @@
   }
 
   &__skeleton-image {
-    width: calc(100% + 32px);
-    height: 168px;
-    margin: -16px -16px 0;
+    width: calc(100% + rem(32));
+    height: rem(168);
+    margin: rem(-16) rem(-16) 0;
   }
 
   &__skeleton-line {
-    height: 12px;
+    height: rem(12);
     border-radius: 999px;
   }
 
   &__skeleton-line--title {
     width: 68%;
-    height: 16px;
-    margin-top: 2px;
+    height: rem(16);
+    margin-top: rem(2);
   }
 
   &__skeleton-line--short {
@@ -144,18 +146,30 @@
 
   &__skeleton-chip {
     align-self: flex-end;
-    width: 72px;
-    height: 24px;
+    width: rem(72);
+    height: rem(24);
     border-radius: 999px;
-    margin-top: 8px;
+    margin-top: rem(8);
   }
 
   &__empty {
-    margin-top: 24px;
+    margin-top: rem(24);
     text-align: center;
-    font-size: 14px;
+    font-size: rem(14);
     color: #9ca3af;
   }
+
+  @media (max-width: 640px) {
+    &__header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    &__header-actions {
+      width: 100%;
+    }
+  }
+}
 
   @media (max-width: 640px) {
     &__header {

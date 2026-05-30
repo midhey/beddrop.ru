@@ -156,8 +156,8 @@
   .swiper-pagination-bullet {
     background: $white;
     opacity: 0.6;
-    width: 6px;
-    height: 6px;
+    width: rem(6);
+    height: rem(6);
   }
 
   .swiper-pagination-bullet-active {

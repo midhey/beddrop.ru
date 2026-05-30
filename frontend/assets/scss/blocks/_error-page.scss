@@ -1,16 +1,16 @@
 @use "../core" as *;
 
 .error-page {
-  padding: 40px 0 64px;
+  padding: rem(40) 0 rem(64);
 }
 
 .error-page__card {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(220px, 0.9fr) minmax(0, 1.1fr);
-  gap: 32px;
+  grid-template-columns: minmax(rem(220), 0.9fr) minmax(0, 1.1fr);
+  gap: rem(32);
   align-items: center;
-  min-height: min(68vh, 560px);
+  min-height: min(68vh, rem(560));
   padding: clamp(24px, 4vw, 40px);
   border-radius: 32px;
   overflow: hidden;
@@ -25,7 +25,7 @@
 .error-page__glow {
   position: absolute;
   inset: auto -10% -35% auto;
-  width: 280px;
+  width: rem(280);
   aspect-ratio: 1;
   border-radius: 50%;
   background: radial-gradient(
@@ -40,14 +40,14 @@
   position: relative;
   display: grid;
   justify-items: center;
-  gap: 20px;
+  gap: rem(20);
 }
 
 .error-page__icon-wrap {
   display: grid;
   place-items: center;
-  width: 88px;
-  height: 88px;
+  width: rem(88);
+  height: rem(88);
   border-radius: 24px;
   color: var(--color-primary);
   background: rgba(122, 59, 255, 0.14);
@@ -73,17 +73,17 @@
 .error-page__badge {
   display: inline-flex;
   align-items: center;
-  padding: 8px 12px;
+  padding: rem(8) rem(12);
   border-radius: var(--radius-pill);
   background: rgba(122, 59, 255, 0.1);
   color: var(--color-primary);
-  font-size: 13px;
+  font-size: rem(13);
   font-weight: 700;
   line-height: 1;
 }
 
 .error-page__title {
-  margin: 18px 0 0;
+  margin: rem(18) 0 0;
   font-family: var(--font-family-secondary);
   font-size: clamp(30px, 5vw, 48px);
   font-weight: 500;
@@ -92,17 +92,17 @@
 }
 
 .error-page__description {
-  margin: 16px 0 0;
+  margin: rem(16) 0 0;
   max-width: 32rem;
-  font-size: 18px;
+  font-size: rem(18);
   line-height: 1.55;
   color: var(--color-text);
 }
 
 .error-page__details {
-  margin: 12px 0 0;
+  margin: rem(12) 0 0;
   max-width: 34rem;
-  font-size: 15px;
+  font-size: rem(15);
   line-height: 1.65;
   color: var(--color-text-muted);
 }
@@ -110,18 +110,18 @@
 .error-page__actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 28px;
+  gap: rem(12);
+  margin-top: rem(28);
 }
 
 @media (max-width: 900px) {
   .error-page {
-    padding-top: 24px;
+    padding-top: rem(24);
   }
 
   .error-page__card {
     grid-template-columns: 1fr;
-    gap: 24px;
+    gap: rem(24);
     min-height: auto;
   }
 
@@ -132,7 +132,7 @@
 
 @media (max-width: 640px) {
   .error-page__card {
-    padding: 24px 20px;
+    padding: rem(24) rem(20);
     border-radius: 24px;
   }
 

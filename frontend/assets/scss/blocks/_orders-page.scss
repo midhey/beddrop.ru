@@ -29,7 +29,7 @@
     &:hover {
       border-color: var(--color-primary);
       box-shadow: 0 4px 12px rgba(122, 59, 255, 0.08);
-      transform: translateY(-2px);
+      transform: translateY(rem(-2));
     }
   }
 

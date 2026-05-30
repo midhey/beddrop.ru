@@ -78,7 +78,7 @@
   gap: rem(16);
   align-items: center;
   padding: rem(13);
-  border: rem(1) solid var(--color-border-neutral);
+  border: 1px solid var(--color-border-neutral);
   border-radius: var(--radius-12);
   background: var(--color-surface);
 }
@@ -164,7 +164,7 @@
   display: grid;
   gap: rem(4);
   padding: rem(10);
-  border: rem(1) solid var(--color-border-neutral);
+  border: 1px solid var(--color-border-neutral);
   border-radius: var(--radius-12);
   background: var(--color-surface);
   color: var(--color-text-subtle);

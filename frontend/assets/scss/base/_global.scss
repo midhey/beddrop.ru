@@ -35,7 +35,7 @@ body {
   line-height: $line-height-main;
   color: $text-color;
   background-color: $bg-main;
-  min-width: 320px;
+  min-width: rem(320);
   overflow-x: hidden;
 }
 
@@ -48,9 +48,9 @@ body {
 
 /* Контейнер-утилита */
 [class*="__container"] {
-  max-width: calc(#{$max-width-container}px + 30px);
+  max-width: calc(rem($max-width-container) + rem(30));
   margin-inline: auto;
-  padding-inline: 15px;
+  padding-inline: rem(15);
   width: 100%;
 }
 
