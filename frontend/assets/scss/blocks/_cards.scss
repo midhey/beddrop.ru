@@ -65,12 +65,12 @@
     flex: 0 0 auto;
     scroll-snap-align: start;
     border-radius: 999px;
-    border: 1px solid #e5e7eb;
-    background: #ffffff;
+    border: 1px solid var(--color-border-neutral);
+    background: $white;
     padding: rem(8) rem(14);
     font-size: rem(13);
     line-height: 1.2;
-    color: #4b5563;
+    color: var(--color-text-subtle);
     cursor: pointer;
     white-space: nowrap;
     transition:
@@ -81,7 +81,7 @@
 
   &__filter:hover {
     border-color: #cbd5e1;
-    color: #111827;
+    color: var(--color-text-strong);
   }
 
   &__filter--active {
@@ -116,7 +116,7 @@
     gap: rem(12);
     padding: rem(16);
     border-radius: 16px;
-    background-color: #ffffff;
+    background-color: $white;
     box-shadow:
       0 10px 15px -3px rgba(15, 23, 42, 0.08),
       0 4px 6px -4px rgba(15, 23, 42, 0.08);

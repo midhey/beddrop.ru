@@ -5,7 +5,7 @@
   background:
     radial-gradient(circle at top left, rgba(14, 165, 233, 0.08), transparent 26%),
     radial-gradient(circle at top right, rgba(79, 70, 229, 0.08), transparent 22%),
-    linear-gradient(180deg, #f8fbff 0%, #ffffff 44%);
+    linear-gradient(180deg, #f8fbff 0%, $white 44%);
 
   &__container {
     display: grid;
@@ -65,7 +65,7 @@
     line-height: 1.04;
     font-weight: 700;
     font-family: $font-secondary;
-    color: #111827;
+    color: var(--color-text-strong);
   }
 
   &__subtitle {
@@ -87,7 +87,7 @@
     align-content: start;
     padding: rem(18) rem(20);
     border-radius: rem(22);
-    background: #ffffff;
+    background: $white;
     border: 1px solid rgba(226, 232, 240, 0.9);
     box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
   }
@@ -104,7 +104,7 @@
     font-size: clamp(24px, 3vw, 34px);
     line-height: 1;
     font-weight: 700;
-    color: #111827;
+    color: var(--color-text-strong);
   }
 
   &__summary {
@@ -118,7 +118,7 @@
     gap: rem(8);
     padding: rem(20) rem(22);
     border-radius: rem(24);
-    background: #ffffff;
+    background: $white;
     border: 1px solid #e5edf6;
   }
 
@@ -154,7 +154,7 @@
     padding: clamp(20px, 3vw, 28px);
     border-radius: rem(28);
     border: 1px solid #e5edf6;
-    background: #ffffff;
+    background: $white;
   }
 
   &__state--error {
@@ -178,7 +178,7 @@
     margin: 0 0 rem(6);
     font-size: rem(20);
     font-weight: 700;
-    color: #111827;
+    color: var(--color-text-strong);
   }
 
   &__state-text {
@@ -228,7 +228,7 @@
     height: rem(60);
     border-radius: rem(22);
     background: linear-gradient(135deg, #0ea5e9 0%, #4f46e5 100%);
-    color: #ffffff;
+    color: $white;
     font-size: rem(24);
     font-weight: 700;
     font-family: $font-secondary;
@@ -253,7 +253,7 @@
     font-size: clamp(22px, 2.5vw, 28px);
     line-height: 1.1;
     font-weight: 700;
-    color: #111827;
+    color: var(--color-text-strong);
   }
 
   &__card-address {
@@ -301,7 +301,7 @@
     min-height: rem(84);
     padding: rem(16);
     border-radius: rem(22);
-    background: #ffffff;
+    background: $white;
     border: 1px solid #e5edf6;
   }
 
@@ -331,7 +331,7 @@
     display: block;
     font-size: rem(15);
     line-height: 1.4;
-    color: #111827;
+    color: var(--color-text-strong);
   }
 
   &__card-actions {
@@ -360,7 +360,7 @@
   }
 
   &__ghost-link:hover {
-    color: #111827;
+    color: var(--color-text-strong);
   }
 
   @media (max-width: 900px) {

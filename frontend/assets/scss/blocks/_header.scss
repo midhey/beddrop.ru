@@ -11,7 +11,7 @@
   width: 100%;
   box-shadow: 0 4px 12px rgba(31, 27, 45, 0.05);
   border-bottom: 1px solid rgba(15, 23, 42, 0.04);
-  background: #ffffff;
+  background: $white;
   transition:
     background-color 0.28s ease,
     box-shadow 0.28s ease,
@@ -22,7 +22,7 @@
     position: fixed;
     inset: 0 0 auto 0;
     z-index: 90;
-    background-color: #ffffff;
+    background-color: $white;
     border-bottom: 1px solid rgba(15, 23, 42, 0.04);
     box-shadow: 0 12px 30px rgba(31, 27, 45, 0.1);
     animation: header-float-in 0.28s cubic-bezier(0.22, 1, 0.36, 1);
@@ -191,7 +191,7 @@
     min-width: rem(340);
     padding: rem(8);
     border-radius: rem(24);
-    background: #ffffff;
+    background: $white;
     border: 1px solid #dfe6ef;
     box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
   }

@@ -105,7 +105,7 @@ $burger-breakpoint: $tablet-l !default;
       visibility 0.4s ease,
       box-shadow 0.4s ease;
     z-index: 30;
-    background: #ffffff;
+    background: $white;
     border-left: none;
     box-shadow: none;
     display: flex;

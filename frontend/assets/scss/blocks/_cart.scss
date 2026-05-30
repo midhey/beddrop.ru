@@ -90,7 +90,7 @@
     align-items: center;
     padding: rem(22) rem(24);
     border-radius: rem(28);
-    background: linear-gradient(135deg, #ffffff 0%, #f7fbff 100%);
+    background: linear-gradient(135deg, $white 0%, #f7fbff 100%);
   }
 
   &__restaurant-copy {
@@ -138,7 +138,7 @@
     gap: rem(18);
     padding: rem(20);
     border-radius: rem(28);
-    background: linear-gradient(180deg, #ffffff 0%, #fcfdff 100%);
+    background: linear-gradient(180deg, $white 0%, #fcfdff 100%);
   }
 
   &__item-media {
@@ -258,7 +258,7 @@
     height: rem(36);
     border: none;
     border-radius: 50%;
-    background: #ffffff;
+    background: $white;
     color: #0f172a;
     cursor: pointer;
     box-shadow: 0 rem(2) rem(6) rgba(15, 23, 42, 0.08);
@@ -270,7 +270,7 @@
 
   &__qty-btn:hover:not(:disabled) {
     background: var(--color-primary);
-    color: #ffffff;
+    color: $white;
     transform: translateY(rem(-1));
   }
 
@@ -320,7 +320,7 @@
     gap: rem(18);
     padding: rem(22);
     border-radius: rem(28);
-    background: linear-gradient(180deg, #ffffff 0%, #f5f9ff 100%);
+    background: linear-gradient(180deg, $white 0%, #f5f9ff 100%);
     box-shadow: 0 rem(18) rem(40) rgba(15, 23, 42, 0.08);
   }
 
@@ -372,9 +372,9 @@
     margin: 0;
     padding: rem(12) rem(14);
     border-radius: rem(14);
-    background: #fef2f2;
+    background: var(--color-status-danger-bg);
     border: 1px solid #f87171;
-    color: #b91c1c;
+    color: var(--color-status-danger-text);
     font-size: rem(14);
     font-weight: 500;
     line-height: 1.4;
