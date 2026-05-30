@@ -6,6 +6,7 @@
     "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {
+        "ext-gd": "*",
         "php": "^8.2",
         "beyondcode/laravel-er-diagram-generator": "^5.0",
         "laravel/framework": "^12.0",

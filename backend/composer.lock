@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d6f0d40313e7b957849cb1398db4c17b",
+    "content-hash": "bd30f7c4502e80f0a79ce876dac21021",
     "packages": [
         {
             "name": "beyondcode/laravel-er-diagram-generator",
@@ -8884,6 +8884,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
+        "ext-gd": "*",
         "php": "^8.2"
     },
     "platform-dev": {},
