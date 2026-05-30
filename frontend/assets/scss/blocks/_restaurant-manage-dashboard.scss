@@ -68,8 +68,8 @@
 
   &__hero-stat {
     display: flex;
+    align-items: center;
     gap: rem(12);
-    align-items: flex-start;
     padding: rem(18);
     border-radius: rem(22);
     background: $white;
@@ -1041,12 +1041,27 @@
 
 @media (max-width: 640px) {
   .restaurant-dashboard {
-    &__header,
+    &__section {
+      padding: rem(16) rem(12);
+      border-radius: rem(20);
+    }
+
+    &__header {
+      padding: rem(16) rem(14);
+      border-radius: rem(20);
+    }
+
     &__product,
     &__order,
     &__staff-item {
-      padding: rem(18);
-      border-radius: rem(22);
+      padding: rem(12);
+      border-radius: rem(18);
+    }
+
+    &__order-item,
+    &__product-edit {
+      padding: rem(8) rem(10);
+      border-radius: rem(14);
     }
 
     &__product,
