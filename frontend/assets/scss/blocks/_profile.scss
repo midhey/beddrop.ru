@@ -30,7 +30,7 @@
     width: rem(100);
     height: rem(100);
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--color-primary) 0%, #4f46e5 100%);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent-indigo) 100%);
     color: $white;
     font-family: $font-secondary;
     font-size: rem(36);
@@ -72,7 +72,7 @@
     background: $white;
     border-radius: var(--radius-24, 24px);
     box-shadow: 0 4px 20px rgba(31, 27, 45, 0.04);
-    border: 1px solid #f0f2f5;
+    border: 1px solid var(--color-border-light);
     overflow: hidden;
   }
 
@@ -90,7 +90,7 @@
     transition: background-color 0.2s ease;
 
     &:not(:last-child) {
-      border-bottom: 1px solid #f0f2f5;
+      border-bottom: 1px solid var(--color-border-light);
     }
   }
 
@@ -122,7 +122,7 @@
     align-items: center;
     justify-content: center;
     border-radius: rem(12);
-    background: #f4f6f9;
+    background: var(--color-bg-tint);
     color: var(--color-text-muted);
     border: none;
     cursor: pointer;
@@ -137,7 +137,7 @@
 
   &__form-wrapper {
     padding: rem(20) rem(24);
-    background: #f9fafb;
+    background: var(--color-surface-soft);
   }
 
   &__security {
@@ -187,7 +187,7 @@
     gap: rem(16);
     margin-top: rem(24);
     padding-top: rem(24);
-    border-top: 1px dashed #e5e7eb;
+    border-top: 1px dashed var(--color-border-neutral);
   }
 
   &__form-actions {
@@ -206,7 +206,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: linear-gradient(90deg, #f8fafc 0%, $white 100%);
+    background: linear-gradient(90deg, var(--color-bg-tint) 0%, $white 100%);
     text-decoration: none;
     color: inherit;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -227,7 +227,7 @@
     width: rem(48);
     height: rem(48);
     border-radius: rem(14);
-    background: #eef2ff;
+    background: var(--color-bg-tint);
     color: var(--color-primary);
     display: flex;
     align-items: center;

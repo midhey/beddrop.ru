@@ -5,7 +5,7 @@
   background:
     radial-gradient(circle at top left, rgba(14, 165, 233, 0.08), transparent 26%),
     radial-gradient(circle at top right, rgba(79, 70, 229, 0.08), transparent 22%),
-    linear-gradient(180deg, #f8fbff 0%, $white 44%);
+    linear-gradient(180deg, var(--color-bg-tint) 0%, $white 44%);
 
   &__container {
     display: grid;
@@ -19,11 +19,11 @@
     width: fit-content;
     font-size: rem(14);
     cursor: pointer;
-    color: #667085;
+    color: var(--color-text-muted);
   }
 
   &__back:hover {
-    color: #101828;
+    color: var(--color-text-strong);
   }
 
   &__hero {
@@ -73,7 +73,7 @@
     max-width: rem(720);
     font-size: rem(16);
     line-height: 1.65;
-    color: #667085;
+    color: var(--color-text-muted);
   }
 
   &__hero-stats {
@@ -97,7 +97,7 @@
     font-weight: 700;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: #667085;
+    color: var(--color-text-muted);
   }
 
   &__hero-stat-value {
@@ -119,7 +119,7 @@
     padding: rem(20) rem(22);
     border-radius: rem(24);
     background: $white;
-    border: 1px solid #e5edf6;
+    border: 1px solid var(--color-border-light);
   }
 
   &__summary-card--accent {
@@ -128,7 +128,7 @@
 
     .restaurants-manage__summary-label,
     .restaurants-manage__summary-text {
-      color: #f8fbff;
+      color: var(--color-bg-tint);
     }
   }
 
@@ -137,14 +137,14 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: #667085;
+    color: var(--color-text-muted);
   }
 
   &__summary-text {
     margin: 0;
     font-size: rem(15);
     line-height: 1.6;
-    color: #344054;
+    color: var(--color-text-subtle);
   }
 
   &__state {
@@ -153,13 +153,13 @@
     align-items: flex-start;
     padding: clamp(20px, 3vw, 28px);
     border-radius: rem(28);
-    border: 1px solid #e5edf6;
+    border: 1px solid var(--color-border-light);
     background: $white;
   }
 
   &__state--error {
     border-color: rgba(248, 113, 113, 0.28);
-    background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(254, 242, 242, 0.95) 100%);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, var(--color-status-danger-bg) 100%);
   }
 
   &__state-icon {
@@ -169,8 +169,8 @@
     width: rem(52);
     height: rem(52);
     border-radius: rem(18);
-    background: #eff6ff;
-    color: #2563eb;
+    background: var(--color-bg-tint);
+    color: var(--color-accent-blue);
     flex: 0 0 auto;
   }
 
@@ -185,7 +185,7 @@
     margin: 0;
     font-size: rem(15);
     line-height: 1.6;
-    color: #667085;
+    color: var(--color-text-muted);
   }
 
   &__list {
@@ -227,7 +227,7 @@
     width: rem(60);
     height: rem(60);
     border-radius: rem(22);
-    background: linear-gradient(135deg, #0ea5e9 0%, #4f46e5 100%);
+    background: linear-gradient(135deg, #0ea5e9 0%, var(--color-accent-indigo) 100%);
     color: $white;
     font-size: rem(24);
     font-weight: 700;
@@ -263,7 +263,7 @@
     margin: 0;
     font-size: rem(15);
     line-height: 1.5;
-    color: #667085;
+    color: var(--color-text-muted);
   }
 
   &__card-grid {
@@ -277,21 +277,21 @@
     align-items: center;
     padding: rem(8) rem(12);
     border-radius: rem(999);
-    background: #f3f4f6;
-    color: #4b5563;
+    background: var(--color-bg-tint);
+    color: var(--color-text-subtle);
     font-size: rem(12);
     font-weight: 700;
     letter-spacing: 0.03em;
   }
 
   &__status[data-status='active'] {
-    background: #ecfdf3;
-    color: #15803d;
+    background: var(--color-status-success-bg);
+    color: var(--color-status-success-text);
   }
 
   &__status[data-status='inactive'] {
-    background: #fef2f2;
-    color: #b91c1c;
+    background: var(--color-status-danger-bg);
+    color: var(--color-status-danger-text);
   }
 
   &__metric {
@@ -302,7 +302,7 @@
     padding: rem(16);
     border-radius: rem(22);
     background: $white;
-    border: 1px solid #e5edf6;
+    border: 1px solid var(--color-border-light);
   }
 
   &__metric-icon {
@@ -312,8 +312,8 @@
     width: rem(40);
     height: rem(40);
     border-radius: rem(14);
-    background: #eef4ff;
-    color: #2563eb;
+    background: var(--color-bg-tint);
+    color: var(--color-accent-blue);
     flex: 0 0 auto;
   }
 
@@ -324,7 +324,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    color: #667085;
+    color: var(--color-text-muted);
   }
 
   &__metric-value {
@@ -355,7 +355,7 @@
     padding: 0;
     font-size: rem(14);
     font-weight: 700;
-    color: #344054;
+    color: var(--color-text-subtle);
     cursor: pointer;
   }
 

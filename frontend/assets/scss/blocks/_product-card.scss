@@ -18,7 +18,7 @@
     width: 100%;
     height: rem(180);
     overflow: hidden;
-    background: #f8fafc;
+    background: var(--color-bg-tint);
   }
 
   &__swiper {
@@ -97,7 +97,7 @@
     letter-spacing: 0.02em;
     padding: rem(3) rem(10);
     border-radius: 999px;
-    background: #f1f5f9;
+    background: var(--color-bg-tint);
     color: var(--color-text-subtle);
     white-space: nowrap;
     overflow: hidden;
@@ -110,9 +110,9 @@
     display: inline-flex;
     align-items: center;
     border-radius: 999px;
-    background: #f1f5f9;
+    background: var(--color-bg-tint);
     overflow: hidden;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--color-border-light);
   }
 
   &__qty-btn {
@@ -128,7 +128,7 @@
     transition: background-color 0.2s ease;
 
     &:hover:not(:disabled) {
-      background-color: #e2e8f0;
+      background-color: var(--color-border-light);
     }
   }
 

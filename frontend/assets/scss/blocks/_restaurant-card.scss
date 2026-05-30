@@ -39,8 +39,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: #eff6ff;
-    color: #1d4ed8;
+    background: var(--color-status-info-bg);
+    color: var(--color-status-info-text);
     font-weight: 700;
     font-size: rem(24);
   }
@@ -83,8 +83,8 @@
     font-size: rem(12);
     padding: rem(4) rem(10);
     border-radius: 999px;
-    background-color: #f3f4f6;
-    color: #4b5563;
+    background-color: var(--color-bg-tint);
+    color: var(--color-text-subtle);
     font-weight: 600;
 
     .ui-icon {
@@ -113,14 +113,14 @@
   }
 
   &__status[data-status='active'] {
-    background-color: rgba(236, 253, 243, 0.9);
-    color: #166534;
-    border: 1px solid rgba(187, 247, 208, 0.5);
+    background-color: var(--color-status-success-bg);
+    color: var(--color-status-success-text);
+    border: 1px solid var(--color-status-success-border);
   }
 
   &__status[data-status='inactive'] {
-    background-color: rgba(254, 242, 242, 0.9);
-    color: #991b1b;
-    border: 1px solid rgba(254, 202, 202, 0.5);
+    background-color: var(--color-status-danger-bg);
+    color: var(--color-status-danger-text);
+    border: 1px solid var(--color-status-danger-border);
   }
 }

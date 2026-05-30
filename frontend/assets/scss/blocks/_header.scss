@@ -129,7 +129,7 @@
     width: rem(40);
     height: rem(40);
     border-radius: 50%;
-    background: linear-gradient(135deg, #0ea5e9 0%, #4f46e5 100%);
+    background: linear-gradient(135deg, var(--color-accent-sky) 0%, var(--color-accent-indigo) 100%);
     color: $white;
     font-family: $font-secondary;
     font-size: rem(16);
@@ -202,7 +202,7 @@
     gap: rem(12);
     padding: rem(14);
     border-radius: rem(20);
-    background: #f4f7fb;
+    background: var(--color-bg-tint);
   }
 
   &__dropdown-summary-copy {
