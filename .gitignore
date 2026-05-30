@@ -3,6 +3,7 @@
 *.swp
 *.swo
 *.idea/
+.serena/
 .vscode/
 *.code-workspace
 /node_modules/
