@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Order\CreateOrder;
+use App\Actions\Order\CancelUserOrder;
 use App\Http\Requests\Order\StoreOrderRequest;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
@@ -45,6 +46,13 @@ class OrderController extends Controller
             'deliveryAddress',
             'routeSegments',
         ]);
+
+        return new OrderResource($order);
+    }
+
+    public function cancel(Order $order, CancelUserOrder $cancelOrder)
+    {
+        $order = $cancelOrder($order, request()->user());
 
         return new OrderResource($order);
     }

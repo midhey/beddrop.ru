@@ -90,6 +90,13 @@ export const checkOrderPaymentStatusRequest = async (
     return data;
 };
 
+export const cancelOrderRequest = async (id: number): Promise<Order> => {
+    const { $api } = useNuxtApp();
+    const { data } = await $api.post<{ data: Order }>(`/orders/${id}/cancel`);
+
+    return data.data;
+};
+
 export const getActiveOrder = async (): Promise<Order | null> => {
     const response = await listOrders({ per_page: 20 });
 

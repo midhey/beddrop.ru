@@ -6,6 +6,7 @@ import {
     initiateOrderPaymentRequest,
     listOrders,
     syncOrderPaymentRequest,
+    cancelOrderRequest,
 } from '~/domains/orders/api';
 import type { Restaurant } from '~/composables/useRestaurants';
 import type { Address } from '~/composables/useAddresses';
@@ -197,6 +198,21 @@ export function useOrders() {
         }
     };
 
+    const cancelOrder = async (id: number): Promise<Order> => {
+        errorMessage.value = null;
+
+        try {
+            const order = await cancelOrderRequest(id);
+            if (current.value?.id === id) {
+                current.value = order;
+            }
+            return order;
+        } catch (e) {
+            handleApiError(e);
+            throw e;
+        }
+    };
+
     return {
         // список
         items,
@@ -216,5 +232,6 @@ export function useOrders() {
         createOrder,
         initiatePayment,
         syncPayment,
+        cancelOrder,
     };
 }

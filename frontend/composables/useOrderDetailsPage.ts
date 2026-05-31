@@ -22,11 +22,18 @@ export function useOrderDetailsPage() {
         errorMessage,
         fetchOrder,
         initiatePayment,
+        cancelOrder: cancelOrderAction,
     } = useOrders();
     const feedback = useFeedback();
     const paymentLoading = ref(false);
+    const cancelLoading = ref(false);
 
     const id = computed(() => Number(route.params.id));
+
+    const canCancel = computed(() => {
+        if (!current.value) return false;
+        return ['CREATED', 'ACCEPTED_BY_RESTAURANT'].includes(current.value.status);
+    });
 
     useSeoMeta(() => ({
         title: current.value
@@ -169,12 +176,31 @@ export function useOrderDetailsPage() {
         }
     };
 
+    const cancelOrder = async () => {
+        if (!current.value || cancelLoading.value) return;
+
+        if (!window.confirm('Вы уверены, что хотите отменить заказ?')) {
+            return;
+        }
+
+        cancelLoading.value = true;
+        try {
+            await cancelOrderAction(current.value.id);
+            feedback.success('Заказ успешно отменен');
+        } catch {
+            // ошибка обработана в useOrders
+        } finally {
+            cancelLoading.value = false;
+        }
+    };
+
     onMounted(loadOrder);
 
     return {
         current,
         currentLoading,
         paymentLoading,
+        cancelLoading,
         errorMessage,
         id,
         sortedEvents,
@@ -183,6 +209,7 @@ export function useOrderDetailsPage() {
         logisticsTimeBreakdown,
         isDelayed,
         isFinal,
+        canCancel,
         formatPrice,
         formatDateTime,
         getOrderStatusClass,
@@ -192,5 +219,6 @@ export function useOrderDetailsPage() {
         getDeliveryProgress,
         payOrder,
         refreshPayment,
+        cancelOrder,
     };
 }

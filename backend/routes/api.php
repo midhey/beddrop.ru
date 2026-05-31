@@ -143,6 +143,7 @@ Route::prefix('/v1')->group(function () {
         Route::post('/{order}/payment', [OrderPaymentController::class, 'store']);
         Route::post('/{order}/payment/status', [OrderPaymentController::class, 'status']);
         Route::post('/{order}/payment/sync', [OrderPaymentController::class, 'sync']);
+        Route::post("/{order}/cancel", [OrderController::class, "cancel"]);
     });
 
     Route::middleware('auth:api')->prefix('/geo')->group(function () {

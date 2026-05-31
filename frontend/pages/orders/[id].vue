@@ -7,6 +7,7 @@ const {
   current,
   currentLoading,
   paymentLoading,
+  cancelLoading,
   errorMessage,
   id,
   sortedEvents,
@@ -15,6 +16,7 @@ const {
   logisticsTimeBreakdown,
   isDelayed,
   isFinal,
+  canCancel,
   formatPrice,
   formatDateTime,
   getOrderStatusClass,
@@ -24,6 +26,7 @@ const {
   getDeliveryProgress,
   payOrder,
   refreshPayment,
+  cancelOrder,
 } = useOrderDetailsPage();
 </script>
 
@@ -139,6 +142,20 @@ const {
               </div>
             </div>
           </div>
+
+          <div v-if="canCancel && current.payment_status !== 'PENDING'" class="order-page__row">
+            <div class="order-page__col order-page__col--full">
+              <button
+                type="button"
+                class="button button--ghost order-page__cancel-button"
+                style="width: 100%; margin-top: 12px;"
+                :disabled="cancelLoading"
+                @click="cancelOrder"
+              >
+                {{ cancelLoading ? 'Отменяем...' : 'Отменить заказ' }}
+              </button>
+            </div>
+          </div>
         </div>
 
         <div
@@ -178,6 +195,17 @@ const {
               @click="refreshPayment"
             >
               Проверить статус
+            </button>
+          </div>
+
+          <div v-if="canCancel" class="order-page__cancel-container">
+             <button
+              type="button"
+              class="button button--ghost order-page__cancel-button"
+              :disabled="cancelLoading"
+              @click="cancelOrder"
+            >
+              {{ cancelLoading ? 'Отменяем...' : 'Отменить заказ' }}
             </button>
           </div>
 
