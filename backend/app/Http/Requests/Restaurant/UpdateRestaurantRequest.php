@@ -4,6 +4,8 @@ namespace App\Http\Requests\Restaurant;
 
 use App\Http\Requests\Concerns\ValidatesAddressPayload;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Exists;
 use Illuminate\Validation\Validator;
 
 class UpdateRestaurantRequest extends FormRequest
@@ -38,7 +40,7 @@ class UpdateRestaurantRequest extends FormRequest
             'closed_reason' => ['sometimes', 'nullable', 'string', 'max:255'],
             'prep_time_min' => ['sometimes', 'nullable', 'integer', 'min:0'],
             'prep_time_max' => ['sometimes', 'nullable', 'integer', 'min:0'],
-            'logo_media_id' => ['sometimes', 'nullable', 'integer', 'exists:media,id'],
+            'logo_media_id' => ['sometimes', 'nullable', 'integer', $this->ownedMediaRule()],
             'owner_id'      => ['sometimes', 'nullable', 'exists:users,id'],
             'address'             => ['sometimes', 'array'],
         ] + $this->addressRules('address.', true);
@@ -59,5 +61,30 @@ class UpdateRestaurantRequest extends FormRequest
                 $validator->errors()->add('prep_time_max', 'Максимальное время приготовления не может быть меньше минимального.');
             }
         });
+    }
+
+    private function ownedMediaRule(): Exists
+    {
+        $rule = Rule::exists('media', 'id');
+        $user = $this->user();
+
+        if ($user && ! $user->isAdmin()) {
+            $restaurant = $this->route('restaurant');
+
+            $rule->where(function ($query) use ($user, $restaurant) {
+                $query->where('uploaded_by_user_id', $user->id);
+
+                if ($restaurant) {
+                    $query->orWhereIn('uploaded_by_user_id', function ($subQuery) use ($restaurant) {
+                        $subQuery
+                            ->select('user_id')
+                            ->from('restaurant_user')
+                            ->where('restaurant_id', $restaurant->id);
+                    });
+                }
+            });
+        }
+
+        return $rule;
     }
 }

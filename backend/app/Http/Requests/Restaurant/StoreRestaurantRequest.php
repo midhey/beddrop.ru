@@ -4,6 +4,8 @@ namespace App\Http\Requests\Restaurant;
 
 use App\Http\Requests\Concerns\ValidatesAddressPayload;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Exists;
 use Illuminate\Validation\Validator;
 
 class StoreRestaurantRequest extends FormRequest
@@ -30,7 +32,7 @@ class StoreRestaurantRequest extends FormRequest
             'closed_reason' => ['nullable', 'string', 'max:255'],
             'prep_time_min' => ['nullable', 'integer', 'min:0'],
             'prep_time_max' => ['nullable', 'integer', 'min:0'],
-            'logo_media_id' => ['nullable', 'integer', 'exists:media,id'],
+            'logo_media_id' => ['nullable', 'integer', $this->ownedMediaRule()],
             'owner_id' => ['nullable', 'exists:users,id'],
         ] + $this->addressRules('address.');
     }
@@ -45,5 +47,17 @@ class StoreRestaurantRequest extends FormRequest
                 $validator->errors()->add('prep_time_max', 'Максимальное время приготовления не может быть меньше минимального.');
             }
         });
+    }
+
+    private function ownedMediaRule(): Exists
+    {
+        $rule = Rule::exists('media', 'id');
+        $user = $this->user();
+
+        if ($user && ! $user->isAdmin()) {
+            $rule->where('uploaded_by_user_id', $user->id);
+        }
+
+        return $rule;
     }
 }

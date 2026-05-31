@@ -55,7 +55,7 @@ class RestaurantSettingsUpdateTest extends TestCase
     {
         $owner = $this->createUser();
         $manager = $this->createUser();
-        $logo = $this->createMedia();
+        $logo = $this->createMedia(['uploaded_by_user_id' => $manager->id]);
         $restaurant = $this->createRestaurant($owner, [
             'description' => 'Старое описание',
         ]);

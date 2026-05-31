@@ -29,7 +29,8 @@ class MediaUploadTest extends TestCase
         $response
             ->assertCreated()
             ->assertJsonPath('media.disk', 'public')
-            ->assertJsonPath('media.mime', 'image/webp');
+            ->assertJsonPath('media.mime', 'image/webp')
+            ->assertJsonPath('media.uploaded_by_user_id', $user->id);
 
         $path = $response->json('media.path');
 
@@ -46,6 +47,7 @@ class MediaUploadTest extends TestCase
             'path' => $path,
             'mime' => 'image/webp',
             'size_bytes' => strlen($contents),
+            'uploaded_by_user_id' => $user->id,
         ]);
     }
 }

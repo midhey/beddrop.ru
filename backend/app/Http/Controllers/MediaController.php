@@ -35,7 +35,9 @@ class MediaController extends Controller
             ]);
         }
 
-        $media = Media::create($optimized);
+        $media = Media::create($optimized + [
+            'uploaded_by_user_id' => $request->user()->id,
+        ]);
 
         return response()->json([
             'media' => $media,

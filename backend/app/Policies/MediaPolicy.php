@@ -16,9 +16,13 @@ class MediaPolicy
             return true;
         }
 
-        $canManageRestaurantLogo = Restaurant::query()
+        if ((int) $media->uploaded_by_user_id !== (int) $user->id) {
+            return false;
+        }
+
+        $isUsedByUnmanagedRestaurant = Restaurant::query()
             ->where('logo_media_id', $media->id)
-            ->whereHas('users', function ($query) use ($user) {
+            ->whereDoesntHave('users', function ($query) use ($user) {
                 $query
                     ->where('users.id', $user->id)
                     ->whereIn('role', [
@@ -28,13 +32,13 @@ class MediaPolicy
             })
             ->exists();
 
-        if ($canManageRestaurantLogo) {
-            return true;
+        if ($isUsedByUnmanagedRestaurant) {
+            return false;
         }
 
-        return Product::query()
+        return ! Product::query()
             ->whereHas('images', fn ($query) => $query->where('media_id', $media->id))
-            ->whereHas('restaurant.users', function ($query) use ($user) {
+            ->whereDoesntHave('restaurant.users', function ($query) use ($user) {
                 $query
                     ->where('users.id', $user->id)
                     ->whereIn('role', [

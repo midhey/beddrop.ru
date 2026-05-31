@@ -17,7 +17,7 @@ class MediaPermissionsTest extends TestCase
         Storage::fake('public');
 
         $owner = $this->createUser();
-        $media = $this->createMedia();
+        $media = $this->createMedia(['uploaded_by_user_id' => $owner->id]);
         $restaurant = $this->createRestaurant($owner, ['logo_media_id' => $media->id]);
 
         Storage::disk('public')->put($media->path, 'logo');
@@ -37,7 +37,7 @@ class MediaPermissionsTest extends TestCase
 
         $owner = $this->createUser();
         $outsider = $this->createUser();
-        $media = $this->createMedia();
+        $media = $this->createMedia(['uploaded_by_user_id' => $owner->id]);
         $this->createRestaurant($owner, ['logo_media_id' => $media->id]);
 
         Storage::disk('public')->put($media->path, 'logo');
@@ -48,5 +48,68 @@ class MediaPermissionsTest extends TestCase
 
         $response->assertForbidden();
         $this->assertDatabaseHas('media', ['id' => $media->id]);
+    }
+
+    public function test_restaurant_owner_can_attach_own_logo_media(): void
+    {
+        $owner = $this->createUser();
+        $media = $this->createMedia(['uploaded_by_user_id' => $owner->id]);
+        $restaurant = $this->createRestaurant($owner);
+
+        $this
+            ->actingAs($owner, 'api')
+            ->putJson("/api/v1/restaurants/{$restaurant->id}", [
+                'logo_media_id' => $media->id,
+            ])
+            ->assertOk()
+            ->assertJsonPath('restaurant.logo_media_id', $media->id);
+
+        $this->assertDatabaseHas('restaurants', [
+            'id' => $restaurant->id,
+            'logo_media_id' => $media->id,
+        ]);
+    }
+
+    public function test_tenant_cannot_attach_another_tenants_logo_media(): void
+    {
+        $tenantAOwner = $this->createUser();
+        $tenantBOwner = $this->createUser();
+        $tenantAMedia = $this->createMedia(['uploaded_by_user_id' => $tenantAOwner->id]);
+        $tenantBRestaurant = $this->createRestaurant($tenantBOwner);
+
+        $this
+            ->actingAs($tenantBOwner, 'api')
+            ->putJson("/api/v1/restaurants/{$tenantBRestaurant->id}", [
+                'logo_media_id' => $tenantAMedia->id,
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('logo_media_id');
+
+        $this->assertDatabaseHas('restaurants', [
+            'id' => $tenantBRestaurant->id,
+            'logo_media_id' => null,
+        ]);
+    }
+
+    public function test_tenant_cannot_attach_another_tenants_product_media(): void
+    {
+        $tenantAOwner = $this->createUser();
+        $tenantBOwner = $this->createUser();
+        $tenantAMedia = $this->createMedia(['uploaded_by_user_id' => $tenantAOwner->id]);
+        $tenantBRestaurant = $this->createRestaurant($tenantBOwner);
+        $tenantBProduct = $this->createProduct($tenantBRestaurant);
+
+        $this
+            ->actingAs($tenantBOwner, 'api')
+            ->postJson("/api/v1/restaurants/{$tenantBRestaurant->slug}/products/{$tenantBProduct->id}/images", [
+                'media_id' => $tenantAMedia->id,
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('media_id');
+
+        $this->assertDatabaseMissing('product_images', [
+            'product_id' => $tenantBProduct->id,
+            'media_id' => $tenantAMedia->id,
+        ]);
     }
 }

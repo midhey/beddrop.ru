@@ -21,7 +21,7 @@ class ProductImageLimitTest extends TestCase
         for ($index = 0; $index < 5; $index++) {
             ProductImage::create([
                 'product_id' => $product->id,
-                'media_id' => $this->createMedia()->id,
+                'media_id' => $this->createMedia(['uploaded_by_user_id' => $owner->id])->id,
                 'sort_order' => $index,
                 'is_cover' => $index === 0,
             ]);
@@ -30,7 +30,7 @@ class ProductImageLimitTest extends TestCase
         $response = $this
             ->actingAs($owner, 'api')
             ->postJson("/api/v1/restaurants/{$restaurant->slug}/products/{$product->id}/images", [
-                'media_id' => $this->createMedia()->id,
+                'media_id' => $this->createMedia(['uploaded_by_user_id' => $owner->id])->id,
                 'sort_order' => 5,
             ]);
 
