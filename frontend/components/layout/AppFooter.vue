@@ -80,13 +80,13 @@ const appName = 'BedDrop';
           <h3 class="footer__nav-title">
             Поддержка
           </h3>
-          <a href="mailto:support@beddrop.local" class="footer__contact-link">
+          <a href="mailto:hello@beddrop.ru" class="footer__contact-link">
             <Mail class="ui-icon" :size="16" :stroke-width="1.9" aria-hidden="true" />
-            support@beddrop.local
+            hello@beddrop.ru
           </a>
-          <a href="tel:+79990000000" class="footer__contact-link">
+          <a href="tel:88005553535" class="footer__contact-link">
             <Phone class="ui-icon" :size="16" :stroke-width="1.9" aria-hidden="true" />
-            +7 (999) 000-00-00
+            8 (800) 555-35-35
           </a>
 
           <div class="footer__socials">

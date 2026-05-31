@@ -15,7 +15,7 @@ useSeoMeta({ title: 'Контакты — BedDrop' });
           <h1>Контакты</h1>
           
           <p>
-            Если у вас возникли вопросы по работе Сервиса (или вы хотите предложить работу автору проекта), вы можете связаться со мной любым удобным способом.
+            Если у вас возникли вопросы по работе Сервиса или вы хотите оставить отзыв, вы можете связаться с нами любым удобным способом.
           </p>
 
           <div class="contacts-grid">
@@ -23,7 +23,7 @@ useSeoMeta({ title: 'Контакты — BedDrop' });
               <Mail class="contact-card__icon" :size="24" />
               <div class="contact-card__info">
                 <span class="contact-card__label">Электронная почта</span>
-                <a href="mailto:support@beddrop.local" class="contact-card__value">support@beddrop.local</a>
+                <a href="mailto:hello@beddrop.ru" class="contact-card__value">hello@beddrop.ru</a>
               </div>
             </div>
 
@@ -31,7 +31,7 @@ useSeoMeta({ title: 'Контакты — BedDrop' });
               <Phone class="contact-card__icon" :size="24" />
               <div class="contact-card__info">
                 <span class="contact-card__label">Телефон</span>
-                <a href="tel:+79990000000" class="contact-card__value">+7 (999) 000-00-00</a>
+                <a href="tel:88005553535" class="contact-card__value">8 (800) 555-35-35</a>
               </div>
             </div>
 
@@ -46,7 +46,7 @@ useSeoMeta({ title: 'Контакты — BedDrop' });
 
           <h2 style="margin-top: 40px;">Обратная связь</h2>
           <p>
-            Мы всегда рады конструктивной критике, предложениям по улучшению UI/UX или просто добрым словам перед защитой диплома.
+            Мы всегда рады конструктивной критике и предложениям по улучшению платформы.
           </p>
         </article>
       </div>
