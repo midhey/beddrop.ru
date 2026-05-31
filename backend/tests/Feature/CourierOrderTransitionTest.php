@@ -2,9 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Actions\Courier\AssignCourierOrder;
 use App\Enums\CourierShiftStatus;
 use App\Enums\OrderStatus;
 use App\Models\CourierShift;
+use App\Models\Order;
 use App\Models\LogisticsSetting;
 use App\Models\OrderRouteSegment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -62,6 +64,49 @@ class CourierOrderTransitionTest extends TestCase
             'id' => $order->id,
             'status' => OrderStatus::ACCEPTED_BY_RESTAURANT->value,
             'courier_id' => null,
+        ]);
+    }
+
+    public function test_stale_courier_assignment_does_not_overwrite_existing_courier_or_duplicate_event(): void
+    {
+        $firstCourier = $this->createUser();
+        $secondCourier = $this->createUser();
+        $customer = $this->createUser();
+        $restaurantOwner = $this->createUser();
+        $restaurant = $this->createRestaurant($restaurantOwner);
+        $product = $this->createProduct($restaurant);
+        $order = $this->createAcceptedOrder($customer, $restaurant, $product, [
+            'status' => OrderStatus::READY_FOR_PICKUP->value,
+        ]);
+        $staleOrderCopy = Order::query()->findOrFail($order->id);
+
+        $this->createCourierProfile($firstCourier);
+        $this->createCourierProfile($secondCourier);
+        $this->openShift($firstCourier);
+        $this->openShift($secondCourier);
+
+        $assign = app(AssignCourierOrder::class);
+        $assign($firstCourier, $order);
+
+        $this->actingAs($secondCourier, 'api');
+
+        try {
+            $assign($secondCourier, $staleOrderCopy);
+            $this->fail('Expected stale assignment to be rejected.');
+        } catch (\Illuminate\Http\Exceptions\HttpResponseException $exception) {
+            $this->assertSame(422, $exception->getResponse()->getStatusCode());
+        }
+
+        $this->assertDatabaseHas('orders', [
+            'id' => $order->id,
+            'courier_id' => $firstCourier->id,
+            'status' => OrderStatus::COURIER_ASSIGNED->value,
+        ]);
+
+        $this->assertDatabaseCount('order_events', 1);
+        $this->assertDatabaseHas('order_events', [
+            'order_id' => $order->id,
+            'event' => OrderStatus::COURIER_ASSIGNED->value,
         ]);
     }
 

@@ -30,31 +30,36 @@ class AssignCourierOrder
     {
         $profile = $this->ensureOpenShift($user);
 
-        if (
-            $order->status !== OrderStatus::READY_FOR_PICKUP->value ||
-            $order->courier_id !== null
-        ) {
-            throw new HttpResponseException(response()->json([
-                'message' => 'Этот заказ нельзя взять в работу',
-            ], 422));
-        }
-
         return DB::transaction(function () use ($order, $profile) {
-            $order->courier_id = $profile->user_id;
-            $order->status = OrderStatus::COURIER_ASSIGNED->value;
-            $order->save();
+            $lockedOrder = Order::query()
+                ->whereKey($order->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if (
+                $lockedOrder->status !== OrderStatus::READY_FOR_PICKUP->value ||
+                $lockedOrder->courier_id !== null
+            ) {
+                throw new HttpResponseException(response()->json([
+                    'message' => 'Этот заказ нельзя взять в работу',
+                ], 422));
+            }
+
+            $lockedOrder->courier_id = $profile->user_id;
+            $lockedOrder->status = OrderStatus::COURIER_ASSIGNED->value;
+            $lockedOrder->save();
 
             OrderEvent::create([
-                'order_id' => $order->id,
+                'order_id' => $lockedOrder->id,
                 'event' => OrderStatus::COURIER_ASSIGNED->value,
                 'payload' => [
                     'courier_user_id' => $profile->user_id,
                 ],
             ]);
 
-            $this->storeApproachRoute($order, $profile);
+            $this->storeApproachRoute($lockedOrder, $profile);
 
-            return $order->load([
+            return $lockedOrder->load([
                 'restaurant.address',
                 'items.product',
                 'deliveryAddress',

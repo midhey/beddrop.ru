@@ -132,25 +132,30 @@ class AdminOrderController extends Controller
             'courier_user_id' => ['required', 'integer', 'exists:courier_profiles,user_id'],
         ]);
 
-        $this->ensureStatus($order, [OrderStatus::READY_FOR_PICKUP]);
-
-        if ($order->courier_id !== null) {
-            abort(422, 'У заказа уже назначен курьер.');
-        }
-
         $profile = CourierProfile::query()->findOrFail($data['courier_user_id']);
         $this->ensureCourierAvailable($profile);
 
         return new OrderResource(DB::transaction(function () use ($request, $order, $profile, $routes, $settings) {
-            $order->courier_id = $profile->user_id;
-            $order->status = OrderStatus::COURIER_ASSIGNED->value;
-            $order->save();
-            $this->event($request, $order, OrderStatus::COURIER_ASSIGNED->value, [
+            $lockedOrder = Order::query()
+                ->whereKey($order->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            $this->ensureStatus($lockedOrder, [OrderStatus::READY_FOR_PICKUP]);
+
+            if ($lockedOrder->courier_id !== null) {
+                abort(422, 'У заказа уже назначен курьер.');
+            }
+
+            $lockedOrder->courier_id = $profile->user_id;
+            $lockedOrder->status = OrderStatus::COURIER_ASSIGNED->value;
+            $lockedOrder->save();
+            $this->event($request, $lockedOrder, OrderStatus::COURIER_ASSIGNED->value, [
                 'courier_user_id' => $profile->user_id,
             ]);
-            $this->storeApproachRoute($order, $profile, $routes, $settings);
+            $this->storeApproachRoute($lockedOrder, $profile, $routes, $settings);
 
-            return $this->loadOrder($order);
+            return $this->loadOrder($lockedOrder);
         }));
     }
 
