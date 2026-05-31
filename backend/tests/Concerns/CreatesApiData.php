@@ -30,14 +30,26 @@ trait CreatesApiData
     {
         $sequence = $this->nextSequence();
 
-        return User::create(array_merge([
+        $attributes = array_merge([
             'email' => "user{$sequence}@example.com",
             'phone' => sprintf('7999000%04d', $sequence),
             'password' => Hash::make('password'),
             'name' => "User {$sequence}",
             'is_admin' => false,
             'is_banned' => false,
-        ], $attributes));
+        ], $attributes);
+
+        $flags = [
+            'is_admin' => $attributes['is_admin'],
+            'is_banned' => $attributes['is_banned'],
+        ];
+
+        unset($attributes['is_admin'], $attributes['is_banned']);
+
+        $user = User::create($attributes);
+        $user->forceFill($flags)->save();
+
+        return $user->fresh();
     }
 
     protected function createAddress(?User $user = null, array $attributes = []): Address

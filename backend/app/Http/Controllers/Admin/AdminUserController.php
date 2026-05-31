@@ -71,7 +71,7 @@ class AdminUserController extends Controller
         }
 
         $before = $user->only(array_keys($data));
-        $user->fill($data);
+        $user->forceFill($data);
         $user->save();
 
         $logger->log(

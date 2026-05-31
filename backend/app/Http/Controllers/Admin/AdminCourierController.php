@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\CourierProfileStatus;
 use App\Enums\CourierShiftStatus;
 use App\Enums\CourierVehicle;
+use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
 use App\Models\CourierLocation;
 use App\Models\CourierProfile;
@@ -14,6 +15,7 @@ use App\Services\Admin\AdminActionLogger;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class AdminCourierController extends Controller
 {
@@ -122,6 +124,10 @@ class AdminCourierController extends Controller
             'rating' => ['sometimes', 'nullable', 'numeric', 'min:0', 'max:5'],
         ]);
 
+        if (($data['status'] ?? null) === CourierProfileStatus::SUSPENDED->value) {
+            $this->ensureCourierCanBeSuspended($courier);
+        }
+
         $before = $courier->only(array_keys($data));
         $courier->fill($data);
         $courier->save();
@@ -137,5 +143,31 @@ class AdminCourierController extends Controller
         return response()->json([
             'courier' => $courier->fresh(['user']),
         ]);
+    }
+
+    private function ensureCourierCanBeSuspended(CourierProfile $courier): void
+    {
+        $hasOpenShift = $courier->shifts()
+            ->where('status', CourierShiftStatus::OPEN->value)
+            ->exists();
+
+        if ($hasOpenShift) {
+            throw ValidationException::withMessages([
+                'status' => 'Нельзя приостановить курьера с открытой сменой.',
+            ]);
+        }
+
+        $hasActiveOrders = $courier->orders()
+            ->whereIn('status', [
+                OrderStatus::COURIER_ASSIGNED->value,
+                OrderStatus::PICKED_UP->value,
+            ])
+            ->exists();
+
+        if ($hasActiveOrders) {
+            throw ValidationException::withMessages([
+                'status' => 'Нельзя приостановить курьера с активным заказом.',
+            ]);
+        }
     }
 }

@@ -3,11 +3,11 @@
 namespace App\Models;
 
 use App\Enums\RestaurantStaffRole;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
@@ -19,8 +19,6 @@ class User extends Authenticatable implements JWTSubject
         'phone',
         'password',
         'name',
-        'is_admin',
-        'is_banned'
     ];
 
     protected $hidden = [
@@ -62,13 +60,13 @@ class User extends Authenticatable implements JWTSubject
             $roles
         );
 
-        if(!$this->relationLoaded('restaurants')) {
+        if (! $this->relationLoaded('restaurants')) {
             $this->load('restaurants');
         }
 
         $restaurantMembership = $this->restaurants->firstWhere('id', $restaurant->id);
 
-        if(!$restaurantMembership) {
+        if (! $restaurantMembership) {
             return false;
         }
 

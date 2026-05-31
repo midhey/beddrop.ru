@@ -2,14 +2,12 @@
 
 namespace Tests\Feature;
 
+use App\Enums\CourierProfileStatus;
 use App\Enums\CourierShiftStatus;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
-use App\Models\AdminActionLog;
 use App\Models\CourierLocation;
 use App\Models\CourierShift;
-use App\Models\OrderEvent;
-use App\Models\OrderRouteSegment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Tests\Concerns\CreatesApiData;
@@ -39,9 +37,9 @@ class AdminApiTest extends TestCase
         $this->createCourierProfile($courier);
         $this->createAcceptedOrder($customer, $restaurant);
 
-        $this->actingAs($admin, 'api')->getJson('/api/v1/admin/users?search=' . $courier->email)->assertOk()->assertJsonPath('data.0.id', $courier->id);
-        $this->actingAs($admin, 'api')->getJson('/api/v1/admin/restaurants?search=' . $restaurant->slug)->assertOk()->assertJsonPath('data.0.id', $restaurant->id);
-        $this->actingAs($admin, 'api')->getJson('/api/v1/admin/couriers?search=' . $courier->email)->assertOk()->assertJsonPath('data.0.user_id', $courier->id);
+        $this->actingAs($admin, 'api')->getJson('/api/v1/admin/users?search='.$courier->email)->assertOk()->assertJsonPath('data.0.id', $courier->id);
+        $this->actingAs($admin, 'api')->getJson('/api/v1/admin/restaurants?search='.$restaurant->slug)->assertOk()->assertJsonPath('data.0.id', $restaurant->id);
+        $this->actingAs($admin, 'api')->getJson('/api/v1/admin/couriers?search='.$courier->email)->assertOk()->assertJsonPath('data.0.user_id', $courier->id);
         $this->actingAs($admin, 'api')->getJson('/api/v1/admin/orders')->assertOk()->assertJsonPath('data.0.restaurant.id', $restaurant->id);
     }
 
@@ -67,6 +65,145 @@ class AdminApiTest extends TestCase
             'action' => 'admin.user.update',
             'target_type' => 'App\Models\User',
             'target_id' => (string) $user->id,
+        ]);
+    }
+
+    public function test_register_and_profile_update_cannot_mass_assign_admin_flags(): void
+    {
+        $this
+            ->postJson('/api/v1/auth/register', [
+                'email' => 'mass-assign@example.com',
+                'phone' => '79990009999',
+                'password' => 'password123',
+                'password_confirmation' => 'password123',
+                'name' => 'Mass Assign',
+                'is_admin' => true,
+                'is_banned' => true,
+            ])
+            ->assertCreated()
+            ->assertJsonPath('user.email', 'mass-assign@example.com');
+
+        $this->assertDatabaseHas('users', [
+            'email' => 'mass-assign@example.com',
+            'is_admin' => false,
+            'is_banned' => false,
+        ]);
+
+        $user = $this->createUser();
+
+        $this
+            ->actingAs($user, 'api')
+            ->putJson('/api/v1/profile/me', [
+                'name' => 'Updated Name',
+                'is_admin' => true,
+                'is_banned' => true,
+            ])
+            ->assertOk()
+            ->assertJsonPath('user.name', 'Updated Name')
+            ->assertJsonPath('user.is_admin', false)
+            ->assertJsonPath('user.is_banned', false);
+
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'name' => 'Updated Name',
+            'is_admin' => false,
+            'is_banned' => false,
+        ]);
+    }
+
+    public function test_admin_update_can_change_admin_and_banned_flags(): void
+    {
+        $admin = $this->createUser(['is_admin' => true]);
+        $user = $this->createUser();
+
+        $this
+            ->actingAs($admin, 'api')
+            ->patchJson("/api/v1/admin/users/{$user->id}", [
+                'is_admin' => true,
+                'is_banned' => true,
+            ])
+            ->assertOk()
+            ->assertJsonPath('user.is_admin', true)
+            ->assertJsonPath('user.is_banned', true);
+
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'is_admin' => true,
+            'is_banned' => true,
+        ]);
+    }
+
+    public function test_admin_cannot_suspend_courier_with_open_shift(): void
+    {
+        $admin = $this->createUser(['is_admin' => true]);
+        $courierUser = $this->createUser();
+        $courier = $this->createCourierProfile($courierUser);
+
+        CourierShift::create([
+            'courier_user_id' => $courierUser->id,
+            'status' => CourierShiftStatus::OPEN->value,
+        ]);
+
+        $this
+            ->actingAs($admin, 'api')
+            ->patchJson("/api/v1/admin/couriers/{$courier->user_id}", [
+                'status' => CourierProfileStatus::SUSPENDED->value,
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['status'])
+            ->assertJsonPath('errors.status.0', 'Нельзя приостановить курьера с открытой сменой.');
+
+        $this->assertDatabaseHas('courier_profiles', [
+            'user_id' => $courierUser->id,
+            'status' => CourierProfileStatus::ACTIVE->value,
+        ]);
+    }
+
+    public function test_admin_cannot_suspend_courier_with_active_order(): void
+    {
+        $admin = $this->createUser(['is_admin' => true]);
+        $courierUser = $this->createUser();
+        $courier = $this->createCourierProfile($courierUser);
+        $customer = $this->createUser();
+        $restaurant = $this->createRestaurant();
+
+        $this->createAcceptedOrder($customer, $restaurant, null, [
+            'courier_id' => $courierUser->id,
+            'status' => OrderStatus::PICKED_UP->value,
+        ]);
+
+        $this
+            ->actingAs($admin, 'api')
+            ->patchJson("/api/v1/admin/couriers/{$courier->user_id}", [
+                'status' => CourierProfileStatus::SUSPENDED->value,
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['status'])
+            ->assertJsonPath('errors.status.0', 'Нельзя приостановить курьера с активным заказом.');
+
+        $this->assertDatabaseHas('courier_profiles', [
+            'user_id' => $courierUser->id,
+            'status' => CourierProfileStatus::ACTIVE->value,
+        ]);
+    }
+
+    public function test_admin_can_suspend_courier_with_no_open_shift_and_no_active_orders(): void
+    {
+        $admin = $this->createUser(['is_admin' => true]);
+        $courierUser = $this->createUser();
+        $courier = $this->createCourierProfile($courierUser);
+
+        $this
+            ->actingAs($admin, 'api')
+            ->patchJson("/api/v1/admin/couriers/{$courier->user_id}", [
+                'status' => CourierProfileStatus::SUSPENDED->value,
+            ])
+            ->assertOk()
+            ->assertJsonPath('courier.status', CourierProfileStatus::SUSPENDED->value);
+
+        $this->assertDatabaseHas('courier_profiles', [
+            'user_id' => $courierUser->id,
+            'status' => CourierProfileStatus::SUSPENDED->value,
         ]);
     }
 

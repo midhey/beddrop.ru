@@ -13,49 +13,37 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        User::updateOrCreate(
-            ['email' => 'admin@mail.com'],
-            [
-                'phone'     => '79990000000',
-                'name'      => 'Администратор',
-                'is_admin'  => true,
-                'is_banned' => false,
-                'password'  => Hash::make('admin123'),
-            ]
-        );
+        $this->upsertUser('admin@mail.com', [
+            'phone' => '79990000000',
+            'name' => 'Администратор',
+            'is_admin' => true,
+            'is_banned' => false,
+            'password' => Hash::make('admin123'),
+        ]);
 
-        User::updateOrCreate(
-            ['email' => 'owner@mail.com'],
-            [
-                'phone'     => '79990000001',
-                'name'      => 'Владелец ресторана',
-                'is_admin'  => false,
-                'is_banned' => false,
-                'password'  => Hash::make('owner123'),
-            ]
-        );
+        $this->upsertUser('owner@mail.com', [
+            'phone' => '79990000001',
+            'name' => 'Владелец ресторана',
+            'is_admin' => false,
+            'is_banned' => false,
+            'password' => Hash::make('owner123'),
+        ]);
 
-        User::updateOrCreate(
-            ['email' => 'customer@mail.com'],
-            [
-                'phone'     => '79990000004',
-                'name'      => 'Покупатель',
-                'is_admin'  => false,
-                'is_banned' => false,
-                'password'  => Hash::make('customer123'),
-            ]
-        );
+        $this->upsertUser('customer@mail.com', [
+            'phone' => '79990000004',
+            'name' => 'Покупатель',
+            'is_admin' => false,
+            'is_banned' => false,
+            'password' => Hash::make('customer123'),
+        ]);
 
-        $courier = User::updateOrCreate(
-            ['email' => 'courier@mail.com'],
-            [
-                'phone'     => '79990000005',
-                'name'      => 'Курьер',
-                'is_admin'  => false,
-                'is_banned' => false,
-                'password'  => Hash::make('courier123'),
-            ]
-        );
+        $courier = $this->upsertUser('courier@mail.com', [
+            'phone' => '79990000005',
+            'name' => 'Курьер',
+            'is_admin' => false,
+            'is_banned' => false,
+            'password' => Hash::make('courier123'),
+        ]);
 
         CourierProfile::updateOrCreate(
             ['user_id' => $courier->id],
@@ -66,26 +54,35 @@ class UserSeeder extends Seeder
             ]
         );
 
-        User::updateOrCreate(
-            ['email' => 'manager@mail.com'],
-            [
-                'phone'     => '79990000002',
-                'name'      => 'Менеджер Ресторана',
-                'is_admin'  => false,
-                'is_banned' => false,
-                'password'  => Hash::make('manager123'),
-            ]
-        );
+        $this->upsertUser('manager@mail.com', [
+            'phone' => '79990000002',
+            'name' => 'Менеджер Ресторана',
+            'is_admin' => false,
+            'is_banned' => false,
+            'password' => Hash::make('manager123'),
+        ]);
 
-        User::updateOrCreate(
-            ['email' => 'staff@mail.com'],
-            [
-                'phone'     => '79990000003',
-                'name'      => 'Сотрудник Ресторана',
-                'is_admin'  => false,
-                'is_banned' => false,
-                'password'  => Hash::make('staff123'),
-            ]
-        );
+        $this->upsertUser('staff@mail.com', [
+            'phone' => '79990000003',
+            'name' => 'Сотрудник Ресторана',
+            'is_admin' => false,
+            'is_banned' => false,
+            'password' => Hash::make('staff123'),
+        ]);
+    }
+
+    private function upsertUser(string $email, array $attributes): User
+    {
+        $flags = [
+            'is_admin' => (bool) ($attributes['is_admin'] ?? false),
+            'is_banned' => (bool) ($attributes['is_banned'] ?? false),
+        ];
+
+        unset($attributes['is_admin'], $attributes['is_banned']);
+
+        $user = User::updateOrCreate(['email' => $email], $attributes);
+        $user->forceFill($flags)->save();
+
+        return $user->fresh();
     }
 }
