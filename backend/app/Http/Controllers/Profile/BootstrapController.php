@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers\Profile;
 
+use App\Actions\Order\FindActiveOrder;
 use App\Enums\CartStatus;
-use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ActiveOrderResource;
 use App\Models\Cart;
 use App\Models\CartItem;
-use App\Models\Order;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class BootstrapController extends Controller
 {
-    public function __invoke(Request $request): JsonResponse
+    public function __invoke(Request $request, FindActiveOrder $findActiveOrder): JsonResponse
     {
         $user = $request->user();
 
@@ -22,7 +22,7 @@ class BootstrapController extends Controller
             'user' => $user,
             'has_restaurants_access' => $this->hasRestaurantsAccess($user->id),
             'has_courier_access' => $this->hasCourierAccess($user->id),
-            'active_order' => $this->activeOrderSummary($user->id),
+            'active_order' => $this->activeOrderSummary($findActiveOrder, $user->id),
             'cart_summary' => $this->cartSummary($user->id),
         ]);
     }
@@ -42,17 +42,11 @@ class BootstrapController extends Controller
             ->exists();
     }
 
-    private function activeOrderSummary(int $userId): ?array
+    private function activeOrderSummary(FindActiveOrder $findActiveOrder, int $userId): ?ActiveOrderResource
     {
-        $order = Order::query()
-            ->where('user_id', $userId)
-            ->whereNotIn('status', $this->finalOrderStatuses())
-            ->with(['restaurant:id,name,slug'])
-            ->withSum('items as items_count', 'quantity')
-            ->orderByDesc('created_at')
-            ->first();
+        $order = $findActiveOrder($userId);
 
-        return $order ? $this->serializeActiveOrder($order) : null;
+        return $order ? new ActiveOrderResource($order) : null;
     }
 
     private function cartSummary(int $userId): ?array
@@ -91,38 +85,6 @@ class BootstrapController extends Controller
             'total_price' => (float) $totalPrice,
             'created_at' => $cart->created_at,
             'updated_at' => $cart->updated_at,
-        ];
-    }
-
-    private function serializeActiveOrder(Order $order): array
-    {
-        return [
-            'id' => $order->id,
-            'status' => $order->status,
-            'payment_status' => $order->payment_status,
-            'payment_method' => $order->payment_method,
-            'total_price' => $order->total_price,
-            'courier_fee' => $order->courier_fee,
-            'restaurant' => $order->restaurant ? [
-                'id' => $order->restaurant->id,
-                'name' => $order->restaurant->name,
-                'slug' => $order->restaurant->slug,
-            ] : null,
-            'items_count' => (int) ($order->items_count ?? 0),
-            'created_at' => $order->created_at,
-            'updated_at' => $order->updated_at,
-        ];
-    }
-
-    /**
-     * @return array<int, string>
-     */
-    private function finalOrderStatuses(): array
-    {
-        return [
-            OrderStatus::DELIVERED->value,
-            OrderStatus::CANCELED_BY_USER->value,
-            OrderStatus::CANCELED_BY_RESTAURANT->value,
         ];
     }
 }

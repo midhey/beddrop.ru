@@ -6,8 +6,8 @@ use App\Actions\Courier\AssignCourierOrder;
 use App\Enums\CourierShiftStatus;
 use App\Enums\OrderStatus;
 use App\Models\CourierShift;
-use App\Models\Order;
 use App\Models\LogisticsSetting;
+use App\Models\Order;
 use App\Models\OrderRouteSegment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Concerns\CreatesApiData;
@@ -93,8 +93,8 @@ class CourierOrderTransitionTest extends TestCase
         try {
             $assign($secondCourier, $staleOrderCopy);
             $this->fail('Expected stale assignment to be rejected.');
-        } catch (\Illuminate\Http\Exceptions\HttpResponseException $exception) {
-            $this->assertSame(422, $exception->getResponse()->getStatusCode());
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $exception) {
+            $this->assertSame(422, $exception->getStatusCode());
         }
 
         $this->assertDatabaseHas('orders', [

@@ -2,36 +2,33 @@
 
 namespace App\Actions\Restaurant;
 
+use App\Actions\Order\TransitionOrderStatus;
 use App\Enums\OrderStatus;
 use App\Models\Order;
-use App\Models\OrderEvent;
 use App\Models\User;
-use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\DB;
 
 class MarkRestaurantOrderReady
 {
+    public function __construct(
+        private readonly TransitionOrderStatus $transitionOrderStatus,
+    ) {}
+
     public function __invoke(Order $order, User $user): Order
     {
         if ($order->status !== OrderStatus::ACCEPTED_BY_RESTAURANT->value) {
-            throw new HttpResponseException(response()->json([
-                'message' => 'Отметить готовность можно только для принятого рестораном заказа.',
-            ], 422));
+            abort(422, 'Отметить готовность можно только для принятого рестораном заказа.');
         }
 
         return DB::transaction(function () use ($order, $user) {
-            $order->status = OrderStatus::READY_FOR_PICKUP->value;
-            $order->save();
-
-            OrderEvent::create([
-                'order_id' => $order->id,
-                'event' => OrderStatus::READY_FOR_PICKUP->value,
-                'payload' => [
+            return ($this->transitionOrderStatus)(
+                $order,
+                OrderStatus::READY_FOR_PICKUP,
+                [
                     'by_user_id' => $user->id,
                 ],
-            ]);
-
-            return $order->load(['user', 'items.product', 'events', 'deliveryAddress', 'restaurant.address', 'routeSegments']);
+                load: ['user', 'items.product', 'events', 'deliveryAddress', 'restaurant.address', 'routeSegments'],
+            );
         });
     }
 }

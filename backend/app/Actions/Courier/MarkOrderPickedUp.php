@@ -2,19 +2,22 @@
 
 namespace App\Actions\Courier;
 
+use App\Actions\Order\TransitionOrderStatus;
 use App\Enums\CourierProfileStatus;
 use App\Enums\CourierShiftStatus;
 use App\Enums\OrderStatus;
 use App\Models\CourierProfile;
 use App\Models\CourierShift;
 use App\Models\Order;
-use App\Models\OrderEvent;
 use App\Models\User;
-use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\DB;
 
 class MarkOrderPickedUp
 {
+    public function __construct(
+        private readonly TransitionOrderStatus $transitionOrderStatus,
+    ) {}
+
     public function __invoke(User $user, Order $order): Order
     {
         $profile = $this->ensureOpenShift($user);
@@ -24,29 +27,18 @@ class MarkOrderPickedUp
         }
 
         if (! in_array($order->status, [OrderStatus::COURIER_ASSIGNED->value], true)) {
-            throw new HttpResponseException(response()->json([
-                'message' => 'Нельзя перевести заказ в статус PICKED_UP',
-            ], 422));
+            abort(422, 'Нельзя перевести заказ в статус PICKED_UP');
         }
 
         return DB::transaction(function () use ($order, $profile) {
-            $order->status = OrderStatus::PICKED_UP->value;
-            $order->save();
-
-            OrderEvent::create([
-                'order_id' => $order->id,
-                'event' => OrderStatus::PICKED_UP->value,
-                'payload' => [
+            return ($this->transitionOrderStatus)(
+                $order,
+                OrderStatus::PICKED_UP,
+                [
                     'courier_user_id' => $profile->user_id,
                 ],
-            ]);
-
-            return $order->load([
-                'restaurant.address',
-                'items.product',
-                'deliveryAddress',
-                'routeSegments',
-            ]);
+                load: ['restaurant.address', 'items.product', 'deliveryAddress', 'routeSegments'],
+            );
         });
     }
 
