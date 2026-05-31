@@ -10,6 +10,20 @@ const owner = {
   is_banned: false,
 };
 
+const manager = {
+  id: 8,
+  email: "manager@mail.com",
+  phone: "79990000002",
+  name: "Менеджер",
+};
+
+const staffMember = {
+  id: 9,
+  email: "staff@mail.com",
+  phone: "79990000003",
+  name: "Сотрудник",
+};
+
 const restaurant = {
   id: 11,
   name: "Новгородский дворик",
@@ -165,6 +179,20 @@ const mockRestaurantDashboard = () => {
         phone: owner.phone,
         name: owner.name,
         role: "OWNER",
+      },
+      {
+        id: manager.id,
+        email: manager.email,
+        phone: manager.phone,
+        name: manager.name,
+        role: "MANAGER",
+      },
+      {
+        id: staffMember.id,
+        email: staffMember.email,
+        phone: staffMember.phone,
+        name: staffMember.name,
+        role: "STAFF",
       },
     ],
   }).as("staff");
@@ -372,6 +400,41 @@ describe("restaurant management dashboard", () => {
     cy.contains("h2", "Настройки ресторана").should("be.visible");
     cy.get(".address-picker__map").should("be.visible");
     cy.window().its("__mapConstructed").should("be.greaterThan", 0);
+  });
+
+  it("does not offer owner as an editable staff role or mutate before update succeeds", () => {
+    visitDashboard();
+
+    cy.contains("button", "Сотрудники").click();
+
+    cy.contains(".restaurant-dashboard__staff-item", manager.email)
+      .find(".restaurant-dashboard__staff-role")
+      .within(() => {
+        cy.get("option[value=OWNER]").should("not.exist");
+      });
+
+    cy.contains(".restaurant-dashboard__staff-item", staffMember.email)
+      .as("staffRow")
+      .find(".restaurant-dashboard__staff-role")
+      .as("staffRoleSelect")
+      .should("have.value", "STAFF");
+
+    cy.intercept("PUT", `${apiBaseUrl()}/restaurants/${restaurantSlug()}/users/${staffMember.id}`, {
+      delay: 300,
+      body: {
+        message: "Роль сотрудника обновлена",
+      },
+    }).as("updateStaffRole");
+
+    cy.get("@staffRoleSelect").select("MANAGER");
+    cy.get("@staffRoleSelect").should("have.value", "STAFF");
+    cy.get("@staffRow").contains(".status-chip", "Сотрудник").should("be.visible");
+
+    cy.wait("@updateStaffRole").its("request.body").should("deep.equal", {
+      role: "MANAGER",
+    });
+    cy.get("@staffRoleSelect").should("have.value", "MANAGER");
+    cy.get("@staffRow").contains(".status-chip", "Менеджер").should("be.visible");
   });
 });
 

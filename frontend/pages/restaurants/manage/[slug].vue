@@ -62,6 +62,7 @@ const {
   inviteExpiryMinutes,
   latestStaffInvite,
   staffActionUserId,
+  staffRoleOptions,
   actionOrderId,
   invitesLoading,
   settingsForm,
@@ -83,7 +84,7 @@ const {
   toggleProductActive,
   handleDeleteProduct,
   handleCreateStaffInvite,
-  handleChangeStaffRole,
+  handleStaffRoleSelectChange,
   handleRemoveStaff,
   formatPrice,
   formatDateTime,
@@ -1602,16 +1603,27 @@ const copyInviteLink = async () => {
 
               <div class="restaurant-dashboard__staff-right">
                 <select
-                  v-model="member.role"
+                  :value="member.role"
                   class="restaurant-dashboard__staff-role field-select"
                   :disabled="
                     staffActionUserId === member.id || member.role === 'OWNER'
                   "
-                  @change="handleChangeStaffRole(member)"
+                  @change="handleStaffRoleSelectChange(member, $event)"
                 >
-                  <option value="OWNER">Владелец</option>
-                  <option value="MANAGER">Менеджер</option>
-                  <option value="STAFF">Сотрудник</option>
+                  <option
+                    v-if="member.role === 'OWNER'"
+                    value="OWNER"
+                    disabled
+                  >
+                    Владелец
+                  </option>
+                  <option
+                    v-for="option in staffRoleOptions"
+                    :key="option.value"
+                    :value="option.value"
+                  >
+                    {{ option.label }}
+                  </option>
                 </select>
 
                 <button

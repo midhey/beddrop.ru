@@ -727,6 +727,13 @@ export function useRestaurantManageDashboardPage() {
     const inviteExpiryMinutes = ref<'5' | '15' | '30' | '60'>('5');
     const latestStaffInvite = ref<RestaurantStaffInvite | null>(null);
     const staffActionUserId = ref<number | null>(null);
+    const staffRoleOptions: Array<{
+        value: Exclude<RestaurantRole, 'OWNER'>;
+        label: string;
+    }> = [
+        { value: 'MANAGER', label: 'Менеджер' },
+        { value: 'STAFF', label: 'Сотрудник' },
+    ];
 
     const handleCreateStaffInvite = async () => {
         try {
@@ -741,19 +748,38 @@ export function useRestaurantManageDashboardPage() {
         }
     };
 
-    const handleChangeStaffRole = async (member: RestaurantStaffMember) => {
+    const handleChangeStaffRole = async (
+        member: RestaurantStaffMember,
+        role: Exclude<RestaurantRole, 'OWNER'>,
+    ) => {
         if (staffActionUserId.value) return;
+        if (member.role === role || member.role === 'OWNER') return;
 
         staffActionUserId.value = member.id;
         try {
             await updateStaff(slug.value, member.id, {
-                role: member.role,
+                role,
             });
             feedback.success('Роль обновлена');
         } catch {
+            try {
+                await fetchStaff(slug.value);
+            } catch {
+            }
         } finally {
             staffActionUserId.value = null;
         }
+    };
+
+    const handleStaffRoleSelectChange = (
+        member: RestaurantStaffMember,
+        event: Event,
+    ) => {
+        const select = event.target as HTMLSelectElement;
+        const role = select.value as Exclude<RestaurantRole, 'OWNER'>;
+        select.value = member.role;
+
+        void handleChangeStaffRole(member, role);
     };
 
     const handleRemoveStaff = async (member: RestaurantStaffMember) => {
@@ -878,6 +904,7 @@ export function useRestaurantManageDashboardPage() {
         inviteExpiryMinutes,
         latestStaffInvite,
         staffActionUserId,
+        staffRoleOptions,
         actionOrderId,
         invitesLoading,
         settingsForm,
@@ -900,6 +927,7 @@ export function useRestaurantManageDashboardPage() {
         handleDeleteProduct,
         handleCreateStaffInvite,
         handleChangeStaffRole,
+        handleStaffRoleSelectChange,
         handleRemoveStaff,
         formatPrice,
         formatDateTime,

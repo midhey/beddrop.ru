@@ -5,7 +5,6 @@ namespace App\Actions\Restaurant;
 use App\Enums\RestaurantStaffRole;
 use App\Models\Restaurant;
 use App\Models\User;
-use Illuminate\Http\Exceptions\HttpResponseException;
 
 class UpdateRestaurantStaffRole
 {
@@ -20,9 +19,7 @@ class UpdateRestaurantStaffRole
             ->first();
 
         if (! $restaurantUser) {
-            throw new HttpResponseException(response()->json([
-                'message' => 'Пользователь не является сотрудником этого ресторана',
-            ], 404));
+            abort(404, 'Пользователь не является сотрудником этого ресторана');
         }
 
         $currentRole = $restaurantUser->pivot->role;
@@ -32,9 +29,7 @@ class UpdateRestaurantStaffRole
         }
 
         if ($currentRole === RestaurantStaffRole::OWNER->value && $role !== RestaurantStaffRole::OWNER) {
-            throw new HttpResponseException(response()->json([
-                'message' => 'Нельзя изменить роль текущего владельца через этот endpoint',
-            ], 422));
+            abort(422, 'Нельзя изменить роль текущего владельца через этот endpoint');
         }
 
         $restaurant->users()->updateExistingPivot($user->id, [
