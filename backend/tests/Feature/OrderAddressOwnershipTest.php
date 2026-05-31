@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Enums\PaymentMethod;
+use App\Models\Order;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Concerns\CreatesApiData;
 use Tests\TestCase;
@@ -59,5 +60,34 @@ class OrderAddressOwnershipTest extends TestCase
             'user_id' => $customer->id,
             'delivery_address_id' => $foreignAddress->id,
         ]);
+    }
+
+    public function test_active_cart_can_only_be_consumed_once(): void
+    {
+        $customer = $this->createUser();
+        $restaurantOwner = $this->createUser();
+        $restaurant = $this->createRestaurant($restaurantOwner);
+        $product = $this->createProduct($restaurant);
+        $cart = $this->createActiveCart($customer, $restaurant);
+        $this->addCartItem($cart, $product);
+        $address = $this->createAddress($customer);
+
+        $payload = [
+            'delivery_address_id' => $address->id,
+            'payment_method' => PaymentMethod::ONLINE->value,
+        ];
+
+        $this
+            ->actingAs($customer, 'api')
+            ->postJson('/api/v1/orders', $payload)
+            ->assertCreated();
+
+        $this
+            ->actingAs($customer, 'api')
+            ->postJson('/api/v1/orders', $payload)
+            ->assertUnprocessable()
+            ->assertJsonPath('message', 'Активная корзина пуста.');
+
+        $this->assertSame(1, Order::query()->where('user_id', $customer->id)->count());
     }
 }

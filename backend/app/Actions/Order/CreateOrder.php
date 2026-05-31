@@ -26,40 +26,41 @@ class CreateOrder
 
     public function __invoke(User $user, array $data): Order
     {
-        $cart = Cart::query()
-            ->where('user_id', $user->id)
-            ->where('status', CartStatus::ACTIVE->value)
-            ->where('is_active', true)
-            ->with([
-                'items.product',
-                'restaurant.address',
-            ])
-            ->first();
+        return DB::transaction(function () use ($user, $data) {
+            $cart = Cart::query()
+                ->where('user_id', $user->id)
+                ->where('status', CartStatus::ACTIVE->value)
+                ->where('is_active', true)
+                ->with([
+                    'items.product',
+                    'restaurant.address',
+                ])
+                ->lockForUpdate()
+                ->first();
 
-        if (!$cart || $cart->items->isEmpty()) {
-            throw new HttpResponseException(response()->json([
-                'message' => 'Активная корзина пуста.',
-            ], 422));
-        }
+            if (!$cart || $cart->status !== CartStatus::ACTIVE->value || !$cart->is_active || $cart->items->isEmpty()) {
+                throw new HttpResponseException(response()->json([
+                    'message' => 'Активная корзина пуста.',
+                ], 422));
+            }
 
-        if (!$cart->restaurant_id) {
-            throw new HttpResponseException(response()->json([
-                'message' => 'Корзина не привязана к ресторану.',
-            ], 422));
-        }
+            if (!$cart->restaurant_id) {
+                throw new HttpResponseException(response()->json([
+                    'message' => 'Корзина не привязана к ресторану.',
+                ], 422));
+            }
 
-        if (!$cart->restaurant || !$cart->restaurant->isOpenForOrders()) {
-            throw new HttpResponseException(response()->json([
-                'message' => $this->closedRestaurantMessage($cart->restaurant?->availability()),
-            ], 422));
-        }
+            if (!$cart->restaurant || !$cart->restaurant->isOpenForOrders()) {
+                throw new HttpResponseException(response()->json([
+                    'message' => $this->closedRestaurantMessage($cart->restaurant?->availability()),
+                ], 422));
+            }
 
-        $total = 0;
-        foreach ($cart->items as $item) {
-            $total += (float) $item->unit_price_snapshot * (int) $item->quantity;
-        }
+            $total = 0;
+            foreach ($cart->items as $item) {
+                $total += (float) $item->unit_price_snapshot * (int) $item->quantity;
+            }
 
-        return DB::transaction(function () use ($cart, $user, $data, $total) {
             $paymentMethod = isset($data['payment_method'])
                 ? PaymentMethod::from($data['payment_method'])
                 : PaymentMethod::ONLINE;
