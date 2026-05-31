@@ -43,10 +43,10 @@ class LogisticsDebugController extends Controller
         $data = $request->validate([
             'from_address_id' => ['nullable', 'integer', 'exists:addresses,id'],
             'to_address_id' => ['nullable', 'integer', 'exists:addresses,id'],
-            'from.lat' => ['required_without:from_address_id', 'numeric'],
-            'from.lng' => ['required_without:from_address_id', 'numeric'],
-            'to.lat' => ['required_without:to_address_id', 'numeric'],
-            'to.lng' => ['required_without:to_address_id', 'numeric'],
+            'from.lat' => ['required_without:from_address_id', 'numeric', 'min:-90', 'max:90'],
+            'from.lng' => ['required_without:from_address_id', 'numeric', 'min:-180', 'max:180'],
+            'to.lat' => ['required_without:to_address_id', 'numeric', 'min:-90', 'max:90'],
+            'to.lng' => ['required_without:to_address_id', 'numeric', 'min:-180', 'max:180'],
             'mode' => ['nullable', 'string', 'in:auto,bicycle,pedestrian'],
         ]);
 

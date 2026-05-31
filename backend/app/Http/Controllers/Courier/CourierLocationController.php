@@ -30,8 +30,8 @@ class CourierLocationController extends Controller
         }
 
         $data = $request->validate([
-            'lat' => ['required', 'numeric'],
-            'lng' => ['required', 'numeric'],
+            'lat' => ['required', 'numeric', 'min:-90', 'max:90'],
+            'lng' => ['required', 'numeric', 'min:-180', 'max:180'],
             'accuracy' => ['nullable', 'numeric'],
             'heading' => ['nullable', 'numeric'],
             'speed' => ['nullable', 'numeric'],

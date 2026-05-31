@@ -52,8 +52,8 @@ class GeoController extends Controller
     public function reverseGeocode(Request $request, DadataAddressService $dadata): JsonResponse
     {
         $data = $request->validate([
-            'lat' => ['required', 'numeric'],
-            'lng' => ['required', 'numeric'],
+            'lat' => ['required', 'numeric', 'min:-90', 'max:90'],
+            'lng' => ['required', 'numeric', 'min:-180', 'max:180'],
         ]);
 
         try {
