@@ -17,7 +17,7 @@ class StoreOrderRequest extends FormRequest
     {
         return [
             'delivery_address_id' => [
-                'nullable',
+                'required',
                 'integer',
                 Rule::exists('addresses', 'id')->where(fn ($query) => $query->where('user_id', $this->user()->id)),
             ],

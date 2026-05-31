@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Enums\PaymentMethod;
 use App\Models\Order;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Tests\Concerns\CreatesApiData;
 use Tests\TestCase;
 
@@ -17,11 +18,14 @@ class OrderAddressOwnershipTest extends TestCase
     {
         $customer = $this->createUser();
         $restaurantOwner = $this->createUser();
-        $restaurant = $this->createRestaurant($restaurantOwner);
+        $restaurant = $this->createRestaurant($restaurantOwner, [
+            'address' => $this->createAddress(null, ['lat' => 58.52, 'lng' => 31.27]),
+        ]);
         $product = $this->createProduct($restaurant);
         $cart = $this->createActiveCart($customer, $restaurant);
         $this->addCartItem($cart, $product, 2);
-        $address = $this->createAddress($customer);
+        $address = $this->createAddress($customer, ['lat' => 58.53, 'lng' => 31.28]);
+        $this->fakeValhallaRoute();
 
         $response = $this
             ->actingAs($customer, 'api')
@@ -42,7 +46,9 @@ class OrderAddressOwnershipTest extends TestCase
         $customer = $this->createUser();
         $foreignUser = $this->createUser();
         $restaurantOwner = $this->createUser();
-        $restaurant = $this->createRestaurant($restaurantOwner);
+        $restaurant = $this->createRestaurant($restaurantOwner, [
+            'address' => $this->createAddress(null, ['lat' => 58.52, 'lng' => 31.27]),
+        ]);
         $product = $this->createProduct($restaurant);
         $cart = $this->createActiveCart($customer, $restaurant);
         $this->addCartItem($cart, $product);
@@ -66,11 +72,14 @@ class OrderAddressOwnershipTest extends TestCase
     {
         $customer = $this->createUser();
         $restaurantOwner = $this->createUser();
-        $restaurant = $this->createRestaurant($restaurantOwner);
+        $restaurant = $this->createRestaurant($restaurantOwner, [
+            'address' => $this->createAddress(null, ['lat' => 58.52, 'lng' => 31.27]),
+        ]);
         $product = $this->createProduct($restaurant);
         $cart = $this->createActiveCart($customer, $restaurant);
         $this->addCartItem($cart, $product);
-        $address = $this->createAddress($customer);
+        $address = $this->createAddress($customer, ['lat' => 58.53, 'lng' => 31.28]);
+        $this->fakeValhallaRoute();
 
         $payload = [
             'delivery_address_id' => $address->id,
@@ -89,5 +98,24 @@ class OrderAddressOwnershipTest extends TestCase
             ->assertJsonPath('message', 'Активная корзина пуста.');
 
         $this->assertSame(1, Order::query()->where('user_id', $customer->id)->count());
+    }
+
+    private function fakeValhallaRoute(): void
+    {
+        config(['services.valhalla.url' => 'https://valhalla.test']);
+
+        Http::fake([
+            'valhalla.test/route' => Http::response([
+                'trip' => [
+                    'summary' => [
+                        'length' => 4.2,
+                        'time' => 780,
+                    ],
+                    'legs' => [
+                        ['shape' => 'encoded-shape'],
+                    ],
+                ],
+            ]),
+        ]);
     }
 }

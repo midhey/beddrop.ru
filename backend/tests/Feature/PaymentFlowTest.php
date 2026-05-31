@@ -262,10 +262,12 @@ class PaymentFlowTest extends TestCase
             $restaurant = $this->createRestaurant();
             $cart = $this->createActiveCart($customer, $restaurant);
             $this->addCartItem($cart, $this->createProduct($restaurant));
+            $address = $this->createAddress($customer);
 
             $this
                 ->actingAs($customer, 'api')
                 ->postJson('/api/v1/orders', [
+                    'delivery_address_id' => $address->id,
                     'payment_method' => $method,
                 ])
                 ->assertStatus(422)

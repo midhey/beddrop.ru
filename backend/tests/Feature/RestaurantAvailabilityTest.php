@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Tests\Concerns\CreatesApiData;
 use Tests\TestCase;
 
@@ -24,7 +25,9 @@ class RestaurantAvailabilityTest extends TestCase
         Carbon::setTestNow(Carbon::parse('2026-05-11 12:00:00', 'Europe/Moscow'));
 
         $customer = $this->createUser();
+        $deliveryAddress = $this->createAddress($customer, ['lat' => 58.53, 'lng' => 31.28]);
         $restaurant = $this->createRestaurant(null, [
+            'address' => $this->createAddress(null, ['lat' => 58.52, 'lng' => 31.27]),
             'accepts_orders' => true,
             'timezone' => 'Europe/Moscow',
             'opens_at' => '10:00',
@@ -33,10 +36,12 @@ class RestaurantAvailabilityTest extends TestCase
         $product = $this->createProduct($restaurant);
         $cart = $this->createActiveCart($customer, $restaurant);
         $this->addCartItem($cart, $product);
+        $this->fakeValhallaRoute();
 
         $this
             ->actingAs($customer, 'api')
             ->postJson('/api/v1/orders', [
+                'delivery_address_id' => $deliveryAddress->id,
                 'payment_method' => 'ONLINE',
             ])
             ->assertCreated();
@@ -47,6 +52,7 @@ class RestaurantAvailabilityTest extends TestCase
         Carbon::setTestNow(Carbon::parse('2026-05-11 09:00:00', 'Europe/Moscow'));
 
         $customer = $this->createUser();
+        $deliveryAddress = $this->createAddress($customer);
         $restaurant = $this->createRestaurant(null, [
             'timezone' => 'Europe/Moscow',
             'opens_at' => '10:00',
@@ -59,6 +65,7 @@ class RestaurantAvailabilityTest extends TestCase
         $this
             ->actingAs($customer, 'api')
             ->postJson('/api/v1/orders', [
+                'delivery_address_id' => $deliveryAddress->id,
                 'payment_method' => 'ONLINE',
             ])
             ->assertUnprocessable()
@@ -70,6 +77,7 @@ class RestaurantAvailabilityTest extends TestCase
         Carbon::setTestNow(Carbon::parse('2026-05-11 12:00:00', 'Europe/Moscow'));
 
         $customer = $this->createUser();
+        $deliveryAddress = $this->createAddress($customer);
         $restaurant = $this->createRestaurant(null, [
             'accepts_orders' => false,
             'closed_reason' => 'Технический перерыв',
@@ -84,6 +92,7 @@ class RestaurantAvailabilityTest extends TestCase
         $this
             ->actingAs($customer, 'api')
             ->postJson('/api/v1/orders', [
+                'delivery_address_id' => $deliveryAddress->id,
                 'payment_method' => 'ONLINE',
             ])
             ->assertUnprocessable()
@@ -95,6 +104,7 @@ class RestaurantAvailabilityTest extends TestCase
         Carbon::setTestNow(Carbon::parse('2026-05-11 12:00:00', 'Europe/Moscow'));
 
         $customer = $this->createUser();
+        $deliveryAddress = $this->createAddress($customer);
         $restaurant = $this->createRestaurant(null, [
             'is_active' => false,
             'timezone' => 'Europe/Moscow',
@@ -108,6 +118,7 @@ class RestaurantAvailabilityTest extends TestCase
         $this
             ->actingAs($customer, 'api')
             ->postJson('/api/v1/orders', [
+                'delivery_address_id' => $deliveryAddress->id,
                 'payment_method' => 'ONLINE',
             ])
             ->assertUnprocessable()
@@ -148,5 +159,24 @@ class RestaurantAvailabilityTest extends TestCase
             ->assertJsonPath('restaurant.availability.status', 'open')
             ->assertJsonPath('restaurant.availability.opens_at', '10:00')
             ->assertJsonPath('restaurant.availability.closes_at', '23:00');
+    }
+
+    private function fakeValhallaRoute(): void
+    {
+        config(['services.valhalla.url' => 'https://valhalla.test']);
+
+        Http::fake([
+            'valhalla.test/route' => Http::response([
+                'trip' => [
+                    'summary' => [
+                        'length' => 4.2,
+                        'time' => 780,
+                    ],
+                    'legs' => [
+                        ['shape' => 'encoded-shape'],
+                    ],
+                ],
+            ]),
+        ]);
     }
 }

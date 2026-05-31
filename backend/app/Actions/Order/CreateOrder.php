@@ -15,6 +15,7 @@ use App\Models\User;
 use App\Services\Logistics\DeliveryQuoteService;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\DB;
+use RuntimeException;
 use Throwable;
 
 class CreateOrder
@@ -71,9 +72,9 @@ class CreateOrder
                 ], 422));
             }
 
-            $quote = $this->tryBuildQuote($cart, $data);
-            $deliveryPrice = (float) ($quote['delivery_price'] ?? 0);
-            $deliveryAddress = $quote['delivery_address'] ?? null;
+            $quote = $this->buildQuote($user, $cart, $data);
+            $deliveryPrice = (float) $quote['delivery_price'];
+            $deliveryAddress = $quote['delivery_address'];
 
             $order = Order::create([
                 'user_id' => $user->id,
@@ -84,33 +85,31 @@ class CreateOrder
                 'payment_method' => $paymentMethod->value,
                 'total_price' => $total + $deliveryPrice,
                 'comment' => $data['comment'] ?? null,
-                'delivery_address_id' => $data['delivery_address_id'] ?? null,
+                'delivery_address_id' => $deliveryAddress->id,
                 'delivery_lat' => $deliveryAddress?->lat,
                 'delivery_lng' => $deliveryAddress?->lng,
-                'delivery_distance_meters' => $quote['distance_meters'] ?? null,
-                'delivery_duration_seconds' => $quote['duration_seconds'] ?? null,
-                'delivery_price_snapshot' => $quote['delivery_price'] ?? null,
+                'delivery_distance_meters' => $quote['distance_meters'],
+                'delivery_duration_seconds' => $quote['duration_seconds'],
+                'delivery_price_snapshot' => $quote['delivery_price'],
                 'estimated_pickup_at' => null,
                 'estimated_delivery_at' => null,
-                'logistics_snapshot_json' => $quote ? [
+                'logistics_snapshot_json' => [
                     'price' => $quote['price'],
                     'time' => $quote['time'],
                     'settings' => $quote['settings_snapshot'],
-                ] : null,
+                ],
             ]);
 
-            if ($quote) {
-                OrderRouteSegment::create([
-                    'order_id' => $order->id,
-                    'segment_type' => 'restaurant_to_client',
-                    'mode' => $quote['mode'],
-                    'distance_meters' => $quote['distance_meters'],
-                    'duration_seconds' => $quote['duration_seconds'],
-                    'encoded_shape' => $quote['route']['encoded_shape'],
-                    'raw_response_json' => $quote['route']['raw'],
-                    'settings_snapshot_json' => $quote['settings_snapshot'],
-                ]);
-            }
+            OrderRouteSegment::create([
+                'order_id' => $order->id,
+                'segment_type' => 'restaurant_to_client',
+                'mode' => $quote['mode'],
+                'distance_meters' => $quote['distance_meters'],
+                'duration_seconds' => $quote['duration_seconds'],
+                'encoded_shape' => $quote['route']['encoded_shape'],
+                'raw_response_json' => $quote['route']['raw'],
+                'settings_snapshot_json' => $quote['settings_snapshot'],
+            ]);
 
             foreach ($cart->items as $item) {
                 OrderItem::create([
@@ -146,20 +145,16 @@ class CreateOrder
 
     /**
      * @param array<string, mixed> $data
-     * @return array<string, mixed>|null
+     * @return array<string, mixed>
      */
-    private function tryBuildQuote(Cart $cart, array $data): ?array
+    private function buildQuote(User $user, Cart $cart, array $data): array
     {
-        if (empty($data['delivery_address_id']) || !config('services.valhalla.url')) {
-            return null;
-        }
-
-        $address = $cart->user
-            ? $cart->user->addresses()->find($data['delivery_address_id'])
-            : null;
+        $address = $user->addresses()->find($data['delivery_address_id'] ?? null);
 
         if (!$address) {
-            return null;
+            throw new HttpResponseException(response()->json([
+                'message' => 'Адрес доставки не найден.',
+            ], 422));
         }
 
         try {
@@ -167,8 +162,14 @@ class CreateOrder
             $quote['delivery_address'] = $address;
 
             return $quote;
+        } catch (RuntimeException $exception) {
+            throw new HttpResponseException(response()->json([
+                'message' => $exception->getMessage(),
+            ], 422));
         } catch (Throwable) {
-            return null;
+            throw new HttpResponseException(response()->json([
+                'message' => 'Не удалось рассчитать доставку.',
+            ], 422));
         }
     }
 
