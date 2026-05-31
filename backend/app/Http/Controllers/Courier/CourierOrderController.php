@@ -9,6 +9,7 @@ use App\Enums\CourierProfileStatus;
 use App\Enums\CourierShiftStatus;
 use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\AvailableCourierOrderResource;
 use App\Http\Resources\OrderResource;
 use App\Models\CourierLocation;
 use App\Models\CourierShift;
@@ -61,10 +62,10 @@ class CourierOrderController extends Controller
             ->whereNull('courier_id')
             ->with([
                 'restaurant.address',
-                'items.product',
                 'deliveryAddress',
                 'routeSegments',
             ])
+            ->withCount('items')
             ->orderBy('created_at')
             ->paginate(20);
 
@@ -104,7 +105,7 @@ class CourierOrderController extends Controller
             );
         }
 
-        return OrderResource::collection($orders);
+        return AvailableCourierOrderResource::collection($orders);
     }
 
     public function active(Request $request)

@@ -134,7 +134,7 @@ class GeoLogisticsApiTest extends TestCase
         ]);
     }
 
-    public function test_available_courier_orders_include_full_preview_route(): void
+    public function test_available_courier_orders_keep_preview_route_private(): void
     {
         config([
             'services.valhalla.url' => 'https://valhalla.test',
@@ -194,14 +194,16 @@ class GeoLogisticsApiTest extends TestCase
             'encoded_shape' => 'delivery-shape',
         ]);
 
-        $this
+        $response = $this
             ->actingAs($courier, 'api')
             ->getJson('/api/v1/courier/orders/available')
             ->assertOk()
-            ->assertJsonPath('data.0.route_segments.0.segment_type', 'courier_to_restaurant')
-            ->assertJsonPath('data.0.route_segments.0.encoded_shape', 'approach-shape')
-            ->assertJsonPath('data.0.route_segments.1.segment_type', 'restaurant_to_client')
-            ->assertJsonPath('data.0.route_segments.1.encoded_shape', 'delivery-shape');
+            ->assertJsonPath('data.0.id', $order->id);
+
+        $availableOrder = $response->json('data.0');
+
+        $this->assertArrayHasKey('courier_approach_distance_meters', $availableOrder);
+        $this->assertArrayNotHasKey('route_segments', $availableOrder);
 
         $this->assertDatabaseMissing('order_route_segments', [
             'order_id' => $order->id,
