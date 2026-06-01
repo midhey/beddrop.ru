@@ -1,0 +1,120 @@
+services:
+  app:
+    image: ${BACKEND_IMAGE:-ghcr.io/midhey/beddrop-backend:latest}
+    container_name: beddrop-app
+    restart: unless-stopped
+    env_file:
+      - ${BEDDROP_ENV_FILE:-.env}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - storage_data:/var/www/html/storage
+    networks:
+      - beddrop_internal
+      - caddy_web
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: beddrop-nginx
+    restart: unless-stopped
+    depends_on:
+      - app
+    volumes:
+      - ./infra/nginx/production.conf:/etc/nginx/nginx.conf:ro
+      - storage_data:/var/www/html/storage:ro
+    networks:
+      - caddy_web
+
+  frontend:
+    image: ${FRONTEND_IMAGE:-ghcr.io/midhey/beddrop-frontend:latest}
+    container_name: beddrop-frontend
+    restart: unless-stopped
+    env_file:
+      - ${BEDDROP_ENV_FILE:-.env}
+    environment:
+      HOST: 0.0.0.0
+      PORT: 3000
+    networks:
+      - caddy_web
+
+  queue:
+    image: ${BACKEND_IMAGE:-ghcr.io/midhey/beddrop-backend:latest}
+    container_name: beddrop-queue
+    restart: unless-stopped
+    command: php artisan queue:work --verbose --tries=3 --timeout=90
+    env_file:
+      - ${BEDDROP_ENV_FILE:-.env}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - storage_data:/var/www/html/storage
+    networks:
+      - beddrop_internal
+      - caddy_web
+
+  scheduler:
+    image: ${BACKEND_IMAGE:-ghcr.io/midhey/beddrop-backend:latest}
+    container_name: beddrop-scheduler
+    restart: unless-stopped
+    command: php artisan schedule:work --verbose --no-interaction
+    env_file:
+      - ${BEDDROP_ENV_FILE:-.env}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - storage_data:/var/www/html/storage
+    networks:
+      - beddrop_internal
+      - caddy_web
+
+  mysql:
+    image: mysql:8.0
+    container_name: beddrop-mysql
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u$${MYSQL_USER} -p$${MYSQL_PASSWORD} --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - beddrop_internal
+
+  redis:
+    image: redis:7-alpine
+    container_name: beddrop-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - beddrop_internal
+
+networks:
+  beddrop_internal:
+    name: beddrop_internal
+  caddy_web:
+    external: true
+    name: valhalla_web
+
+volumes:
+  mysql_data:
+  redis_data:
+  storage_data:

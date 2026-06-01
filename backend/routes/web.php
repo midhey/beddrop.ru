@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\RootController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => ['status' => 'ok']);
+Route::get('/', RootController::class);
