@@ -1,0 +1,10 @@
+{
+  "name": "beddrop-quality-tools",
+  "private": true,
+  "scripts": {
+    "duplicates": "jscpd --config jscpd.json"
+  },
+  "devDependencies": {
+    "jscpd": "^4.2.4"
+  }
+}

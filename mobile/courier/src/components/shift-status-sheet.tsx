@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import type { ComponentType } from "react";
 import { Animated, PanResponder, Pressable, ScrollView, Text, useWindowDimensions, View } from "react-native";
 import {
@@ -221,15 +221,15 @@ export function ShiftStatusSheet({
   const { height } = useWindowDimensions();
   const expandedHeight = Math.min(560, Math.max(410, Math.round(height * 0.68)));
   const collapsedOffset = expandedHeight - COLLAPSED_HEIGHT;
-  const translateY = useRef(new Animated.Value(collapsedOffset)).current;
+  const [translateY] = useState(() => new Animated.Value(collapsedOffset));
   const currentOffset = useRef(collapsedOffset);
   const startOffset = useRef(collapsedOffset);
   const routeDistance = sumMetric(routeSegments, "distance_meters");
   const routeDuration = sumMetric(routeSegments, "duration_seconds");
 
-  const clamp = (value: number) => Math.min(collapsedOffset, Math.max(0, value));
+  const clamp = useCallback((value: number) => Math.min(collapsedOffset, Math.max(0, value)), [collapsedOffset]);
 
-  const animateTo = (offset: number) => {
+  const animateTo = useCallback((offset: number) => {
     Animated.spring(translateY, {
       toValue: offset,
       useNativeDriver: true,
@@ -237,10 +237,11 @@ export function ShiftStatusSheet({
       stiffness: 220,
       mass: 0.8,
     }).start();
-  };
+  }, [translateY]);
 
   const panResponder = useMemo(
     () =>
+      // eslint-disable-next-line react-hooks/refs
       PanResponder.create({
         onMoveShouldSetPanResponder: (_event, gesture) => Math.abs(gesture.dy) > 6,
         onPanResponderGrant: () => {
@@ -258,7 +259,7 @@ export function ShiftStatusSheet({
           animateTo(next);
         },
       }),
-    [collapsedOffset, translateY],
+    [animateTo, clamp, collapsedOffset, translateY],
   );
 
   const toggleExpanded = () => {

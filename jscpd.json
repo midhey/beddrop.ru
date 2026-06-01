@@ -1,0 +1,28 @@
+{
+  "path": [
+    "backend/app",
+    "backend/routes",
+    "backend/database",
+    "frontend",
+    "mobile/courier/app",
+    "mobile/courier/src"
+  ],
+  "ignore": [
+    "**/vendor/**",
+    "**/node_modules/**",
+    "**/.nuxt/**",
+    "**/.output/**",
+    "**/.expo/**",
+    "**/coverage/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/storage/**",
+    "**/public/docs/**",
+    "**/package-lock.json",
+    "**/composer.lock"
+  ],
+  "reporters": ["console"],
+  "minLines": 8,
+  "minTokens": 70,
+  "threshold": 5
+}
