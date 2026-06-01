@@ -85,8 +85,16 @@ export function useOrderDetailsPage() {
         return ['DELIVERED', 'CANCELED_BY_USER', 'CANCELED_BY_RESTAURANT'].includes(current.value.status);
     });
 
+    const canPay = computed(() => {
+        if (!current.value || isFinal.value) return false;
+
+        return current.value.status === 'CREATED' &&
+            current.value.payment_method === 'ONLINE' &&
+            ['PENDING', 'FAILED'].includes(current.value.payment_status);
+    });
+
     const getDeliveryProgress = (status: string, paymentStatus?: string) => {
-        if (paymentStatus === 'PENDING') return 5;
+        if (paymentStatus === 'PENDING' || paymentStatus === 'FAILED') return 5;
 
         const stages: Record<string, number> = {
             'CREATED': 15,
@@ -218,6 +226,7 @@ export function useOrderDetailsPage() {
         isDelayed,
         isFinal,
         canCancel,
+        canPay,
         formatPrice,
         formatDateTime,
         getOrderStatusClass,

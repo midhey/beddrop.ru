@@ -17,6 +17,7 @@ const {
   isDelayed,
   isFinal,
   canCancel,
+  canPay,
   formatPrice,
   formatDateTime,
   getOrderStatusClass,
@@ -183,7 +184,7 @@ const {
         </div>
 
         <div
-          v-if="current.payment_status === 'PENDING' && !isFinal"
+          v-if="canPay"
           class="order-page__payment-alert"
         >
           <div class="order-page__payment-alert-reflect"></div>
@@ -196,8 +197,13 @@ const {
               <span class="order-page__payment-alert-badge">
                 Безопасная оплата
               </span>
-              <h2 class="order-page__payment-alert-title">Ожидаем оплату</h2>
-              <p class="order-page__payment-alert-text">
+              <h2 class="order-page__payment-alert-title">
+                {{ current.payment_status === 'FAILED' ? 'Оплата не прошла' : 'Ожидаем оплату' }}
+              </h2>
+              <p v-if="current.payment_status === 'FAILED'" class="order-page__payment-alert-text">
+                Платеж не был подтвержден. Можно попробовать оплатить этот заказ еще раз.
+              </p>
+              <p v-else class="order-page__payment-alert-text">
                 После оплаты заказ автоматически уйдет в ресторан. Если статус не
                 обновится сразу, проверьте его вручную.
               </p>
@@ -217,7 +223,7 @@ const {
                 :stroke-width="1.9"
                 aria-hidden="true"
               />
-              <span>{{ paymentLoading ? 'Открываем...' : 'Оплатить' }}</span>
+              <span>{{ paymentLoading ? 'Открываем...' : (current.payment_status === 'FAILED' ? 'Оплатить снова' : 'Оплатить') }}</span>
             </button>
             <button
               type="button"
@@ -256,7 +262,7 @@ const {
         </div>
 
         <div
-          v-if="current.route_segments?.length && current.payment_status !== 'PENDING'"
+          v-if="current.route_segments?.length && current.payment_status !== 'PENDING' && current.payment_status !== 'FAILED'"
           class="order-page__card surface-card"
         >
           <div class="order-page__section-header section-head">

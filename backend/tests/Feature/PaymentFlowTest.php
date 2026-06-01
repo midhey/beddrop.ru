@@ -237,6 +237,36 @@ class PaymentFlowTest extends TestCase
         ]);
     }
 
+    public function test_owner_can_retry_failed_created_online_order_payment(): void
+    {
+        $order = $this->pendingOnlineOrder([
+            'payment_status' => PaymentStatus::FAILED->value,
+        ]);
+        $payment = $this->createPaymentForOrder($order, '2-test-failed');
+        $payment->update([
+            'provider_status' => 'canceled',
+            'failed_at' => now(),
+        ]);
+
+        $this
+            ->actingAs($order->user, 'api')
+            ->postJson("/api/v1/orders/{$order->id}/payment")
+            ->assertOk()
+            ->assertJsonPath('payment.provider_payment_id', '2-test-created')
+            ->assertJsonPath('payment.confirmation_url', 'https://yookassa.test/confirm/2-test-created')
+            ->assertJsonPath('order.payment_status', PaymentStatus::PENDING->value);
+
+        $this->assertSame("order-{$order->id}-yookassa-v2", $this->provider->lastIdempotencyKey);
+        $this->assertDatabaseHas('payments', [
+            'id' => $payment->id,
+            'order_id' => $order->id,
+            'provider_payment_id' => '2-test-created',
+            'provider_status' => 'pending',
+            'idempotency_key' => "order-{$order->id}-yookassa-v2",
+            'failed_at' => null,
+        ]);
+    }
+
     public function test_success_with_wrong_provider_amount_does_not_mark_order_paid(): void
     {
         $order = $this->pendingOnlineOrder(['total_price' => 990.00]);

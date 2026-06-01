@@ -30,7 +30,7 @@ class OrderPaymentService
             $lockedOrder = Order::query()->whereKey($order->id)->lockForUpdate()->firstOrFail();
             $this->ensurePayable($lockedOrder);
 
-            return Payment::query()->firstOrCreate(
+            $payment = Payment::query()->firstOrCreate(
                 ['order_id' => $lockedOrder->id],
                 [
                     'provider' => 'yookassa',
@@ -39,6 +39,27 @@ class OrderPaymentService
                     'idempotency_key' => "order-{$lockedOrder->id}-yookassa-v1",
                 ],
             );
+
+            if ($lockedOrder->payment_status === PaymentStatus::FAILED->value) {
+                $payment->forceFill([
+                    'provider_payment_id' => null,
+                    'provider_status' => null,
+                    'confirmation_url' => null,
+                    'amount_value' => $lockedOrder->total_price,
+                    'currency' => config('services.yookassa.currency', 'RUB'),
+                    'idempotency_key' => $this->nextIdempotencyKey($lockedOrder, $payment),
+                    'raw_payload' => null,
+                    'provider_created_at' => null,
+                    'synced_at' => null,
+                    'confirmed_at' => null,
+                    'failed_at' => null,
+                ])->save();
+
+                $lockedOrder->payment_status = PaymentStatus::PENDING->value;
+                $lockedOrder->save();
+            }
+
+            return $payment;
         });
 
         if ($payment->provider_payment_id && $payment->confirmation_url) {
@@ -129,11 +150,25 @@ class OrderPaymentService
             ], 422));
         }
 
-        if ($order->payment_status !== PaymentStatus::PENDING->value) {
+        if (! in_array($order->payment_status, [
+            PaymentStatus::PENDING->value,
+            PaymentStatus::FAILED->value,
+        ], true)) {
             throw new HttpResponseException(response()->json([
                 'message' => 'Заказ уже не ожидает оплату.',
             ], 422));
         }
+    }
+
+    private function nextIdempotencyKey(Order $order, Payment $payment): string
+    {
+        $currentKey = $payment->idempotency_key;
+
+        if (preg_match('/-v(\d+)$/', $currentKey, $matches)) {
+            return "order-{$order->id}-yookassa-v" . ((int) $matches[1] + 1);
+        }
+
+        return "order-{$order->id}-yookassa-v2";
     }
 
     private function applyProviderPayment(Payment $payment, ProviderPayment $providerPayment): void
