@@ -42,4 +42,27 @@ class GeoValidationTest extends TestCase
         // Status might be 502 if Dadata is not configured, but not 422
         $this->assertNotEquals(422, $response->status());
     }
+
+    public function test_address_payload_validates_coordinate_bounds(): void
+    {
+        $user = $this->createUser();
+
+        $this->actingAs($user, 'api')
+            ->postJson('/api/v1/addresses', [
+                'value' => 'Великий Новгород, Кремль, 3',
+                'lat' => -91,
+                'lng' => 31.2866066,
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['lat']);
+
+        $this->actingAs($user, 'api')
+            ->postJson('/api/v1/addresses', [
+                'value' => 'Великий Новгород, Кремль, 3',
+                'lat' => 58.5176735,
+                'lng' => 181,
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['lng']);
+    }
 }
