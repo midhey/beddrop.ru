@@ -17,25 +17,30 @@ export default defineNuxtPlugin(() => {
         distance: '16px',
         notifyPadding: '20px',
         showOnlyTheLastOne: false,
-        warning: { background: '#facc15' },
-        failure: { background: '#ed4137' },
-        success: { background: '#16a34a' },
+        warning: { background: '#FFB800' }, // --color-secondary
+        failure: { background: '#E74C3C' }, // --color-error
+        success: { background: '#7A3BFF' }, // --color-primary
+        info: { background: '#00bcf0' },
     });
 
     Notiflix.Block.init({
         svgSize: '32px',
-        svgColor: '#ffffff',
-        backgroundColor: 'rgba(15,23,42,0.75)',
-        messageColor: '#e5e7eb',
+        svgColor: '#7A3BFF', // --color-primary
+        backgroundColor: 'rgba(255,255,255,0.75)',
+        messageColor: '#1F1B2D', // --color-text
     });
 
     Notiflix.Confirm.init({
         width: '360px',
-        borderRadius: '16px',
+        borderRadius: '22px', // matches card radius
+        titleColor: '#1F1B2D',
         titleFontSize: '20px',
         messageFontSize: '15px',
-        okButtonBackground: '#00bcf0',
-        cancelButtonBackground: '#9ca3af',
+        okButtonBackground: '#7A3BFF', // --color-primary
+        okButtonColor: '#ffffff',
+        cancelButtonBackground: '#F4F2FF', // --color-bg
+        cancelButtonColor: '#6B6780', // --color-text-muted
+        backOverlayColor: 'rgba(31, 27, 45, 0.4)', // --color-text + alpha
     });
 
     const notify = (level: FeedbackLevel, message: string) => {
