@@ -50,3 +50,15 @@ export interface CourierLocationPayload {
     speed?: number | null;
     recorded_at?: string | null;
 }
+
+export interface CourierEarningsBucket {
+    deliveries_count: number;
+    earnings_sum: string;
+    total_orders_sum: string;
+}
+
+export interface CourierEarnings {
+    today: CourierEarningsBucket;
+    week: CourierEarningsBucket;
+    total: CourierEarningsBucket;
+}

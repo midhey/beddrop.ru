@@ -13,6 +13,7 @@ const {
   availableOrders,
   activeOrders,
   historyOrders,
+  earningsCards,
   pageLoading,
   actionOrderId,
   actionType,
@@ -44,6 +45,7 @@ const {
   doAssign,
   doPickup,
   doDeliver,
+  showWithdrawPlaceholder,
   goBack,
 } = useCourierDashboardPage();
 </script>
@@ -191,6 +193,41 @@ const {
                 <span>Обновить позицию</span>
               </button>
             </div>
+          </section>
+
+          <section class="courier-card surface-card courier-earnings">
+            <div class="courier-card__header section-head">
+              <h2 class="courier-card__title section-title">Заработок</h2>
+            </div>
+
+            <div class="courier-earnings__grid">
+              <div
+                v-for="card in earningsCards"
+                :key="card.key"
+                class="courier-earnings__item"
+              >
+                <span class="courier-earnings__period">
+                  {{ card.title }}
+                </span>
+                <strong class="courier-earnings__amount">
+                  {{ card.earnings }}
+                </strong>
+                <span class="courier-earnings__meta">
+                  {{ card.deliveries }} доставок
+                </span>
+                <span class="courier-earnings__meta">
+                  Оборот {{ card.turnover }}
+                </span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              class="button courier-earnings__withdraw"
+              @click="showWithdrawPlaceholder"
+            >
+              Вывести деньги
+            </button>
           </section>
 
           <!-- Доступные заказы -->

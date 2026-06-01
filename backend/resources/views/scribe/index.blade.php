@@ -269,6 +269,9 @@
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v1-courier-orders-history">
                                 <a href="#endpoints-GETapi-v1-courier-orders-history">GET api/v1/courier/orders/history</a>
                             </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v1-courier-earnings">
+                                <a href="#endpoints-GETapi-v1-courier-earnings">Courier earnings summary.</a>
+                            </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-POSTapi-v1-courier-location">
                                 <a href="#endpoints-POSTapi-v1-courier-location">POST api/v1/courier/location</a>
                             </li>
@@ -440,7 +443,7 @@ Protected endpoints use JWT access tokens in the `Authorization: Bearer &lt;toke
     \"phone\": \"82256977571\",
     \"password\": \"|{+-0pBNvYgx\",
     \"name\": \"w\",
-    \"client_type\": \"mobile\",
+    \"client_type\": \"web\",
     \"device_name\": \"a\"
 }"
 </code></pre></div>
@@ -461,7 +464,7 @@ let body = {
     "phone": "82256977571",
     "password": "|{+-0pBNvYgx",
     "name": "w",
-    "client_type": "mobile",
+    "client_type": "web",
     "device_name": "a"
 };
 
@@ -602,10 +605,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="client_type"                data-endpoint="POSTapi-v1-auth-register"
-               value="mobile"
+               value="web"
                data-component="body">
     <br>
-<p>Example: <code>mobile</code></p>
+<p>Example: <code>web</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>web</code></li> <li><code>mobile</code></li></ul>
         </div>
@@ -642,7 +645,7 @@ Must be one of:
     --data "{
     \"email\": \"gbailey@example.net\",
     \"password\": \"|]|{+-\",
-    \"client_type\": \"mobile\",
+    \"client_type\": \"web\",
     \"device_name\": \"v\"
 }"
 </code></pre></div>
@@ -661,7 +664,7 @@ const headers = {
 let body = {
     "email": "gbailey@example.net",
     "password": "|]|{+-",
-    "client_type": "mobile",
+    "client_type": "web",
     "device_name": "v"
 };
 
@@ -778,10 +781,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="client_type"                data-endpoint="POSTapi-v1-auth-login"
-               value="mobile"
+               value="web"
                data-component="body">
     <br>
-<p>Example: <code>mobile</code></p>
+<p>Example: <code>web</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>web</code></li> <li><code>mobile</code></li></ul>
         </div>
@@ -2142,11 +2145,11 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"description\": \"Eius et animi quos velit et.\",
     \"slug\": \"v\",
     \"phone\": \"d\",
-    \"is_active\": false,
-    \"accepts_orders\": true,
+    \"is_active\": true,
+    \"accepts_orders\": false,
     \"timezone\": \"Asia\\/Barnaul\",
-    \"opens_at\": \"10:23\",
-    \"closes_at\": \"10:23\",
+    \"opens_at\": \"10:53\",
+    \"closes_at\": \"10:53\",
     \"closed_reason\": \"j\",
     \"prep_time_min\": 52,
     \"prep_time_max\": 8,
@@ -2236,11 +2239,11 @@ let body = {
     "description": "Eius et animi quos velit et.",
     "slug": "v",
     "phone": "d",
-    "is_active": false,
-    "accepts_orders": true,
+    "is_active": true,
+    "accepts_orders": false,
     "timezone": "Asia\/Barnaul",
-    "opens_at": "10:23",
-    "closes_at": "10:23",
+    "opens_at": "10:53",
+    "closes_at": "10:53",
     "closed_reason": "j",
     "prep_time_min": 52,
     "prep_time_max": 8,
@@ -2474,7 +2477,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>false</code></p>
+<p>Example: <code>true</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>accepts_orders</code></b>&nbsp;&nbsp;
@@ -2496,7 +2499,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>timezone</code></b>&nbsp;&nbsp;
@@ -2517,10 +2520,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="opens_at"                data-endpoint="POSTapi-v1-restaurants"
-               value="10:23"
+               value="10:53"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>H:i</code>. Example: <code>10:23</code></p>
+<p>Must be a valid date in the format <code>H:i</code>. Example: <code>10:53</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>closes_at</code></b>&nbsp;&nbsp;
@@ -2529,10 +2532,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="closes_at"                data-endpoint="POSTapi-v1-restaurants"
-               value="10:23"
+               value="10:53"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>H:i</code>. Example: <code>10:23</code></p>
+<p>Must be a valid date in the format <code>H:i</code>. Example: <code>10:53</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>closed_reason</code></b>&nbsp;&nbsp;
@@ -3413,10 +3416,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"address_id\": 16,
     \"phone\": \"n\",
     \"is_active\": true,
-    \"accepts_orders\": true,
+    \"accepts_orders\": false,
     \"timezone\": \"Antarctica\\/Rothera\",
-    \"opens_at\": \"10:23\",
-    \"closes_at\": \"10:23\",
+    \"opens_at\": \"10:53\",
+    \"closes_at\": \"10:53\",
     \"closed_reason\": \"z\",
     \"prep_time_min\": 77,
     \"prep_time_max\": 8,
@@ -3508,10 +3511,10 @@ let body = {
     "address_id": 16,
     "phone": "n",
     "is_active": true,
-    "accepts_orders": true,
+    "accepts_orders": false,
     "timezone": "Antarctica\/Rothera",
-    "opens_at": "10:23",
-    "closes_at": "10:23",
+    "opens_at": "10:53",
+    "closes_at": "10:53",
     "closed_reason": "z",
     "prep_time_min": 77,
     "prep_time_max": 8,
@@ -3792,7 +3795,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>timezone</code></b>&nbsp;&nbsp;
@@ -3813,10 +3816,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="opens_at"                data-endpoint="PUTapi-v1-restaurants--restaurant_id-"
-               value="10:23"
+               value="10:53"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>H:i</code>. Example: <code>10:23</code></p>
+<p>Must be a valid date in the format <code>H:i</code>. Example: <code>10:53</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>closes_at</code></b>&nbsp;&nbsp;
@@ -3825,10 +3828,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="closes_at"                data-endpoint="PUTapi-v1-restaurants--restaurant_id-"
-               value="10:23"
+               value="10:53"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>H:i</code>. Example: <code>10:23</code></p>
+<p>Must be a valid date in the format <code>H:i</code>. Example: <code>10:53</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>closed_reason</code></b>&nbsp;&nbsp;
@@ -5106,7 +5109,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"user_id\": 16,
-    \"role\": \"STAFF\"
+    \"role\": \"OWNER\"
 }"
 </code></pre></div>
 
@@ -5124,7 +5127,7 @@ const headers = {
 
 let body = {
     "user_id": 16,
-    "role": "STAFF"
+    "role": "OWNER"
 };
 
 fetch(url, {
@@ -5253,10 +5256,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="role"                data-endpoint="POSTapi-v1-restaurants--restaurant_slug--users"
-               value="STAFF"
+               value="OWNER"
                data-component="body">
     <br>
-<p>Example: <code>STAFF</code></p>
+<p>Example: <code>OWNER</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>OWNER</code></li> <li><code>MANAGER</code></li> <li><code>STAFF</code></li></ul>
         </div>
@@ -5606,8 +5609,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"role\": \"STAFF\",
-    \"expires_in_minutes\": 15
+    \"role\": \"OWNER\",
+    \"expires_in_minutes\": 60
 }"
 </code></pre></div>
 
@@ -5624,8 +5627,8 @@ const headers = {
 };
 
 let body = {
-    "role": "STAFF",
-    "expires_in_minutes": 15
+    "role": "OWNER",
+    "expires_in_minutes": 60
 };
 
 fetch(url, {
@@ -5742,10 +5745,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="role"                data-endpoint="POSTapi-v1-restaurants--restaurant_slug--staff-invites"
-               value="STAFF"
+               value="OWNER"
                data-component="body">
     <br>
-<p>Must not be one of <code>OWNER</code>. Example: <code>STAFF</code></p>
+<p>Must not be one of <code>OWNER</code>. Example: <code>OWNER</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>OWNER</code></li> <li><code>MANAGER</code></li> <li><code>STAFF</code></li></ul>
         </div>
@@ -5756,10 +5759,10 @@ Must be one of:
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="expires_in_minutes"                data-endpoint="POSTapi-v1-restaurants--restaurant_slug--staff-invites"
-               value="15"
+               value="60"
                data-component="body">
     <br>
-<p>Example: <code>15</code></p>
+<p>Example: <code>60</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>5</code></li> <li><code>15</code></li> <li><code>30</code></li> <li><code>60</code></li></ul>
         </div>
@@ -11298,7 +11301,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"restaurant_id\": 16,
     \"delivery_address_id\": 16,
-    \"mode\": \"auto\"
+    \"mode\": \"bicycle\"
 }"
 </code></pre></div>
 
@@ -11317,7 +11320,7 @@ const headers = {
 let body = {
     "restaurant_id": 16,
     "delivery_address_id": 16,
-    "mode": "auto"
+    "mode": "bicycle"
 };
 
 fetch(url, {
@@ -11445,10 +11448,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="mode"                data-endpoint="POSTapi-v1-delivery-quote"
-               value="auto"
+               value="bicycle"
                data-component="body">
     <br>
-<p>Example: <code>auto</code></p>
+<p>Example: <code>bicycle</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>auto</code></li> <li><code>bicycle</code></li> <li><code>pedestrian</code></li></ul>
         </div>
@@ -11599,7 +11602,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"vehicle\": \"SCOOTER\"
+    \"vehicle\": \"FOOT\"
 }"
 </code></pre></div>
 
@@ -11616,7 +11619,7 @@ const headers = {
 };
 
 let body = {
-    "vehicle": "SCOOTER"
+    "vehicle": "FOOT"
 };
 
 fetch(url, {
@@ -11720,10 +11723,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="vehicle"                data-endpoint="POSTapi-v1-courier-profile"
-               value="SCOOTER"
+               value="FOOT"
                data-component="body">
     <br>
-<p>Example: <code>SCOOTER</code></p>
+<p>Example: <code>FOOT</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>FOOT</code></li> <li><code>BIKE</code></li> <li><code>SCOOTER</code></li> <li><code>CAR</code></li></ul>
         </div>
@@ -12485,6 +12488,165 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                         </form>
 
+                    <h2 id="endpoints-GETapi-v1-courier-earnings">Courier earnings summary.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>Returns delivery and payout totals for the authenticated active courier.
+Period buckets use delivered order <code>updated_at</code> timestamps.</p>
+
+<span id="example-requests-GETapi-v1-courier-earnings">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost:8080/api/v1/courier/earnings" \
+    --header "Authorization: Bearer {ACCESS_TOKEN}" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost:8080/api/v1/courier/earnings"
+);
+
+const headers = {
+    "Authorization": "Bearer {ACCESS_TOKEN}",
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-courier-earnings">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;today&quot;: {
+        &quot;deliveries_count&quot;: 2,
+        &quot;earnings_sum&quot;: &quot;300.00&quot;,
+        &quot;total_orders_sum&quot;: &quot;1490.00&quot;
+    },
+    &quot;week&quot;: {
+        &quot;deliveries_count&quot;: 5,
+        &quot;earnings_sum&quot;: &quot;750.00&quot;,
+        &quot;total_orders_sum&quot;: &quot;4120.00&quot;
+    },
+    &quot;total&quot;: {
+        &quot;deliveries_count&quot;: 12,
+        &quot;earnings_sum&quot;: &quot;1800.00&quot;,
+        &quot;total_orders_sum&quot;: &quot;10880.00&quot;
+    }
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (403):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Профиль курьера не найден или отключён.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v1-courier-earnings" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v1-courier-earnings"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-courier-earnings"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-courier-earnings" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-courier-earnings">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v1-courier-earnings" data-method="GET"
+      data-path="api/v1/courier/earnings"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-courier-earnings', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-courier-earnings"
+                    onclick="tryItOut('GETapi-v1-courier-earnings');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-courier-earnings"
+                    onclick="cancelTryOut('GETapi-v1-courier-earnings');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-courier-earnings"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/courier/earnings</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="GETapi-v1-courier-earnings"
+               value="Bearer {ACCESS_TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer {ACCESS_TOKEN}</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-courier-earnings"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-courier-earnings"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
                     <h2 id="endpoints-POSTapi-v1-courier-location">POST api/v1/courier/location</h2>
 
 <p>
@@ -12509,7 +12671,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"accuracy\": 4326.41688,
     \"heading\": 4326.41688,
     \"speed\": 4326.41688,
-    \"recorded_at\": \"2026-06-01T10:23:12\"
+    \"recorded_at\": \"2026-06-01T10:53:32\"
 }"
 </code></pre></div>
 
@@ -12531,7 +12693,7 @@ let body = {
     "accuracy": 4326.41688,
     "heading": 4326.41688,
     "speed": 4326.41688,
-    "recorded_at": "2026-06-01T10:23:12"
+    "recorded_at": "2026-06-01T10:53:32"
 };
 
 fetch(url, {
@@ -12695,10 +12857,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="recorded_at"                data-endpoint="POSTapi-v1-courier-location"
-               value="2026-06-01T10:23:12"
+               value="2026-06-01T10:53:32"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-06-01T10:23:12</code></p>
+<p>Must be a valid date. Example: <code>2026-06-01T10:53:32</code></p>
         </div>
         </form>
 
@@ -14307,56 +14469,56 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"value\": \"n\",
     \"unrestricted_value\": \"g\",
     \"line1\": \"z\",
-    \"line2\": \"q\",
-    \"city\": \"w\",
-    \"postal_code\": \"t\",
-    \"country\": \"n\",
-    \"country_iso_code\": \"nq\",
-    \"federal_district\": \"l\",
-    \"region_fias_id\": \"e\",
-    \"region_kladr_id\": \"h\",
-    \"region_iso_code\": \"u\",
-    \"region_with_type\": \"a\",
-    \"region_type\": \"h\",
-    \"region_type_full\": \"p\",
-    \"region\": \"u\",
-    \"area_fias_id\": \"z\",
-    \"area_kladr_id\": \"w\",
-    \"area_with_type\": \"v\",
-    \"area_type\": \"b\",
-    \"area_type_full\": \"d\",
-    \"area\": \"s\",
-    \"city_fias_id\": \"c\",
-    \"city_kladr_id\": \"n\",
-    \"city_with_type\": \"q\",
-    \"city_type\": \"a\",
-    \"city_type_full\": \"t\",
-    \"settlement_fias_id\": \"k\",
-    \"settlement_kladr_id\": \"c\",
-    \"settlement_with_type\": \"l\",
-    \"settlement_type\": \"k\",
-    \"settlement_type_full\": \"m\",
-    \"settlement\": \"w\",
-    \"street_fias_id\": \"u\",
-    \"street_kladr_id\": \"j\",
-    \"street_with_type\": \"i\",
-    \"street_type\": \"h\",
-    \"street_type_full\": \"q\",
-    \"street\": \"a\",
-    \"house_fias_id\": \"o\",
-    \"house_kladr_id\": \"h\",
-    \"house_type\": \"q\",
-    \"house_type_full\": \"m\",
-    \"house\": \"z\",
+    \"line2\": \"m\",
+    \"city\": \"i\",
+    \"postal_code\": \"y\",
+    \"country\": \"v\",
+    \"country_iso_code\": \"dl\",
+    \"federal_district\": \"j\",
+    \"region_fias_id\": \"n\",
+    \"region_kladr_id\": \"i\",
+    \"region_iso_code\": \"k\",
+    \"region_with_type\": \"h\",
+    \"region_type\": \"w\",
+    \"region_type_full\": \"a\",
+    \"region\": \"y\",
+    \"area_fias_id\": \"k\",
+    \"area_kladr_id\": \"c\",
+    \"area_with_type\": \"m\",
+    \"area_type\": \"y\",
+    \"area_type_full\": \"u\",
+    \"area\": \"w\",
+    \"city_fias_id\": \"p\",
+    \"city_kladr_id\": \"w\",
+    \"city_with_type\": \"l\",
+    \"city_type\": \"v\",
+    \"city_type_full\": \"q\",
+    \"settlement_fias_id\": \"w\",
+    \"settlement_kladr_id\": \"r\",
+    \"settlement_with_type\": \"s\",
+    \"settlement_type\": \"i\",
+    \"settlement_type_full\": \"t\",
+    \"settlement\": \"c\",
+    \"street_fias_id\": \"p\",
+    \"street_kladr_id\": \"s\",
+    \"street_with_type\": \"c\",
+    \"street_type\": \"q\",
+    \"street_type_full\": \"l\",
+    \"street\": \"d\",
+    \"house_fias_id\": \"z\",
+    \"house_kladr_id\": \"s\",
+    \"house_type\": \"n\",
+    \"house_type_full\": \"r\",
+    \"house\": \"w\",
     \"block_type\": \"t\",
-    \"block_type_full\": \"t\",
-    \"block\": \"t\",
-    \"flat_type\": \"o\",
-    \"flat_type_full\": \"r\",
-    \"flat\": \"n\",
-    \"entrance\": \"b\",
-    \"floor\": \"g\",
-    \"intercom\": \"l\",
+    \"block_type_full\": \"u\",
+    \"block\": \"j\",
+    \"flat_type\": \"w\",
+    \"flat_type_full\": \"v\",
+    \"flat\": \"l\",
+    \"entrance\": \"x\",
+    \"floor\": \"j\",
+    \"intercom\": \"k\",
     \"lat\": 4326.41688,
     \"lng\": 4326.41688,
     \"fias_id\": \"m\",
@@ -14386,56 +14548,56 @@ let body = {
     "value": "n",
     "unrestricted_value": "g",
     "line1": "z",
-    "line2": "q",
-    "city": "w",
-    "postal_code": "t",
-    "country": "n",
-    "country_iso_code": "nq",
-    "federal_district": "l",
-    "region_fias_id": "e",
-    "region_kladr_id": "h",
-    "region_iso_code": "u",
-    "region_with_type": "a",
-    "region_type": "h",
-    "region_type_full": "p",
-    "region": "u",
-    "area_fias_id": "z",
-    "area_kladr_id": "w",
-    "area_with_type": "v",
-    "area_type": "b",
-    "area_type_full": "d",
-    "area": "s",
-    "city_fias_id": "c",
-    "city_kladr_id": "n",
-    "city_with_type": "q",
-    "city_type": "a",
-    "city_type_full": "t",
-    "settlement_fias_id": "k",
-    "settlement_kladr_id": "c",
-    "settlement_with_type": "l",
-    "settlement_type": "k",
-    "settlement_type_full": "m",
-    "settlement": "w",
-    "street_fias_id": "u",
-    "street_kladr_id": "j",
-    "street_with_type": "i",
-    "street_type": "h",
-    "street_type_full": "q",
-    "street": "a",
-    "house_fias_id": "o",
-    "house_kladr_id": "h",
-    "house_type": "q",
-    "house_type_full": "m",
-    "house": "z",
+    "line2": "m",
+    "city": "i",
+    "postal_code": "y",
+    "country": "v",
+    "country_iso_code": "dl",
+    "federal_district": "j",
+    "region_fias_id": "n",
+    "region_kladr_id": "i",
+    "region_iso_code": "k",
+    "region_with_type": "h",
+    "region_type": "w",
+    "region_type_full": "a",
+    "region": "y",
+    "area_fias_id": "k",
+    "area_kladr_id": "c",
+    "area_with_type": "m",
+    "area_type": "y",
+    "area_type_full": "u",
+    "area": "w",
+    "city_fias_id": "p",
+    "city_kladr_id": "w",
+    "city_with_type": "l",
+    "city_type": "v",
+    "city_type_full": "q",
+    "settlement_fias_id": "w",
+    "settlement_kladr_id": "r",
+    "settlement_with_type": "s",
+    "settlement_type": "i",
+    "settlement_type_full": "t",
+    "settlement": "c",
+    "street_fias_id": "p",
+    "street_kladr_id": "s",
+    "street_with_type": "c",
+    "street_type": "q",
+    "street_type_full": "l",
+    "street": "d",
+    "house_fias_id": "z",
+    "house_kladr_id": "s",
+    "house_type": "n",
+    "house_type_full": "r",
+    "house": "w",
     "block_type": "t",
-    "block_type_full": "t",
-    "block": "t",
-    "flat_type": "o",
-    "flat_type_full": "r",
-    "flat": "n",
-    "entrance": "b",
-    "floor": "g",
-    "intercom": "l",
+    "block_type_full": "u",
+    "block": "j",
+    "flat_type": "w",
+    "flat_type_full": "v",
+    "flat": "l",
+    "entrance": "x",
+    "floor": "j",
+    "intercom": "k",
     "lat": 4326.41688,
     "lng": 4326.41688,
     "fias_id": "m",
@@ -14609,10 +14771,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="line2"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="q"
+               value="m"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>q</code></p>
+<p>Must not be greater than 255 characters. Example: <code>m</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>city</code></b>&nbsp;&nbsp;
@@ -14621,10 +14783,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="city"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="w"
+               value="i"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>w</code></p>
+<p>Must not be greater than 255 characters. Example: <code>i</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>postal_code</code></b>&nbsp;&nbsp;
@@ -14633,10 +14795,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="postal_code"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="t"
+               value="y"
                data-component="body">
     <br>
-<p>Must not be greater than 32 characters. Example: <code>t</code></p>
+<p>Must not be greater than 32 characters. Example: <code>y</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>country</code></b>&nbsp;&nbsp;
@@ -14645,10 +14807,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="country"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="n"
+               value="v"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>n</code></p>
+<p>Must not be greater than 255 characters. Example: <code>v</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>country_iso_code</code></b>&nbsp;&nbsp;
@@ -14657,10 +14819,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="country_iso_code"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="nq"
+               value="dl"
                data-component="body">
     <br>
-<p>Must not be greater than 2 characters. Example: <code>nq</code></p>
+<p>Must not be greater than 2 characters. Example: <code>dl</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>federal_district</code></b>&nbsp;&nbsp;
@@ -14669,10 +14831,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="federal_district"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="l"
+               value="j"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>l</code></p>
+<p>Must not be greater than 255 characters. Example: <code>j</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>region_fias_id</code></b>&nbsp;&nbsp;
@@ -14681,10 +14843,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="region_fias_id"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="e"
+               value="n"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>e</code></p>
+<p>Must not be greater than 255 characters. Example: <code>n</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>region_kladr_id</code></b>&nbsp;&nbsp;
@@ -14693,10 +14855,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="region_kladr_id"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="h"
+               value="i"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>h</code></p>
+<p>Must not be greater than 255 characters. Example: <code>i</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>region_iso_code</code></b>&nbsp;&nbsp;
@@ -14705,10 +14867,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="region_iso_code"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="u"
+               value="k"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>u</code></p>
+<p>Must not be greater than 255 characters. Example: <code>k</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>region_with_type</code></b>&nbsp;&nbsp;
@@ -14717,10 +14879,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="region_with_type"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="a"
+               value="h"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>a</code></p>
+<p>Must not be greater than 255 characters. Example: <code>h</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>region_type</code></b>&nbsp;&nbsp;
@@ -14729,10 +14891,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="region_type"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="h"
+               value="w"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>h</code></p>
+<p>Must not be greater than 255 characters. Example: <code>w</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>region_type_full</code></b>&nbsp;&nbsp;
@@ -14741,10 +14903,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="region_type_full"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="p"
+               value="a"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>p</code></p>
+<p>Must not be greater than 255 characters. Example: <code>a</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>region</code></b>&nbsp;&nbsp;
@@ -14753,10 +14915,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="region"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="u"
+               value="y"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>u</code></p>
+<p>Must not be greater than 255 characters. Example: <code>y</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>area_fias_id</code></b>&nbsp;&nbsp;
@@ -14765,10 +14927,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="area_fias_id"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="z"
+               value="k"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>z</code></p>
+<p>Must not be greater than 255 characters. Example: <code>k</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>area_kladr_id</code></b>&nbsp;&nbsp;
@@ -14777,10 +14939,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="area_kladr_id"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="w"
+               value="c"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>w</code></p>
+<p>Must not be greater than 255 characters. Example: <code>c</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>area_with_type</code></b>&nbsp;&nbsp;
@@ -14789,10 +14951,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="area_with_type"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="v"
+               value="m"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>v</code></p>
+<p>Must not be greater than 255 characters. Example: <code>m</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>area_type</code></b>&nbsp;&nbsp;
@@ -14801,10 +14963,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="area_type"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="b"
+               value="y"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>b</code></p>
+<p>Must not be greater than 255 characters. Example: <code>y</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>area_type_full</code></b>&nbsp;&nbsp;
@@ -14813,10 +14975,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="area_type_full"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="d"
+               value="u"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>d</code></p>
+<p>Must not be greater than 255 characters. Example: <code>u</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>area</code></b>&nbsp;&nbsp;
@@ -14825,10 +14987,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="area"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="s"
+               value="w"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>s</code></p>
+<p>Must not be greater than 255 characters. Example: <code>w</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>city_fias_id</code></b>&nbsp;&nbsp;
@@ -14837,10 +14999,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="city_fias_id"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="c"
+               value="p"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>c</code></p>
+<p>Must not be greater than 255 characters. Example: <code>p</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>city_kladr_id</code></b>&nbsp;&nbsp;
@@ -14849,10 +15011,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="city_kladr_id"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="n"
+               value="w"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>n</code></p>
+<p>Must not be greater than 255 characters. Example: <code>w</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>city_with_type</code></b>&nbsp;&nbsp;
@@ -14861,10 +15023,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="city_with_type"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="q"
+               value="l"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>q</code></p>
+<p>Must not be greater than 255 characters. Example: <code>l</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>city_type</code></b>&nbsp;&nbsp;
@@ -14873,10 +15035,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="city_type"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="a"
+               value="v"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>a</code></p>
+<p>Must not be greater than 255 characters. Example: <code>v</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>city_type_full</code></b>&nbsp;&nbsp;
@@ -14885,10 +15047,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="city_type_full"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="t"
+               value="q"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>t</code></p>
+<p>Must not be greater than 255 characters. Example: <code>q</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>settlement_fias_id</code></b>&nbsp;&nbsp;
@@ -14897,10 +15059,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="settlement_fias_id"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="k"
+               value="w"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>k</code></p>
+<p>Must not be greater than 255 characters. Example: <code>w</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>settlement_kladr_id</code></b>&nbsp;&nbsp;
@@ -14909,10 +15071,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="settlement_kladr_id"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="c"
+               value="r"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>c</code></p>
+<p>Must not be greater than 255 characters. Example: <code>r</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>settlement_with_type</code></b>&nbsp;&nbsp;
@@ -14921,10 +15083,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="settlement_with_type"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="l"
+               value="s"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>l</code></p>
+<p>Must not be greater than 255 characters. Example: <code>s</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>settlement_type</code></b>&nbsp;&nbsp;
@@ -14933,10 +15095,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="settlement_type"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="k"
+               value="i"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>k</code></p>
+<p>Must not be greater than 255 characters. Example: <code>i</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>settlement_type_full</code></b>&nbsp;&nbsp;
@@ -14945,10 +15107,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="settlement_type_full"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="m"
+               value="t"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>m</code></p>
+<p>Must not be greater than 255 characters. Example: <code>t</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>settlement</code></b>&nbsp;&nbsp;
@@ -14957,10 +15119,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="settlement"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="w"
+               value="c"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>w</code></p>
+<p>Must not be greater than 255 characters. Example: <code>c</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>street_fias_id</code></b>&nbsp;&nbsp;
@@ -14969,10 +15131,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="street_fias_id"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="u"
+               value="p"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>u</code></p>
+<p>Must not be greater than 255 characters. Example: <code>p</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>street_kladr_id</code></b>&nbsp;&nbsp;
@@ -14981,10 +15143,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="street_kladr_id"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="j"
+               value="s"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>j</code></p>
+<p>Must not be greater than 255 characters. Example: <code>s</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>street_with_type</code></b>&nbsp;&nbsp;
@@ -14993,10 +15155,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="street_with_type"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="i"
+               value="c"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>i</code></p>
+<p>Must not be greater than 255 characters. Example: <code>c</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>street_type</code></b>&nbsp;&nbsp;
@@ -15005,10 +15167,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="street_type"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="h"
+               value="q"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>h</code></p>
+<p>Must not be greater than 255 characters. Example: <code>q</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>street_type_full</code></b>&nbsp;&nbsp;
@@ -15017,10 +15179,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="street_type_full"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="q"
+               value="l"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>q</code></p>
+<p>Must not be greater than 255 characters. Example: <code>l</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>street</code></b>&nbsp;&nbsp;
@@ -15029,10 +15191,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="street"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="a"
+               value="d"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>a</code></p>
+<p>Must not be greater than 255 characters. Example: <code>d</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>house_fias_id</code></b>&nbsp;&nbsp;
@@ -15041,10 +15203,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="house_fias_id"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="o"
+               value="z"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>o</code></p>
+<p>Must not be greater than 255 characters. Example: <code>z</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>house_kladr_id</code></b>&nbsp;&nbsp;
@@ -15053,10 +15215,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="house_kladr_id"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="h"
+               value="s"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>h</code></p>
+<p>Must not be greater than 255 characters. Example: <code>s</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>house_type</code></b>&nbsp;&nbsp;
@@ -15065,10 +15227,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="house_type"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="q"
+               value="n"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>q</code></p>
+<p>Must not be greater than 255 characters. Example: <code>n</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>house_type_full</code></b>&nbsp;&nbsp;
@@ -15077,10 +15239,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="house_type_full"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="m"
+               value="r"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>m</code></p>
+<p>Must not be greater than 255 characters. Example: <code>r</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>house</code></b>&nbsp;&nbsp;
@@ -15089,10 +15251,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="house"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="z"
+               value="w"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>z</code></p>
+<p>Must not be greater than 255 characters. Example: <code>w</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>block_type</code></b>&nbsp;&nbsp;
@@ -15113,10 +15275,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="block_type_full"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="t"
+               value="u"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>t</code></p>
+<p>Must not be greater than 255 characters. Example: <code>u</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>block</code></b>&nbsp;&nbsp;
@@ -15125,10 +15287,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="block"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="t"
+               value="j"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>t</code></p>
+<p>Must not be greater than 255 characters. Example: <code>j</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>flat_type</code></b>&nbsp;&nbsp;
@@ -15137,10 +15299,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="flat_type"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="o"
+               value="w"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>o</code></p>
+<p>Must not be greater than 255 characters. Example: <code>w</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>flat_type_full</code></b>&nbsp;&nbsp;
@@ -15149,10 +15311,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="flat_type_full"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="r"
+               value="v"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>r</code></p>
+<p>Must not be greater than 255 characters. Example: <code>v</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>flat</code></b>&nbsp;&nbsp;
@@ -15161,10 +15323,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="flat"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="n"
+               value="l"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>n</code></p>
+<p>Must not be greater than 255 characters. Example: <code>l</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>entrance</code></b>&nbsp;&nbsp;
@@ -15173,10 +15335,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="entrance"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="b"
+               value="x"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>b</code></p>
+<p>Must not be greater than 255 characters. Example: <code>x</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>floor</code></b>&nbsp;&nbsp;
@@ -15185,10 +15347,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="floor"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="g"
+               value="j"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>g</code></p>
+<p>Must not be greater than 255 characters. Example: <code>j</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>intercom</code></b>&nbsp;&nbsp;
@@ -15197,10 +15359,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="intercom"                data-endpoint="PUTapi-v1-addresses--address_id-"
-               value="l"
+               value="k"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>l</code></p>
+<p>Must not be greater than 255 characters. Example: <code>k</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>lat</code></b>&nbsp;&nbsp;
@@ -15493,7 +15655,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Authorization: Bearer {ACCESS_TOKEN}" \
     --header "Content-Type: multipart/form-data" \
     --header "Accept: application/json" \
-    --form "file=@/private/var/folders/pk/14spjvpd1_j3spnw8jgmrwq40000gn/T/phpg60ioo8j6k4u3J6p75N" </code></pre></div>
+    --form "file=@/private/var/folders/pk/14spjvpd1_j3spnw8jgmrwq40000gn/T/phps4gn3mpuoscfflnyEvW" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -15614,7 +15776,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                value=""
                data-component="body">
     <br>
-<p>Must be a file. Must be an image. Must not be greater than 10240 kilobytes. Example: <code>/private/var/folders/pk/14spjvpd1_j3spnw8jgmrwq40000gn/T/phpg60ioo8j6k4u3J6p75N</code></p>
+<p>Must be a file. Must be an image. Must not be greater than 10240 kilobytes. Example: <code>/private/var/folders/pk/14spjvpd1_j3spnw8jgmrwq40000gn/T/phps4gn3mpuoscfflnyEvW</code></p>
         </div>
         </form>
 
@@ -16631,11 +16793,11 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"slug\": \"v\",
     \"address_id\": 16,
     \"phone\": \"n\",
-    \"is_active\": false,
+    \"is_active\": true,
     \"accepts_orders\": false,
     \"timezone\": \"Antarctica\\/Rothera\",
-    \"opens_at\": \"10:23\",
-    \"closes_at\": \"10:23\",
+    \"opens_at\": \"10:53\",
+    \"closes_at\": \"10:53\",
     \"closed_reason\": \"z\",
     \"prep_time_min\": 77,
     \"prep_time_max\": 8,
@@ -16674,27 +16836,27 @@ You can check the Dev Tools console for debugging information.</code></pre>
         \"settlement_with_type\": \"i\",
         \"settlement_type\": \"t\",
         \"settlement_type_full\": \"c\",
-        \"settlement\": \"p\",
-        \"street_fias_id\": \"s\",
-        \"street_kladr_id\": \"c\",
-        \"street_with_type\": \"q\",
-        \"street_type\": \"l\",
-        \"street_type_full\": \"d\",
-        \"street\": \"z\",
-        \"house_fias_id\": \"s\",
-        \"house_kladr_id\": \"n\",
-        \"house_type\": \"r\",
-        \"house_type_full\": \"w\",
-        \"house\": \"t\",
-        \"block_type\": \"u\",
+        \"settlement\": \"pscqld\",
+        \"street_fias_id\": \"z\",
+        \"street_kladr_id\": \"s\",
+        \"street_with_type\": \"n\",
+        \"street_type\": \"r\",
+        \"street_type_full\": \"w\",
+        \"street\": \"t\",
+        \"house_fias_id\": \"u\",
+        \"house_kladr_id\": \"j\",
+        \"house_type\": \"w\",
+        \"house_type_full\": \"v\",
+        \"house\": \"l\",
+        \"block_type\": \"x\",
         \"block_type_full\": \"j\",
-        \"block\": \"w\",
-        \"flat_type\": \"v\",
-        \"flat_type_full\": \"l\",
-        \"flat\": \"x\",
-        \"entrance\": \"j\",
-        \"floor\": \"k\",
-        \"intercom\": \"l\",
+        \"block\": \"k\",
+        \"flat_type\": \"l\",
+        \"flat_type_full\": \"q\",
+        \"flat\": \"p\",
+        \"entrance\": \"p\",
+        \"floor\": \"w\",
+        \"intercom\": \"q\",
         \"lat\": 4326.41688,
         \"lng\": 4326.41688,
         \"fias_id\": \"m\",
@@ -16726,11 +16888,11 @@ let body = {
     "slug": "v",
     "address_id": 16,
     "phone": "n",
-    "is_active": false,
+    "is_active": true,
     "accepts_orders": false,
     "timezone": "Antarctica\/Rothera",
-    "opens_at": "10:23",
-    "closes_at": "10:23",
+    "opens_at": "10:53",
+    "closes_at": "10:53",
     "closed_reason": "z",
     "prep_time_min": 77,
     "prep_time_max": 8,
@@ -16769,27 +16931,27 @@ let body = {
         "settlement_with_type": "i",
         "settlement_type": "t",
         "settlement_type_full": "c",
-        "settlement": "p",
-        "street_fias_id": "s",
-        "street_kladr_id": "c",
-        "street_with_type": "q",
-        "street_type": "l",
-        "street_type_full": "d",
-        "street": "z",
-        "house_fias_id": "s",
-        "house_kladr_id": "n",
-        "house_type": "r",
-        "house_type_full": "w",
-        "house": "t",
-        "block_type": "u",
+        "settlement": "pscqld",
+        "street_fias_id": "z",
+        "street_kladr_id": "s",
+        "street_with_type": "n",
+        "street_type": "r",
+        "street_type_full": "w",
+        "street": "t",
+        "house_fias_id": "u",
+        "house_kladr_id": "j",
+        "house_type": "w",
+        "house_type_full": "v",
+        "house": "l",
+        "block_type": "x",
         "block_type_full": "j",
-        "block": "w",
-        "flat_type": "v",
-        "flat_type_full": "l",
-        "flat": "x",
-        "entrance": "j",
-        "floor": "k",
-        "intercom": "l",
+        "block": "k",
+        "flat_type": "l",
+        "flat_type_full": "q",
+        "flat": "p",
+        "entrance": "p",
+        "floor": "w",
+        "intercom": "q",
         "lat": 4326.41688,
         "lng": 4326.41688,
         "fias_id": "m",
@@ -16989,7 +17151,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>false</code></p>
+<p>Example: <code>true</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>accepts_orders</code></b>&nbsp;&nbsp;
@@ -17032,10 +17194,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="opens_at"                data-endpoint="PUTapi-v1-admin-restaurants--restaurant_id-"
-               value="10:23"
+               value="10:53"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>H:i</code>. Example: <code>10:23</code></p>
+<p>Must be a valid date in the format <code>H:i</code>. Example: <code>10:53</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>closes_at</code></b>&nbsp;&nbsp;
@@ -17044,10 +17206,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="closes_at"                data-endpoint="PUTapi-v1-admin-restaurants--restaurant_id-"
-               value="10:23"
+               value="10:53"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>H:i</code>. Example: <code>10:23</code></p>
+<p>Must be a valid date in the format <code>H:i</code>. Example: <code>10:53</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>closed_reason</code></b>&nbsp;&nbsp;
@@ -17522,10 +17684,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="address.settlement"                data-endpoint="PUTapi-v1-admin-restaurants--restaurant_id-"
-               value="p"
+               value="pscqld"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>p</code></p>
+<p>Must not be greater than 255 characters. Example: <code>pscqld</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>street_fias_id</code></b>&nbsp;&nbsp;
@@ -17534,10 +17696,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="address.street_fias_id"                data-endpoint="PUTapi-v1-admin-restaurants--restaurant_id-"
-               value="s"
+               value="z"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>s</code></p>
+<p>Must not be greater than 255 characters. Example: <code>z</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>street_kladr_id</code></b>&nbsp;&nbsp;
@@ -17546,10 +17708,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="address.street_kladr_id"                data-endpoint="PUTapi-v1-admin-restaurants--restaurant_id-"
-               value="c"
+               value="s"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>c</code></p>
+<p>Must not be greater than 255 characters. Example: <code>s</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>street_with_type</code></b>&nbsp;&nbsp;
@@ -17558,10 +17720,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="address.street_with_type"                data-endpoint="PUTapi-v1-admin-restaurants--restaurant_id-"
-               value="q"
+               value="n"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>q</code></p>
+<p>Must not be greater than 255 characters. Example: <code>n</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>street_type</code></b>&nbsp;&nbsp;
@@ -17570,10 +17732,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="address.street_type"                data-endpoint="PUTapi-v1-admin-restaurants--restaurant_id-"
-               value="l"
+               value="r"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>l</code></p>
+<p>Must not be greater than 255 characters. Example: <code>r</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>street_type_full</code></b>&nbsp;&nbsp;
@@ -17582,10 +17744,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="address.street_type_full"                data-endpoint="PUTapi-v1-admin-restaurants--restaurant_id-"
-               value="d"
+               value="w"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>d</code></p>
+<p>Must not be greater than 255 characters. Example: <code>w</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>street</code></b>&nbsp;&nbsp;
@@ -17594,10 +17756,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="address.street"                data-endpoint="PUTapi-v1-admin-restaurants--restaurant_id-"
-               value="z"
+               value="t"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>z</code></p>
+<p>Must not be greater than 255 characters. Example: <code>t</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>house_fias_id</code></b>&nbsp;&nbsp;
@@ -17606,10 +17768,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="address.house_fias_id"                data-endpoint="PUTapi-v1-admin-restaurants--restaurant_id-"
-               value="s"
+               value="u"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>s</code></p>
+<p>Must not be greater than 255 characters. Example: <code>u</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>house_kladr_id</code></b>&nbsp;&nbsp;
@@ -17618,10 +17780,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="address.house_kladr_id"                data-endpoint="PUTapi-v1-admin-restaurants--restaurant_id-"
-               value="n"
+               value="j"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>n</code></p>
+<p>Must not be greater than 255 characters. Example: <code>j</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>house_type</code></b>&nbsp;&nbsp;
@@ -17630,10 +17792,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="address.house_type"                data-endpoint="PUTapi-v1-admin-restaurants--restaurant_id-"
-               value="r"
+               value="w"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>r</code></p>
+<p>Must not be greater than 255 characters. Example: <code>w</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>house_type_full</code></b>&nbsp;&nbsp;
@@ -17642,10 +17804,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="address.house_type_full"                data-endpoint="PUTapi-v1-admin-restaurants--restaurant_id-"
-               value="w"
+               value="v"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>w</code></p>
+<p>Must not be greater than 255 characters. Example: <code>v</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>house</code></b>&nbsp;&nbsp;
@@ -17654,10 +17816,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="address.house"                data-endpoint="PUTapi-v1-admin-restaurants--restaurant_id-"
-               value="t"
+               value="l"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>t</code></p>
+<p>Must not be greater than 255 characters. Example: <code>l</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>block_type</code></b>&nbsp;&nbsp;
@@ -17666,10 +17828,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="address.block_type"                data-endpoint="PUTapi-v1-admin-restaurants--restaurant_id-"
-               value="u"
+               value="x"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>u</code></p>
+<p>Must not be greater than 255 characters. Example: <code>x</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>block_type_full</code></b>&nbsp;&nbsp;
@@ -17690,10 +17852,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="address.block"                data-endpoint="PUTapi-v1-admin-restaurants--restaurant_id-"
-               value="w"
+               value="k"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>w</code></p>
+<p>Must not be greater than 255 characters. Example: <code>k</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>flat_type</code></b>&nbsp;&nbsp;
@@ -17702,10 +17864,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="address.flat_type"                data-endpoint="PUTapi-v1-admin-restaurants--restaurant_id-"
-               value="v"
+               value="l"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>v</code></p>
+<p>Must not be greater than 255 characters. Example: <code>l</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>flat_type_full</code></b>&nbsp;&nbsp;
@@ -17714,10 +17876,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="address.flat_type_full"                data-endpoint="PUTapi-v1-admin-restaurants--restaurant_id-"
-               value="l"
+               value="q"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>l</code></p>
+<p>Must not be greater than 255 characters. Example: <code>q</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>flat</code></b>&nbsp;&nbsp;
@@ -17726,10 +17888,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="address.flat"                data-endpoint="PUTapi-v1-admin-restaurants--restaurant_id-"
-               value="x"
+               value="p"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>x</code></p>
+<p>Must not be greater than 255 characters. Example: <code>p</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>entrance</code></b>&nbsp;&nbsp;
@@ -17738,10 +17900,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="address.entrance"                data-endpoint="PUTapi-v1-admin-restaurants--restaurant_id-"
-               value="j"
+               value="p"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>j</code></p>
+<p>Must not be greater than 255 characters. Example: <code>p</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>floor</code></b>&nbsp;&nbsp;
@@ -17750,10 +17912,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="address.floor"                data-endpoint="PUTapi-v1-admin-restaurants--restaurant_id-"
-               value="k"
+               value="w"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>k</code></p>
+<p>Must not be greater than 255 characters. Example: <code>w</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>intercom</code></b>&nbsp;&nbsp;
@@ -17762,10 +17924,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="address.intercom"                data-endpoint="PUTapi-v1-admin-restaurants--restaurant_id-"
-               value="l"
+               value="q"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>l</code></p>
+<p>Must not be greater than 255 characters. Example: <code>q</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>lat</code></b>&nbsp;&nbsp;
@@ -18374,7 +18536,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"user_id\": 16,
-    \"status\": \"ACTIVE\",
+    \"status\": \"SUSPENDED\",
     \"vehicle\": \"SCOOTER\",
     \"rating\": 2
 }"
@@ -18394,7 +18556,7 @@ const headers = {
 
 let body = {
     "user_id": 16,
-    "status": "ACTIVE",
+    "status": "SUSPENDED",
     "vehicle": "SCOOTER",
     "rating": 2
 };
@@ -18512,10 +18674,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="status"                data-endpoint="POSTapi-v1-admin-couriers"
-               value="ACTIVE"
+               value="SUSPENDED"
                data-component="body">
     <br>
-<p>Example: <code>ACTIVE</code></p>
+<p>Example: <code>SUSPENDED</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>ACTIVE</code></li> <li><code>SUSPENDED</code></li></ul>
         </div>
@@ -18705,8 +18867,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"status\": \"SUSPENDED\",
-    \"vehicle\": \"BIKE\",
+    \"status\": \"ACTIVE\",
+    \"vehicle\": \"CAR\",
     \"rating\": 1
 }"
 </code></pre></div>
@@ -18724,8 +18886,8 @@ const headers = {
 };
 
 let body = {
-    "status": "SUSPENDED",
-    "vehicle": "BIKE",
+    "status": "ACTIVE",
+    "vehicle": "CAR",
     "rating": 1
 };
 
@@ -18843,10 +19005,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="status"                data-endpoint="PATCHapi-v1-admin-couriers--courier_user_id-"
-               value="SUSPENDED"
+               value="ACTIVE"
                data-component="body">
     <br>
-<p>Example: <code>SUSPENDED</code></p>
+<p>Example: <code>ACTIVE</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>ACTIVE</code></li> <li><code>SUSPENDED</code></li></ul>
         </div>
@@ -18857,10 +19019,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="vehicle"                data-endpoint="PATCHapi-v1-admin-couriers--courier_user_id-"
-               value="BIKE"
+               value="CAR"
                data-component="body">
     <br>
-<p>Example: <code>BIKE</code></p>
+<p>Example: <code>CAR</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>FOOT</code></li> <li><code>BIKE</code></li> <li><code>SCOOTER</code></li> <li><code>CAR</code></li></ul>
         </div>
@@ -20762,7 +20924,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
         \"lat\": 16,
         \"lng\": 17
     },
-    \"mode\": \"auto\"
+    \"mode\": \"bicycle\"
 }"
 </code></pre></div>
 
@@ -20789,7 +20951,7 @@ let body = {
         "lat": 16,
         "lng": 17
     },
-    "mode": "auto"
+    "mode": "bicycle"
 };
 
 fetch(url, {
@@ -20989,10 +21151,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="mode"                data-endpoint="POSTapi-v1-admin-logistics-test-route"
-               value="auto"
+               value="bicycle"
                data-component="body">
     <br>
-<p>Example: <code>auto</code></p>
+<p>Example: <code>bicycle</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>auto</code></li> <li><code>bicycle</code></li> <li><code>pedestrian</code></li></ul>
         </div>

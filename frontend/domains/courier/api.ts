@@ -1,4 +1,5 @@
 import type {
+    CourierEarnings,
     CourierLocationPayload,
     CourierOrder,
     CourierProfile,
@@ -149,4 +150,11 @@ export const postCourierLocation = async (
 ): Promise<void> => {
     const { $api } = useNuxtApp();
     await $api.post('/courier/location', payload);
+};
+
+export const getCourierEarnings = async (): Promise<CourierEarnings> => {
+    const { $api } = useNuxtApp();
+    const { data } = await $api.get<CourierEarnings>('/courier/earnings');
+
+    return data;
 };

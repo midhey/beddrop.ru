@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\LogisticsDebugController;
 use App\Http\Controllers\Admin\LogisticsSettingsController;
 use App\Http\Controllers\Delivery\DeliveryQuoteController;
 use App\Http\Controllers\Geo\GeoController;
+use App\Http\Controllers\Courier\CourierEarningsController;
 use App\Http\Controllers\Courier\CourierLocationController;
 use App\Http\Controllers\Courier\CourierProfileController;
 use App\Http\Controllers\Courier\CourierShiftController;
@@ -167,6 +168,7 @@ Route::prefix('/v1')->group(function () {
         Route::get('/orders/available', [CourierOrderController::class, 'available']);
         Route::get('/orders/active', [CourierOrderController::class, 'active']);
         Route::get('/orders/history', [CourierOrderController::class, 'history']);
+        Route::get('/earnings', CourierEarningsController::class);
 
         Route::post('/location', [CourierLocationController::class, 'store']);
 

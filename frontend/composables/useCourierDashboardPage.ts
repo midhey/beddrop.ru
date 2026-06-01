@@ -1,6 +1,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRouter } from '#app';
 import { useSeoMeta } from '#imports';
+import { useFeedback } from '~/composables/useFeedback';
 import { useCourier } from '~/composables/useCourier';
 import {
     canCourierMarkDelivered,
@@ -44,9 +45,11 @@ export function useCourierDashboardPage() {
         availableOrders,
         activeOrders,
         historyOrders,
+        earnings,
         fetchProfile,
         fetchShift,
         fetchOrders,
+        fetchEarnings,
         startShift,
         endShift,
         assignOrder,
@@ -54,6 +57,7 @@ export function useCourierDashboardPage() {
         markDelivered,
         sendLocation,
     } = useCourier();
+    const feedback = useFeedback();
 
     useSeoMeta({
         title: 'Курьерский кабинет — BedDrop',
@@ -179,6 +183,7 @@ export function useCourierDashboardPage() {
     const doDeliver = async (orderId: number) => {
         await withOrderAction(orderId, 'deliver', async () => {
             await markDelivered(orderId);
+            await fetchEarnings();
         });
     };
 
@@ -220,6 +225,25 @@ export function useCourierDashboardPage() {
         }
 
         return details.join(' · ');
+    };
+
+    const earningsCards = computed(() => {
+        const data = earnings.value;
+
+        return [
+            { key: 'today', title: 'Сегодня', bucket: data?.today },
+            { key: 'week', title: 'Неделя', bucket: data?.week },
+            { key: 'total', title: 'Всё время', bucket: data?.total },
+        ].map((item) => ({
+            ...item,
+            deliveries: item.bucket?.deliveries_count ?? 0,
+            earnings: formatPrice(item.bucket?.earnings_sum ?? 0),
+            turnover: formatPrice(item.bucket?.total_orders_sum ?? 0),
+        }));
+    });
+
+    const showWithdrawPlaceholder = () => {
+        feedback.info('Пока не работает');
     };
 
     const formatDistance = (meters: number | null | undefined): string => {
@@ -303,7 +327,7 @@ export function useCourierDashboardPage() {
 
     const loadCourierDashboard = async () => {
         try {
-            await Promise.all([fetchProfile(), fetchShift(), fetchOrders()]);
+            await Promise.all([fetchProfile(), fetchShift(), fetchOrders(), fetchEarnings()]);
             syncLocationWatch();
         } catch {
         }
@@ -429,6 +453,7 @@ export function useCourierDashboardPage() {
         availableOrders,
         activeOrders,
         historyOrders,
+        earningsCards,
         pageLoading,
         actionOrderId,
         actionType,
@@ -461,6 +486,7 @@ export function useCourierDashboardPage() {
         doAssign,
         doPickup,
         doDeliver,
+        showWithdrawPlaceholder,
         goBack,
     };
 }

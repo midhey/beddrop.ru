@@ -56,7 +56,7 @@ paths:
                 client_type:
                   type: string
                   description: ''
-                  example: mobile
+                  example: web
                   enum:
                     - web
                     - mobile
@@ -97,7 +97,7 @@ paths:
                 client_type:
                   type: string
                   description: ''
-                  example: mobile
+                  example: web
                   enum:
                     - web
                     - mobile
@@ -280,11 +280,11 @@ paths:
                 is_active:
                   type: boolean
                   description: ''
-                  example: false
+                  example: true
                 accepts_orders:
                   type: boolean
                   description: ''
-                  example: true
+                  example: false
                 timezone:
                   type: string
                   description: 'Must be a valid time zone, such as <code>Africa/Accra</code>.'
@@ -292,12 +292,12 @@ paths:
                 opens_at:
                   type: string
                   description: 'Must be a valid date in the format <code>H:i</code>.'
-                  example: '10:23'
+                  example: '10:53'
                   nullable: true
                 closes_at:
                   type: string
                   description: 'Must be a valid date in the format <code>H:i</code>.'
-                  example: '10:23'
+                  example: '10:53'
                   nullable: true
                 closed_reason:
                   type: string
@@ -713,7 +713,7 @@ paths:
                 accepts_orders:
                   type: boolean
                   description: ''
-                  example: true
+                  example: false
                 timezone:
                   type: string
                   description: 'Must be a valid time zone, such as <code>Africa/Accra</code>.'
@@ -721,12 +721,12 @@ paths:
                 opens_at:
                   type: string
                   description: 'Must be a valid date in the format <code>H:i</code>.'
-                  example: '10:23'
+                  example: '10:53'
                   nullable: true
                 closes_at:
                   type: string
                   description: 'Must be a valid date in the format <code>H:i</code>.'
-                  example: '10:23'
+                  example: '10:53'
                   nullable: true
                 closed_reason:
                   type: string
@@ -1147,7 +1147,7 @@ paths:
                 role:
                   type: string
                   description: ''
-                  example: STAFF
+                  example: OWNER
                   enum:
                     - OWNER
                     - MANAGER
@@ -1234,7 +1234,7 @@ paths:
                 role:
                   type: string
                   description: 'Must not be one of <code>OWNER</code>.'
-                  example: STAFF
+                  example: OWNER
                   enum:
                     - OWNER
                     - MANAGER
@@ -1242,7 +1242,7 @@ paths:
                 expires_in_minutes:
                   type: integer
                   description: ''
-                  example: 15
+                  example: 60
                   enum:
                     - 5
                     - 15
@@ -2089,7 +2089,7 @@ paths:
                 mode:
                   type: string
                   description: ''
-                  example: auto
+                  example: bicycle
                   enum:
                     - auto
                     - bicycle
@@ -2125,7 +2125,7 @@ paths:
                 vehicle:
                   type: string
                   description: ''
-                  example: SCOOTER
+                  example: FOOT
                   enum:
                     - FOOT
                     - BIKE
@@ -2186,6 +2186,83 @@ paths:
       responses: {  }
       tags:
         - Endpoints
+  /api/v1/courier/earnings:
+    get:
+      summary: 'Courier earnings summary.'
+      operationId: courierEarningsSummary
+      description: "Returns delivery and payout totals for the authenticated active courier.\nPeriod buckets use delivered order `updated_at` timestamps."
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  today:
+                    deliveries_count: 2
+                    earnings_sum: '300.00'
+                    total_orders_sum: '1490.00'
+                  week:
+                    deliveries_count: 5
+                    earnings_sum: '750.00'
+                    total_orders_sum: '4120.00'
+                  total:
+                    deliveries_count: 12
+                    earnings_sum: '1800.00'
+                    total_orders_sum: '10880.00'
+                properties:
+                  today:
+                    type: object
+                    properties:
+                      deliveries_count:
+                        type: integer
+                        example: 2
+                      earnings_sum:
+                        type: string
+                        example: '300.00'
+                      total_orders_sum:
+                        type: string
+                        example: '1490.00'
+                  week:
+                    type: object
+                    properties:
+                      deliveries_count:
+                        type: integer
+                        example: 5
+                      earnings_sum:
+                        type: string
+                        example: '750.00'
+                      total_orders_sum:
+                        type: string
+                        example: '4120.00'
+                  total:
+                    type: object
+                    properties:
+                      deliveries_count:
+                        type: integer
+                        example: 12
+                      earnings_sum:
+                        type: string
+                        example: '1800.00'
+                      total_orders_sum:
+                        type: string
+                        example: '10880.00'
+        403:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'Профиль курьера не найден или отключён.'
+                properties:
+                  message:
+                    type: string
+                    example: 'Профиль курьера не найден или отключён.'
+      tags:
+        - Endpoints
   /api/v1/courier/location:
     post:
       summary: ''
@@ -2228,7 +2305,7 @@ paths:
                 recorded_at:
                   type: string
                   description: 'Must be a valid date.'
-                  example: '2026-06-01T10:23:12'
+                  example: '2026-06-01T10:53:32'
                   nullable: true
               required:
                 - lat
@@ -2674,207 +2751,207 @@ paths:
                 line2:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: q
+                  example: m
                   nullable: true
                 city:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: w
+                  example: i
                   nullable: true
                 postal_code:
                   type: string
                   description: 'Must not be greater than 32 characters.'
-                  example: t
+                  example: 'y'
                   nullable: true
                 country:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: 'n'
+                  example: v
                   nullable: true
                 country_iso_code:
                   type: string
                   description: 'Must not be greater than 2 characters.'
-                  example: nq
+                  example: dl
                   nullable: true
                 federal_district:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: l
+                  example: j
                   nullable: true
                 region_fias_id:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: e
+                  example: 'n'
                   nullable: true
                 region_kladr_id:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: h
+                  example: i
                   nullable: true
                 region_iso_code:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: u
+                  example: k
                   nullable: true
                 region_with_type:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: a
+                  example: h
                   nullable: true
                 region_type:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: h
+                  example: w
                   nullable: true
                 region_type_full:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: p
+                  example: a
                   nullable: true
                 region:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: u
+                  example: 'y'
                   nullable: true
                 area_fias_id:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: z
+                  example: k
                   nullable: true
                 area_kladr_id:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: w
+                  example: c
                   nullable: true
                 area_with_type:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: v
+                  example: m
                   nullable: true
                 area_type:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: b
+                  example: 'y'
                   nullable: true
                 area_type_full:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: d
+                  example: u
                   nullable: true
                 area:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: s
+                  example: w
                   nullable: true
                 city_fias_id:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: c
+                  example: p
                   nullable: true
                 city_kladr_id:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: 'n'
+                  example: w
                   nullable: true
                 city_with_type:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: q
+                  example: l
                   nullable: true
                 city_type:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: a
+                  example: v
                   nullable: true
                 city_type_full:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: t
+                  example: q
                   nullable: true
                 settlement_fias_id:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: k
+                  example: w
                   nullable: true
                 settlement_kladr_id:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: c
+                  example: r
                   nullable: true
                 settlement_with_type:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: l
+                  example: s
                   nullable: true
                 settlement_type:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: k
+                  example: i
                   nullable: true
                 settlement_type_full:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: m
+                  example: t
                   nullable: true
                 settlement:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: w
+                  example: c
                   nullable: true
                 street_fias_id:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: u
+                  example: p
                   nullable: true
                 street_kladr_id:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: j
+                  example: s
                   nullable: true
                 street_with_type:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: i
+                  example: c
                   nullable: true
                 street_type:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: h
+                  example: q
                   nullable: true
                 street_type_full:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: q
+                  example: l
                   nullable: true
                 street:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: a
+                  example: d
                   nullable: true
                 house_fias_id:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: o
+                  example: z
                   nullable: true
                 house_kladr_id:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: h
+                  example: s
                   nullable: true
                 house_type:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: q
+                  example: 'n'
                   nullable: true
                 house_type_full:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: m
+                  example: r
                   nullable: true
                 house:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: z
+                  example: w
                   nullable: true
                 block_type:
                   type: string
@@ -2884,42 +2961,42 @@ paths:
                 block_type_full:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: t
+                  example: u
                   nullable: true
                 block:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: t
+                  example: j
                   nullable: true
                 flat_type:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: o
+                  example: w
                   nullable: true
                 flat_type_full:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: r
+                  example: v
                   nullable: true
                 flat:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: 'n'
+                  example: l
                   nullable: true
                 entrance:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: b
+                  example: x
                   nullable: true
                 floor:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: g
+                  example: j
                   nullable: true
                 intercom:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: l
+                  example: k
                   nullable: true
                 lat:
                   type: number
@@ -3151,7 +3228,7 @@ paths:
                 is_active:
                   type: boolean
                   description: ''
-                  example: false
+                  example: true
                 accepts_orders:
                   type: boolean
                   description: ''
@@ -3163,12 +3240,12 @@ paths:
                 opens_at:
                   type: string
                   description: 'Must be a valid date in the format <code>H:i</code>.'
-                  example: '10:23'
+                  example: '10:53'
                   nullable: true
                 closes_at:
                   type: string
                   description: 'Must be a valid date in the format <code>H:i</code>.'
-                  example: '10:23'
+                  example: '10:53'
                   nullable: true
                 closed_reason:
                   type: string
@@ -3365,67 +3442,67 @@ paths:
                     settlement:
                       type: string
                       description: 'Must not be greater than 255 characters.'
-                      example: p
+                      example: pscqld
                       nullable: true
                     street_fias_id:
                       type: string
                       description: 'Must not be greater than 255 characters.'
-                      example: s
+                      example: z
                       nullable: true
                     street_kladr_id:
                       type: string
                       description: 'Must not be greater than 255 characters.'
-                      example: c
+                      example: s
                       nullable: true
                     street_with_type:
                       type: string
                       description: 'Must not be greater than 255 characters.'
-                      example: q
+                      example: 'n'
                       nullable: true
                     street_type:
                       type: string
                       description: 'Must not be greater than 255 characters.'
-                      example: l
+                      example: r
                       nullable: true
                     street_type_full:
                       type: string
                       description: 'Must not be greater than 255 characters.'
-                      example: d
+                      example: w
                       nullable: true
                     street:
                       type: string
                       description: 'Must not be greater than 255 characters.'
-                      example: z
+                      example: t
                       nullable: true
                     house_fias_id:
                       type: string
                       description: 'Must not be greater than 255 characters.'
-                      example: s
+                      example: u
                       nullable: true
                     house_kladr_id:
                       type: string
                       description: 'Must not be greater than 255 characters.'
-                      example: 'n'
+                      example: j
                       nullable: true
                     house_type:
                       type: string
                       description: 'Must not be greater than 255 characters.'
-                      example: r
+                      example: w
                       nullable: true
                     house_type_full:
                       type: string
                       description: 'Must not be greater than 255 characters.'
-                      example: w
+                      example: v
                       nullable: true
                     house:
                       type: string
                       description: 'Must not be greater than 255 characters.'
-                      example: t
+                      example: l
                       nullable: true
                     block_type:
                       type: string
                       description: 'Must not be greater than 255 characters.'
-                      example: u
+                      example: x
                       nullable: true
                     block_type_full:
                       type: string
@@ -3435,37 +3512,37 @@ paths:
                     block:
                       type: string
                       description: 'Must not be greater than 255 characters.'
-                      example: w
+                      example: k
                       nullable: true
                     flat_type:
                       type: string
                       description: 'Must not be greater than 255 characters.'
-                      example: v
+                      example: l
                       nullable: true
                     flat_type_full:
                       type: string
                       description: 'Must not be greater than 255 characters.'
-                      example: l
+                      example: q
                       nullable: true
                     flat:
                       type: string
                       description: 'Must not be greater than 255 characters.'
-                      example: x
+                      example: p
                       nullable: true
                     entrance:
                       type: string
                       description: 'Must not be greater than 255 characters.'
-                      example: j
+                      example: p
                       nullable: true
                     floor:
                       type: string
                       description: 'Must not be greater than 255 characters.'
-                      example: k
+                      example: w
                       nullable: true
                     intercom:
                       type: string
                       description: 'Must not be greater than 255 characters.'
-                      example: l
+                      example: q
                       nullable: true
                     lat:
                       type: number
@@ -3613,7 +3690,7 @@ paths:
                 status:
                   type: string
                   description: ''
-                  example: ACTIVE
+                  example: SUSPENDED
                   enum:
                     - ACTIVE
                     - SUSPENDED
@@ -3662,14 +3739,14 @@ paths:
                 status:
                   type: string
                   description: ''
-                  example: SUSPENDED
+                  example: ACTIVE
                   enum:
                     - ACTIVE
                     - SUSPENDED
                 vehicle:
                   type: string
                   description: ''
-                  example: BIKE
+                  example: CAR
                   enum:
                     - FOOT
                     - BIKE
@@ -4007,7 +4084,7 @@ paths:
                 mode:
                   type: string
                   description: ''
-                  example: auto
+                  example: bicycle
                   enum:
                     - auto
                     - bicycle

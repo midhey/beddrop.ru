@@ -10,7 +10,7 @@
     ],
     "info": {
         "name": "BedDrop API Documentation",
-        "_postman_id": "65ca1719-72cb-4b93-84fc-b80062e19afc",
+        "_postman_id": "3ba21019-9880-4822-a12d-98446c6d1316",
         "description": "REST API for Beddrop clients, restaurants, couriers and admin workflows.",
         "schema": "https:\/\/schema.getpostman.com\/json\/collection\/v2.1.0\/collection.json",
         "version": "1.0.0"
@@ -42,7 +42,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"email\":\"gbailey@example.net\",\"phone\":\"82256977571\",\"password\":\"|{+-0pBNvYgx\",\"name\":\"w\",\"client_type\":\"mobile\",\"device_name\":\"a\"}"
+                            "raw": "{\"email\":\"gbailey@example.net\",\"phone\":\"82256977571\",\"password\":\"|{+-0pBNvYgx\",\"name\":\"w\",\"client_type\":\"web\",\"device_name\":\"a\"}"
                         },
                         "description": "",
                         "auth": {
@@ -73,7 +73,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"email\":\"gbailey@example.net\",\"password\":\"|]|{+-\",\"client_type\":\"mobile\",\"device_name\":\"v\"}"
+                            "raw": "{\"email\":\"gbailey@example.net\",\"password\":\"|]|{+-\",\"client_type\":\"web\",\"device_name\":\"v\"}"
                         },
                         "description": "",
                         "auth": {
@@ -372,7 +372,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"name\":\"b\",\"description\":\"Eius et animi quos velit et.\",\"slug\":\"v\",\"phone\":\"d\",\"is_active\":false,\"accepts_orders\":true,\"timezone\":\"Asia\\\/Barnaul\",\"opens_at\":\"10:23\",\"closes_at\":\"10:23\",\"closed_reason\":\"j\",\"prep_time_min\":52,\"prep_time_max\":8,\"logo_media_id\":16,\"address\":{\"label\":\"n\",\"value\":\"g\",\"unrestricted_value\":\"z\",\"line1\":\"m\",\"line2\":\"i\",\"city\":\"y\",\"postal_code\":\"v\",\"country\":\"d\",\"country_iso_code\":\"lj\",\"federal_district\":\"n\",\"region_fias_id\":\"i\",\"region_kladr_id\":\"k\",\"region_iso_code\":\"h\",\"region_with_type\":\"w\",\"region_type\":\"a\",\"region_type_full\":\"y\",\"region\":\"k\",\"area_fias_id\":\"c\",\"area_kladr_id\":\"m\",\"area_with_type\":\"y\",\"area_type\":\"u\",\"area_type_full\":\"w\",\"area\":\"p\",\"city_fias_id\":\"w\",\"city_kladr_id\":\"l\",\"city_with_type\":\"v\",\"city_type\":\"q\",\"city_type_full\":\"w\",\"settlement_fias_id\":\"r\",\"settlement_kladr_id\":\"s\",\"settlement_with_type\":\"i\",\"settlement_type\":\"t\",\"settlement_type_full\":\"c\",\"settlement\":\"p\",\"street_fias_id\":\"s\",\"street_kladr_id\":\"c\",\"street_with_type\":\"q\",\"street_type\":\"l\",\"street_type_full\":\"d\",\"street\":\"z\",\"house_fias_id\":\"s\",\"house_kladr_id\":\"n\",\"house_type\":\"r\",\"house_type_full\":\"w\",\"house\":\"t\",\"block_type\":\"u\",\"block_type_full\":\"j\",\"block\":\"w\",\"flat_type\":\"v\",\"flat_type_full\":\"l\",\"flat\":\"x\",\"entrance\":\"j\",\"floor\":\"k\",\"intercom\":\"l\",\"lat\":4326.41688,\"lng\":4326.41688,\"fias_id\":\"m\",\"kladr_id\":\"i\",\"qc_geo\":76,\"timezone\":\"America\\\/Caracas\",\"beltway_hit\":\"d\",\"beltway_distance\":4326.41688,\"geo_source\":\"m\"}}"
+                            "raw": "{\"name\":\"b\",\"description\":\"Eius et animi quos velit et.\",\"slug\":\"v\",\"phone\":\"d\",\"is_active\":true,\"accepts_orders\":false,\"timezone\":\"Asia\\\/Barnaul\",\"opens_at\":\"10:53\",\"closes_at\":\"10:53\",\"closed_reason\":\"j\",\"prep_time_min\":52,\"prep_time_max\":8,\"logo_media_id\":16,\"address\":{\"label\":\"n\",\"value\":\"g\",\"unrestricted_value\":\"z\",\"line1\":\"m\",\"line2\":\"i\",\"city\":\"y\",\"postal_code\":\"v\",\"country\":\"d\",\"country_iso_code\":\"lj\",\"federal_district\":\"n\",\"region_fias_id\":\"i\",\"region_kladr_id\":\"k\",\"region_iso_code\":\"h\",\"region_with_type\":\"w\",\"region_type\":\"a\",\"region_type_full\":\"y\",\"region\":\"k\",\"area_fias_id\":\"c\",\"area_kladr_id\":\"m\",\"area_with_type\":\"y\",\"area_type\":\"u\",\"area_type_full\":\"w\",\"area\":\"p\",\"city_fias_id\":\"w\",\"city_kladr_id\":\"l\",\"city_with_type\":\"v\",\"city_type\":\"q\",\"city_type_full\":\"w\",\"settlement_fias_id\":\"r\",\"settlement_kladr_id\":\"s\",\"settlement_with_type\":\"i\",\"settlement_type\":\"t\",\"settlement_type_full\":\"c\",\"settlement\":\"p\",\"street_fias_id\":\"s\",\"street_kladr_id\":\"c\",\"street_with_type\":\"q\",\"street_type\":\"l\",\"street_type_full\":\"d\",\"street\":\"z\",\"house_fias_id\":\"s\",\"house_kladr_id\":\"n\",\"house_type\":\"r\",\"house_type_full\":\"w\",\"house\":\"t\",\"block_type\":\"u\",\"block_type_full\":\"j\",\"block\":\"w\",\"flat_type\":\"v\",\"flat_type_full\":\"l\",\"flat\":\"x\",\"entrance\":\"j\",\"floor\":\"k\",\"intercom\":\"l\",\"lat\":4326.41688,\"lng\":4326.41688,\"fias_id\":\"m\",\"kladr_id\":\"i\",\"qc_geo\":76,\"timezone\":\"America\\\/Caracas\",\"beltway_hit\":\"d\",\"beltway_distance\":4326.41688,\"geo_source\":\"m\"}}"
                         },
                         "description": ""
                     },
@@ -408,7 +408,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"name\":\"b\",\"description\":\"Eius et animi quos velit et.\",\"slug\":\"v\",\"address_id\":16,\"phone\":\"n\",\"is_active\":true,\"accepts_orders\":true,\"timezone\":\"Antarctica\\\/Rothera\",\"opens_at\":\"10:23\",\"closes_at\":\"10:23\",\"closed_reason\":\"z\",\"prep_time_min\":77,\"prep_time_max\":8,\"logo_media_id\":16,\"address\":{\"label\":\"n\",\"value\":\"g\",\"unrestricted_value\":\"z\",\"line1\":\"m\",\"line2\":\"i\",\"city\":\"y\",\"postal_code\":\"v\",\"country\":\"d\",\"country_iso_code\":\"lj\",\"federal_district\":\"n\",\"region_fias_id\":\"i\",\"region_kladr_id\":\"k\",\"region_iso_code\":\"h\",\"region_with_type\":\"w\",\"region_type\":\"a\",\"region_type_full\":\"y\",\"region\":\"k\",\"area_fias_id\":\"c\",\"area_kladr_id\":\"m\",\"area_with_type\":\"y\",\"area_type\":\"u\",\"area_type_full\":\"w\",\"area\":\"p\",\"city_fias_id\":\"w\",\"city_kladr_id\":\"l\",\"city_with_type\":\"v\",\"city_type\":\"q\",\"city_type_full\":\"w\",\"settlement_fias_id\":\"r\",\"settlement_kladr_id\":\"s\",\"settlement_with_type\":\"i\",\"settlement_type\":\"t\",\"settlement_type_full\":\"c\",\"settlement\":\"p\",\"street_fias_id\":\"s\",\"street_kladr_id\":\"c\",\"street_with_type\":\"q\",\"street_type\":\"l\",\"street_type_full\":\"d\",\"street\":\"z\",\"house_fias_id\":\"s\",\"house_kladr_id\":\"n\",\"house_type\":\"r\",\"house_type_full\":\"w\",\"house\":\"t\",\"block_type\":\"u\",\"block_type_full\":\"j\",\"block\":\"w\",\"flat_type\":\"v\",\"flat_type_full\":\"l\",\"flat\":\"x\",\"entrance\":\"j\",\"floor\":\"k\",\"intercom\":\"l\",\"lat\":4326.41688,\"lng\":4326.41688,\"fias_id\":\"m\",\"kladr_id\":\"i\",\"qc_geo\":76,\"timezone\":\"America\\\/Caracas\",\"beltway_hit\":\"d\",\"beltway_distance\":4326.41688,\"geo_source\":\"m\"}}"
+                            "raw": "{\"name\":\"b\",\"description\":\"Eius et animi quos velit et.\",\"slug\":\"v\",\"address_id\":16,\"phone\":\"n\",\"is_active\":true,\"accepts_orders\":false,\"timezone\":\"Antarctica\\\/Rothera\",\"opens_at\":\"10:53\",\"closes_at\":\"10:53\",\"closed_reason\":\"z\",\"prep_time_min\":77,\"prep_time_max\":8,\"logo_media_id\":16,\"address\":{\"label\":\"n\",\"value\":\"g\",\"unrestricted_value\":\"z\",\"line1\":\"m\",\"line2\":\"i\",\"city\":\"y\",\"postal_code\":\"v\",\"country\":\"d\",\"country_iso_code\":\"lj\",\"federal_district\":\"n\",\"region_fias_id\":\"i\",\"region_kladr_id\":\"k\",\"region_iso_code\":\"h\",\"region_with_type\":\"w\",\"region_type\":\"a\",\"region_type_full\":\"y\",\"region\":\"k\",\"area_fias_id\":\"c\",\"area_kladr_id\":\"m\",\"area_with_type\":\"y\",\"area_type\":\"u\",\"area_type_full\":\"w\",\"area\":\"p\",\"city_fias_id\":\"w\",\"city_kladr_id\":\"l\",\"city_with_type\":\"v\",\"city_type\":\"q\",\"city_type_full\":\"w\",\"settlement_fias_id\":\"r\",\"settlement_kladr_id\":\"s\",\"settlement_with_type\":\"i\",\"settlement_type\":\"t\",\"settlement_type_full\":\"c\",\"settlement\":\"p\",\"street_fias_id\":\"s\",\"street_kladr_id\":\"c\",\"street_with_type\":\"q\",\"street_type\":\"l\",\"street_type_full\":\"d\",\"street\":\"z\",\"house_fias_id\":\"s\",\"house_kladr_id\":\"n\",\"house_type\":\"r\",\"house_type_full\":\"w\",\"house\":\"t\",\"block_type\":\"u\",\"block_type_full\":\"j\",\"block\":\"w\",\"flat_type\":\"v\",\"flat_type_full\":\"l\",\"flat\":\"x\",\"entrance\":\"j\",\"floor\":\"k\",\"intercom\":\"l\",\"lat\":4326.41688,\"lng\":4326.41688,\"fias_id\":\"m\",\"kladr_id\":\"i\",\"qc_geo\":76,\"timezone\":\"America\\\/Caracas\",\"beltway_hit\":\"d\",\"beltway_distance\":4326.41688,\"geo_source\":\"m\"}}"
                         },
                         "description": ""
                     },
@@ -546,7 +546,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"user_id\":16,\"role\":\"STAFF\"}"
+                            "raw": "{\"user_id\":16,\"role\":\"OWNER\"}"
                         },
                         "description": ""
                     },
@@ -663,7 +663,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"role\":\"STAFF\",\"expires_in_minutes\":15}"
+                            "raw": "{\"role\":\"OWNER\",\"expires_in_minutes\":60}"
                         },
                         "description": ""
                     },
@@ -1909,7 +1909,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"restaurant_id\":16,\"delivery_address_id\":16,\"mode\":\"auto\"}"
+                            "raw": "{\"restaurant_id\":16,\"delivery_address_id\":16,\"mode\":\"bicycle\"}"
                         },
                         "description": ""
                     },
@@ -1962,7 +1962,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"vehicle\":\"SCOOTER\"}"
+                            "raw": "{\"vehicle\":\"FOOT\"}"
                         },
                         "description": ""
                     },
@@ -2119,6 +2119,44 @@
                     "response": []
                 },
                 {
+                    "name": "Courier earnings summary.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/courier\/earnings",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/courier\/earnings"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Returns delivery and payout totals for the authenticated active courier.\nPeriod buckets use delivered order `updated_at` timestamps."
+                    },
+                    "response": [
+                        {
+                            "header": [],
+                            "code": 200,
+                            "body": "{\n  \"today\": {\"deliveries_count\": 2, \"earnings_sum\": \"300.00\", \"total_orders_sum\": \"1490.00\"},\n  \"week\": {\"deliveries_count\": 5, \"earnings_sum\": \"750.00\", \"total_orders_sum\": \"4120.00\"},\n  \"total\": {\"deliveries_count\": 12, \"earnings_sum\": \"1800.00\", \"total_orders_sum\": \"10880.00\"}\n}",
+                            "name": ""
+                        },
+                        {
+                            "header": [],
+                            "code": 403,
+                            "body": "{\"message\": \"\u041f\u0440\u043e\u0444\u0438\u043b\u044c \u043a\u0443\u0440\u044c\u0435\u0440\u0430 \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d \u0438\u043b\u0438 \u043e\u0442\u043a\u043b\u044e\u0447\u0451\u043d.\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
                     "name": "POST api\/v1\/courier\/location",
                     "request": {
                         "url": {
@@ -2140,7 +2178,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"lat\":1,\"lng\":22,\"accuracy\":4326.41688,\"heading\":4326.41688,\"speed\":4326.41688,\"recorded_at\":\"2026-06-01T10:23:12\"}"
+                            "raw": "{\"lat\":1,\"lng\":22,\"accuracy\":4326.41688,\"heading\":4326.41688,\"speed\":4326.41688,\"recorded_at\":\"2026-06-01T10:53:32\"}"
                         },
                         "description": ""
                     },
@@ -2328,7 +2366,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"label\":\"b\",\"value\":\"n\",\"unrestricted_value\":\"g\",\"line1\":\"z\",\"line2\":\"q\",\"city\":\"w\",\"postal_code\":\"t\",\"country\":\"n\",\"country_iso_code\":\"nq\",\"federal_district\":\"l\",\"region_fias_id\":\"e\",\"region_kladr_id\":\"h\",\"region_iso_code\":\"u\",\"region_with_type\":\"a\",\"region_type\":\"h\",\"region_type_full\":\"p\",\"region\":\"u\",\"area_fias_id\":\"z\",\"area_kladr_id\":\"w\",\"area_with_type\":\"v\",\"area_type\":\"b\",\"area_type_full\":\"d\",\"area\":\"s\",\"city_fias_id\":\"c\",\"city_kladr_id\":\"n\",\"city_with_type\":\"q\",\"city_type\":\"a\",\"city_type_full\":\"t\",\"settlement_fias_id\":\"k\",\"settlement_kladr_id\":\"c\",\"settlement_with_type\":\"l\",\"settlement_type\":\"k\",\"settlement_type_full\":\"m\",\"settlement\":\"w\",\"street_fias_id\":\"u\",\"street_kladr_id\":\"j\",\"street_with_type\":\"i\",\"street_type\":\"h\",\"street_type_full\":\"q\",\"street\":\"a\",\"house_fias_id\":\"o\",\"house_kladr_id\":\"h\",\"house_type\":\"q\",\"house_type_full\":\"m\",\"house\":\"z\",\"block_type\":\"t\",\"block_type_full\":\"t\",\"block\":\"t\",\"flat_type\":\"o\",\"flat_type_full\":\"r\",\"flat\":\"n\",\"entrance\":\"b\",\"floor\":\"g\",\"intercom\":\"l\",\"lat\":4326.41688,\"lng\":4326.41688,\"fias_id\":\"m\",\"kladr_id\":\"i\",\"qc_geo\":76,\"timezone\":\"America\\\/Caracas\",\"beltway_hit\":\"d\",\"beltway_distance\":4326.41688,\"geo_source\":\"m\"}"
+                            "raw": "{\"label\":\"b\",\"value\":\"n\",\"unrestricted_value\":\"g\",\"line1\":\"z\",\"line2\":\"m\",\"city\":\"i\",\"postal_code\":\"y\",\"country\":\"v\",\"country_iso_code\":\"dl\",\"federal_district\":\"j\",\"region_fias_id\":\"n\",\"region_kladr_id\":\"i\",\"region_iso_code\":\"k\",\"region_with_type\":\"h\",\"region_type\":\"w\",\"region_type_full\":\"a\",\"region\":\"y\",\"area_fias_id\":\"k\",\"area_kladr_id\":\"c\",\"area_with_type\":\"m\",\"area_type\":\"y\",\"area_type_full\":\"u\",\"area\":\"w\",\"city_fias_id\":\"p\",\"city_kladr_id\":\"w\",\"city_with_type\":\"l\",\"city_type\":\"v\",\"city_type_full\":\"q\",\"settlement_fias_id\":\"w\",\"settlement_kladr_id\":\"r\",\"settlement_with_type\":\"s\",\"settlement_type\":\"i\",\"settlement_type_full\":\"t\",\"settlement\":\"c\",\"street_fias_id\":\"p\",\"street_kladr_id\":\"s\",\"street_with_type\":\"c\",\"street_type\":\"q\",\"street_type_full\":\"l\",\"street\":\"d\",\"house_fias_id\":\"z\",\"house_kladr_id\":\"s\",\"house_type\":\"n\",\"house_type_full\":\"r\",\"house\":\"w\",\"block_type\":\"t\",\"block_type_full\":\"u\",\"block\":\"j\",\"flat_type\":\"w\",\"flat_type_full\":\"v\",\"flat\":\"l\",\"entrance\":\"x\",\"floor\":\"j\",\"intercom\":\"k\",\"lat\":4326.41688,\"lng\":4326.41688,\"fias_id\":\"m\",\"kladr_id\":\"i\",\"qc_geo\":76,\"timezone\":\"America\\\/Caracas\",\"beltway_hit\":\"d\",\"beltway_distance\":4326.41688,\"geo_source\":\"m\"}"
                         },
                         "description": ""
                     },
@@ -2641,7 +2679,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"name\":\"b\",\"description\":\"Eius et animi quos velit et.\",\"slug\":\"v\",\"address_id\":16,\"phone\":\"n\",\"is_active\":false,\"accepts_orders\":false,\"timezone\":\"Antarctica\\\/Rothera\",\"opens_at\":\"10:23\",\"closes_at\":\"10:23\",\"closed_reason\":\"z\",\"prep_time_min\":77,\"prep_time_max\":8,\"logo_media_id\":16,\"address\":{\"label\":\"n\",\"value\":\"g\",\"unrestricted_value\":\"z\",\"line1\":\"m\",\"line2\":\"i\",\"city\":\"y\",\"postal_code\":\"v\",\"country\":\"d\",\"country_iso_code\":\"lj\",\"federal_district\":\"n\",\"region_fias_id\":\"i\",\"region_kladr_id\":\"k\",\"region_iso_code\":\"h\",\"region_with_type\":\"w\",\"region_type\":\"a\",\"region_type_full\":\"y\",\"region\":\"k\",\"area_fias_id\":\"c\",\"area_kladr_id\":\"m\",\"area_with_type\":\"y\",\"area_type\":\"u\",\"area_type_full\":\"w\",\"area\":\"p\",\"city_fias_id\":\"w\",\"city_kladr_id\":\"l\",\"city_with_type\":\"v\",\"city_type\":\"q\",\"city_type_full\":\"w\",\"settlement_fias_id\":\"r\",\"settlement_kladr_id\":\"s\",\"settlement_with_type\":\"i\",\"settlement_type\":\"t\",\"settlement_type_full\":\"c\",\"settlement\":\"p\",\"street_fias_id\":\"s\",\"street_kladr_id\":\"c\",\"street_with_type\":\"q\",\"street_type\":\"l\",\"street_type_full\":\"d\",\"street\":\"z\",\"house_fias_id\":\"s\",\"house_kladr_id\":\"n\",\"house_type\":\"r\",\"house_type_full\":\"w\",\"house\":\"t\",\"block_type\":\"u\",\"block_type_full\":\"j\",\"block\":\"w\",\"flat_type\":\"v\",\"flat_type_full\":\"l\",\"flat\":\"x\",\"entrance\":\"j\",\"floor\":\"k\",\"intercom\":\"l\",\"lat\":4326.41688,\"lng\":4326.41688,\"fias_id\":\"m\",\"kladr_id\":\"i\",\"qc_geo\":76,\"timezone\":\"America\\\/Caracas\",\"beltway_hit\":\"d\",\"beltway_distance\":4326.41688,\"geo_source\":\"m\"}}"
+                            "raw": "{\"name\":\"b\",\"description\":\"Eius et animi quos velit et.\",\"slug\":\"v\",\"address_id\":16,\"phone\":\"n\",\"is_active\":true,\"accepts_orders\":false,\"timezone\":\"Antarctica\\\/Rothera\",\"opens_at\":\"10:53\",\"closes_at\":\"10:53\",\"closed_reason\":\"z\",\"prep_time_min\":77,\"prep_time_max\":8,\"logo_media_id\":16,\"address\":{\"label\":\"n\",\"value\":\"g\",\"unrestricted_value\":\"z\",\"line1\":\"m\",\"line2\":\"i\",\"city\":\"y\",\"postal_code\":\"v\",\"country\":\"d\",\"country_iso_code\":\"lj\",\"federal_district\":\"n\",\"region_fias_id\":\"i\",\"region_kladr_id\":\"k\",\"region_iso_code\":\"h\",\"region_with_type\":\"w\",\"region_type\":\"a\",\"region_type_full\":\"y\",\"region\":\"k\",\"area_fias_id\":\"c\",\"area_kladr_id\":\"m\",\"area_with_type\":\"y\",\"area_type\":\"u\",\"area_type_full\":\"w\",\"area\":\"p\",\"city_fias_id\":\"w\",\"city_kladr_id\":\"l\",\"city_with_type\":\"v\",\"city_type\":\"q\",\"city_type_full\":\"w\",\"settlement_fias_id\":\"r\",\"settlement_kladr_id\":\"s\",\"settlement_with_type\":\"i\",\"settlement_type\":\"t\",\"settlement_type_full\":\"c\",\"settlement\":\"pscqld\",\"street_fias_id\":\"z\",\"street_kladr_id\":\"s\",\"street_with_type\":\"n\",\"street_type\":\"r\",\"street_type_full\":\"w\",\"street\":\"t\",\"house_fias_id\":\"u\",\"house_kladr_id\":\"j\",\"house_type\":\"w\",\"house_type_full\":\"v\",\"house\":\"l\",\"block_type\":\"x\",\"block_type_full\":\"j\",\"block\":\"k\",\"flat_type\":\"l\",\"flat_type_full\":\"q\",\"flat\":\"p\",\"entrance\":\"p\",\"floor\":\"w\",\"intercom\":\"q\",\"lat\":4326.41688,\"lng\":4326.41688,\"fias_id\":\"m\",\"kladr_id\":\"i\",\"qc_geo\":76,\"timezone\":\"America\\\/Caracas\",\"beltway_hit\":\"d\",\"beltway_distance\":4326.41688,\"geo_source\":\"m\"}}"
                         },
                         "description": ""
                     },
@@ -2775,7 +2813,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"user_id\":16,\"status\":\"ACTIVE\",\"vehicle\":\"SCOOTER\",\"rating\":2}"
+                            "raw": "{\"user_id\":16,\"status\":\"SUSPENDED\",\"vehicle\":\"SCOOTER\",\"rating\":2}"
                         },
                         "description": ""
                     },
@@ -2844,7 +2882,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"status\":\"SUSPENDED\",\"vehicle\":\"BIKE\",\"rating\":1}"
+                            "raw": "{\"status\":\"ACTIVE\",\"vehicle\":\"CAR\",\"rating\":1}"
                         },
                         "description": ""
                     },
@@ -3284,7 +3322,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"from_address_id\":16,\"to_address_id\":16,\"from\":{\"lat\":22,\"lng\":7},\"to\":{\"lat\":16,\"lng\":17},\"mode\":\"auto\"}"
+                            "raw": "{\"from_address_id\":16,\"to_address_id\":16,\"from\":{\"lat\":22,\"lng\":7},\"to\":{\"lat\":16,\"lng\":17},\"mode\":\"bicycle\"}"
                         },
                         "description": ""
                     },

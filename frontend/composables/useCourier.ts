@@ -3,6 +3,7 @@ import { useApiHelpers } from '~/composables/useApiHelpers';
 import {
     assignCourierOrder,
     endCourierShift,
+    getCourierEarnings,
     getCourierProfile,
     getCurrentCourierShift,
     listCourierOrders,
@@ -13,6 +14,7 @@ import {
 } from '~/domains/courier/api';
 import { isCourierShiftOpen } from '~/domains/courier/presentation';
 import type {
+    CourierEarnings,
     CourierLocationPayload,
     CourierOrder,
     CourierProfile,
@@ -28,10 +30,12 @@ export function useCourier() {
     const loadingProfile = ref(false);
     const loadingShift = ref(false);
     const loadingOrders = ref(false);
+    const loadingEarnings = ref(false);
 
     const availableOrders = ref<CourierOrder[]>([]);
     const activeOrders = ref<CourierOrder[]>([]);
     const historyOrders = ref<CourierOrder[]>([]);
+    const earnings = ref<CourierEarnings | null>(null);
 
     const ordersBlockedByShift = ref(false);
 
@@ -141,6 +145,21 @@ export function useCourier() {
         }
     };
 
+    const fetchEarnings = async () => {
+        loadingEarnings.value = true;
+        errorMessage.value = null;
+
+        try {
+            earnings.value = await getCourierEarnings();
+            return earnings.value;
+        } catch (e) {
+            handleApiError(e);
+            throw e;
+        } finally {
+            loadingEarnings.value = false;
+        }
+    };
+
     const updateOrderInLists = (order: CourierOrder) => {
         const id = order.id;
 
@@ -214,11 +233,13 @@ export function useCourier() {
         loadingProfile,
         loadingShift,
         loadingOrders,
+        loadingEarnings,
         errorMessage,
 
         availableOrders,
         activeOrders,
         historyOrders,
+        earnings,
 
         // methods
         fetchProfile,
@@ -226,6 +247,7 @@ export function useCourier() {
         startShift,
         endShift,
         fetchOrders,
+        fetchEarnings,
         assignOrder,
         markPickedUp,
         markDelivered,
