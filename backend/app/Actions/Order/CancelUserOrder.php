@@ -10,16 +10,16 @@ use Illuminate\Support\Facades\DB;
 class CancelUserOrder
 {
     public function __construct(
-        private readonly TransitionOrderStatus ,
+        private readonly TransitionOrderStatus $transitionOrderStatus,
     ) {}
 
-    public function __invoke(Order , User $user): Order
+    public function __invoke(Order $order, User $user): Order
     {
         if ($order->user_id !== $user->id) {
             abort(404);
         }
 
-        if (!in_array($order->status, [
+        if (! in_array($order->status, [
             OrderStatus::CREATED->value,
             OrderStatus::ACCEPTED_BY_RESTAURANT->value,
         ], true)) {
