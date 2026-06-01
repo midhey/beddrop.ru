@@ -1,5 +1,16 @@
 import type { ExpoConfig } from "expo/config";
 
+const devApiBase = "http://10.0.2.2:8080/api/v1";
+const isProductionBuild =
+  process.env.NODE_ENV === "production" ||
+  process.env.APP_ENV === "production" ||
+  process.env.EAS_BUILD_PROFILE === "production";
+const apiBase = process.env.EXPO_PUBLIC_API_BASE ?? (isProductionBuild ? undefined : devApiBase);
+
+if (!apiBase) {
+  throw new Error("EXPO_PUBLIC_API_BASE is required for production courier builds.");
+}
+
 const config: ExpoConfig = {
   name: "BedDrop Courier",
   slug: "beddrop-courier",
@@ -30,7 +41,7 @@ const config: ExpoConfig = {
     favicon: "./assets/favicon.png",
   },
   extra: {
-    apiBase: process.env.EXPO_PUBLIC_API_BASE ?? "http://10.0.2.2:8080/api/v1",
+    apiBase,
   },
 };
 

@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import { CalendarDays, CircleAlert, PackageCheck, TrendingUp, Wallet } from "lucide-react-native";
 import { courierApi } from "@/api/courier";
 import { Screen } from "@/components/screen";
@@ -138,7 +138,6 @@ const MonthOrdersChart = ({ orders }: { orders: CourierOrder[] }) => {
 };
 
 export default function EarningsScreen() {
-  const [showWithdrawNotice, setShowWithdrawNotice] = useState(false);
   const earnings = useQuery({ queryKey: ["courier", "earnings"], queryFn: courierApi.earnings, retry: false });
   const history = useQuery({ queryKey: ["courier", "orders", "history"], queryFn: courierApi.history, retry: false });
   const data = earnings.data;
@@ -169,46 +168,38 @@ export default function EarningsScreen() {
 
       <MonthOrdersChart orders={history.data ?? []} />
 
-      <Button onPress={() => setShowWithdrawNotice(true)}>Вывести деньги</Button>
-
-      {showWithdrawNotice ? (
+      <Button disabled>Вывести деньги</Button>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "flex-start",
+          gap: 10,
+          padding: 14,
+          borderRadius: radii.lg,
+          backgroundColor: colors.infoBg,
+          borderWidth: 1,
+          borderColor: colors.borderLight,
+        }}
+      >
         <View
           style={{
-            flexDirection: "row",
-            alignItems: "flex-start",
-            gap: 10,
-            padding: 14,
-            borderRadius: radii.lg,
-            backgroundColor: colors.infoBg,
-            borderWidth: 1,
-            borderColor: colors.borderLight,
+            width: 34,
+            height: 34,
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: 17,
+            backgroundColor: colors.surface,
           }}
         >
-          <View
-            style={{
-              width: 34,
-              height: 34,
-              alignItems: "center",
-              justifyContent: "center",
-              borderRadius: 17,
-              backgroundColor: colors.surface,
-            }}
-          >
-            <CircleAlert color={colors.infoText} size={iconSizes.lg} strokeWidth={iconStrokeWidth} />
-          </View>
-          <View style={{ flex: 1, gap: 3 }}>
-            <Text selectable style={{ color: colors.textStrong, fontSize: 15, fontWeight: "900" }}>
-              Вывод пока не работает
-            </Text>
-            <Muted>Кнопка уже на месте, подключение выплат будет отдельным шагом.</Muted>
-          </View>
-          <Pressable onPress={() => setShowWithdrawNotice(false)} hitSlop={10}>
-            <Text selectable style={{ color: colors.infoText, fontWeight: "900" }}>
-              OK
-            </Text>
-          </Pressable>
+          <CircleAlert color={colors.infoText} size={iconSizes.lg} strokeWidth={iconStrokeWidth} />
         </View>
-      ) : null}
+        <View style={{ flex: 1, gap: 3 }}>
+          <Text selectable style={{ color: colors.textStrong, fontSize: 15, fontWeight: "900" }}>
+            Вывод средств будет доступен позже
+          </Text>
+          <Muted>Выплаты не подключены в демонстрационной версии.</Muted>
+        </View>
+      </View>
 
       {history.isError ? (
         <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>

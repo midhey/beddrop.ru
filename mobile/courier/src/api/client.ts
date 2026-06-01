@@ -3,7 +3,11 @@ import Constants from "expo-constants";
 import { tokenStore } from "@/store/tokens";
 
 const extra = Constants.expoConfig?.extra as { apiBase?: string } | undefined;
-export const apiBase = extra?.apiBase ?? "http://10.0.2.2:8080/api/v1";
+export const apiBase = extra?.apiBase;
+
+if (!apiBase) {
+  throw new Error("Courier API base URL is not configured. Set EXPO_PUBLIC_API_BASE.");
+}
 
 export const api = axios.create({ baseURL: apiBase });
 
