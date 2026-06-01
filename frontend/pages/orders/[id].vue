@@ -115,7 +115,25 @@ const {
               <div class="order-page__value">
                 {{ getPaymentMethodLabel(current.payment_method) }}
                 ·
-                <span :class="current.payment_status === 'PAID' ? 'order-status--success' : 'order-status--info'" class="status-chip">
+                <template v-if="current.status === 'CANCELED_BY_USER' || current.status === 'CANCELED_BY_RESTAURANT'">
+                  <span
+                      v-if="current.payment_status === 'PAID'"
+                      class="status-chip order-status--info"
+                  >
+                    Оплата возвращена
+                  </span>
+                  <span
+                      v-else
+                      class="status-chip order-status--danger"
+                  >
+                    Отменена
+                  </span>
+                </template>
+                <span
+                    v-else
+                    :class="current.payment_status === 'PAID' ? 'order-status--success' : 'order-status--info'"
+                    class="status-chip"
+                >
                   {{ getPaymentStatusLabel(current.payment_status) }}
                 </span>
               </div>
@@ -159,7 +177,7 @@ const {
         </div>
 
         <div
-          v-if="current.payment_status === 'PENDING'"
+          v-if="current.payment_status === 'PENDING' && !isFinal"
           class="order-page__payment-alert"
         >
           <div class="order-page__payment-alert-main">

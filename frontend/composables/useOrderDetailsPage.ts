@@ -179,13 +179,21 @@ export function useOrderDetailsPage() {
     const cancelOrder = async () => {
         if (!current.value || cancelLoading.value) return;
 
-        if (!window.confirm('Вы уверены, что хотите отменить заказ?')) {
+        const confirmed = await feedback.confirm({
+            title: 'Отмена заказа',
+            message: 'Вы уверены, что хотите отменить заказ? Это действие нельзя будет отменить.',
+            confirmText: 'Да, отменить',
+            cancelText: 'Нет, оставить',
+        });
+
+        if (!confirmed) {
             return;
         }
 
         cancelLoading.value = true;
         try {
-            await cancelOrderAction(current.value.id);
+            const updatedOrder = await cancelOrderAction(current.value.id);
+            current.value = updatedOrder;
             feedback.success('Заказ успешно отменен');
         } catch {
             // ошибка обработана в useOrders
