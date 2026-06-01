@@ -90,37 +90,32 @@
   }
 
   &__payment-alert {
-    padding: rem(16);
+    padding: rem(20);
     background: var(--color-surface);
     border: 1px solid var(--color-border-light);
     border-radius: rem(18);
     display: flex;
     flex-direction: column;
-    gap: rem(12);
-    margin-bottom: rem(8);
-    box-shadow:
-      0 rem(6) rem(18) rgba(15, 23, 42, 0.05),
-      inset rem(3) 0 0 var(--color-secondary);
+    gap: rem(16);
+    margin-bottom: rem(12);
+    box-shadow: 0 rem(4) rem(16) rgba(15, 23, 42, 0.04);
     position: relative;
     overflow: hidden;
 
-    &::before {
+    &::after {
       content: "";
       position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(
-          135deg,
-          color-mix(in oklab, var(--color-secondary) 9%, transparent) 0%,
-          transparent 48%
-        );
-      pointer-events: none;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: rem(4);
+      background: var(--color-secondary);
     }
 
     &-main {
       display: flex;
       align-items: flex-start;
-      gap: rem(10);
+      gap: rem(14);
       position: relative;
       z-index: 1;
     }
@@ -129,16 +124,15 @@
       width: rem(36);
       height: rem(36);
       flex: 0 0 rem(36);
-      background: color-mix(in oklab, var(--color-secondary) 28%, var(--color-surface));
-      color: var(--color-text-strong);
-      border: 1px solid color-mix(in oklab, var(--color-secondary) 48%, var(--color-border-light));
-      border-radius: rem(12);
+      background: color-mix(in oklab, var(--color-secondary) 15%, var(--color-surface));
+      color: var(--color-secondary);
+      border-radius: rem(10);
       display: flex;
       align-items: center;
       justify-content: center;
 
       .ui-icon {
-        color: var(--color-text-strong);
+        color: var(--color-secondary);
         stroke-width: 2.3;
       }
     }
@@ -154,17 +148,18 @@
     &-badge {
       display: inline-flex;
       align-items: center;
-      min-height: rem(20);
-      padding: rem(3) rem(8);
+      min-height: rem(18);
+      padding: 0 rem(6);
       border-radius: var(--radius-pill);
-      background: color-mix(in oklab, var(--color-secondary) 28%, var(--color-surface));
-      color: var(--color-text-strong);
-      border: 1px solid color-mix(in oklab, var(--color-secondary) 48%, var(--color-border-light));
-      font-size: rem(10);
+      background: color-mix(in oklab, var(--color-secondary) 10%, var(--color-surface));
+      color: var(--color-secondary);
+      font-size: rem(9);
       font-weight: 800;
       line-height: 1;
-      letter-spacing: 0.02em;
+      letter-spacing: 0.04em;
       text-transform: uppercase;
+      margin-bottom: rem(2);
+      border: 1px solid color-mix(in oklab, var(--color-secondary) 20%, transparent);
     }
 
     &-title {
@@ -177,7 +172,7 @@
     }
 
     &-text {
-      font-size: rem(12);
+      font-size: rem(12.5);
       font-weight: 500;
       color: var(--color-text-subtle);
       line-height: 1.45;
@@ -190,20 +185,36 @@
       flex-direction: column;
       gap: rem(10);
       position: relative;
-      z-index: 1;
+      z-index: 2;
+      width: 100%;
     }
 
     .order-page__payment-button {
       width: 100%;
-      min-height: rem(46);
-      padding: rem(12) rem(14);
-      border-radius: rem(14);
+      min-height: rem(44);
+      padding: rem(10) rem(16);
+      border-radius: rem(12);
       font-size: rem(13);
+      font-weight: 700;
+      justify-content: center;
     }
 
     .order-page__payment-button--secondary {
+      background: var(--color-bg-tint);
       color: var(--color-text-strong);
-      background: color-mix(in oklab, var(--color-surface) 86%, var(--color-bg-tint));
+      border: 1px solid var(--color-border-light);
+    }
+
+    .order-page__cancel-button {
+      background-color: #fff5f5; // Светло-красный фон
+      color: #e53e3e; // Насыщенный красный текст
+      border: 1px solid #feb2b2; // Светло-красная рамка
+      
+      &:hover {
+        background-color: #fed7d7;
+        border-color: #fc8181;
+        color: #c53030;
+      }
     }
 
     .order-page__payment-note {
@@ -217,6 +228,22 @@
     }
   }
 
+  @keyframes alert-icon-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(rem(-5)); }
+  }
+
+  @keyframes alert-icon-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes badge-shimmer {
+    0% { left: -100%; }
+    30%, 100% { left: 100%; }
+  }
+
+
   &__delivery-status {
     margin-bottom: rem(20);
     padding: rem(16) rem(20);
@@ -228,11 +255,11 @@
     &--delayed {
       border-color: var(--color-status-danger-border);
       background: var(--color-status-danger-bg);
-      
+
       .order-page__delivery-label {
         color: var(--color-status-danger-text);
       }
-      
+
       .order-page__delivery-time {
         color: var(--color-status-danger-text);
       }
@@ -309,7 +336,7 @@
     background: var(--color-primary);
     border-radius: var(--radius-pill);
     transition: width 0.5s ease-out;
-    
+
     &::after {
       content: "";
       position: absolute;
@@ -328,8 +355,12 @@
   }
 
   @keyframes progress-shimmer {
-    from { transform: translateX(-100%); }
-    to { transform: translateX(100%); }
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(100%);
+    }
   }
 
   &__items {
@@ -485,7 +516,8 @@
   &:last-child &__dot {
     border-color: var(--color-primary);
     background: var(--color-primary);
-    box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-primary) 20%, transparent);
+    box-shadow: 0 0 0 4px
+      color-mix(in oklab, var(--color-primary) 20%, transparent);
   }
 
   &--completed::before {
@@ -502,7 +534,6 @@
     flex-direction: column;
     gap: rem(2);
   }
-
 
   &__title {
     font-size: rem(14);
@@ -526,52 +557,36 @@
   }
 }
 
-@media (min-width: rem(640)) {
+@media (min-width: rem(768)) {
   .order-page {
     &__payment-alert {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(rem(260), rem(340));
-      grid-template-areas:
-        "main actions"
-        "note actions";
+      padding: rem(20) rem(24);
+      flex-direction: row;
+      flex-wrap: wrap;
       align-items: center;
-      gap: rem(12) rem(18);
-      padding: rem(18);
+      gap: rem(20) rem(32);
 
       &-main {
-        grid-area: main;
-        align-items: flex-start;
-      }
-
-      &-icon {
-        width: rem(40);
-        height: rem(40);
-        flex-basis: rem(40);
-      }
-
-      &-title {
-        font-size: rem(18);
-      }
-
-      &-text {
-        max-width: rem(640);
+        flex: 1;
+        min-width: rem(300);
       }
 
       .order-page__payment-actions {
-        grid-area: actions;
+        width: auto;
         flex-direction: row;
-        justify-content: flex-end;
+        align-items: center;
+        flex-shrink: 0;
       }
 
       .order-page__payment-button {
         width: auto;
-        min-width: rem(150);
+        min-width: rem(130);
       }
 
       .order-page__payment-note {
-        grid-area: note;
+        width: 100%;
+        margin-top: rem(-8);
       }
-
     }
   }
 }

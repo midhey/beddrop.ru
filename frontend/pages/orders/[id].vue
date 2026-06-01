@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowLeft, CreditCard, Clock, MapPin, ClipboardList, Info } from "lucide-vue-next";
+import { ArrowLeft, CreditCard, Clock, MapPin, ClipboardList, Info, RefreshCw, Ban } from "lucide-vue-next";
 import RouteMap from "~/components/map/RouteMap.vue";
 import { useOrderDetailsPage } from "~/composables/useOrderDetailsPage";
 
@@ -165,12 +165,18 @@ const {
             <div class="order-page__col order-page__col--full">
               <button
                 type="button"
-                class="button button--ghost order-page__cancel-button"
+                class="button button--ghost button--icon order-page__cancel-button"
                 style="width: 100%; margin-top: 12px;"
                 :disabled="cancelLoading"
                 @click="cancelOrder"
               >
-                {{ cancelLoading ? 'Отменяем...' : 'Отменить заказ' }}
+                <Ban
+                  class="ui-icon"
+                  :size="16"
+                  :stroke-width="1.9"
+                  aria-hidden="true"
+                />
+                <span>{{ cancelLoading ? 'Отменяем...' : 'Отменить' }}</span>
               </button>
             </div>
           </div>
@@ -180,6 +186,7 @@ const {
           v-if="current.payment_status === 'PENDING' && !isFinal"
           class="order-page__payment-alert"
         >
+          <div class="order-page__payment-alert-reflect"></div>
           <div class="order-page__payment-alert-main">
             <div class="order-page__payment-alert-icon">
               <CreditCard :size="20" class="ui-icon" aria-hidden="true" />
@@ -200,30 +207,46 @@ const {
           <div class="order-page__payment-actions">
             <button
               type="button"
-              class="button order-page__payment-button"
+              class="button button--icon order-page__payment-button"
               :disabled="paymentLoading"
               @click="payOrder"
             >
-              {{ paymentLoading ? 'Открываем оплату...' : 'Оплатить' }}
+              <CreditCard
+                class="ui-icon"
+                :size="16"
+                :stroke-width="1.9"
+                aria-hidden="true"
+              />
+              <span>{{ paymentLoading ? 'Открываем...' : 'Оплатить' }}</span>
             </button>
             <button
               type="button"
-              class="button button--ghost order-page__payment-button order-page__payment-button--secondary"
+              class="button button--ghost button--icon order-page__payment-button order-page__payment-button--secondary"
               :disabled="paymentLoading"
               @click="refreshPayment"
             >
-              Проверить статус
+              <RefreshCw
+                class="ui-icon"
+                :size="16"
+                :stroke-width="1.9"
+                aria-hidden="true"
+              />
+              <span>Проверить</span>
             </button>
-          </div>
-
-          <div v-if="canCancel" class="order-page__cancel-container">
-             <button
+            <button
+              v-if="canCancel"
               type="button"
-              class="button button--ghost order-page__cancel-button"
+              class="button button--icon order-page__payment-button order-page__cancel-button"
               :disabled="cancelLoading"
               @click="cancelOrder"
             >
-              {{ cancelLoading ? 'Отменяем...' : 'Отменить заказ' }}
+              <Ban
+                class="ui-icon"
+                :size="16"
+                :stroke-width="1.9"
+                aria-hidden="true"
+              />
+              <span>{{ cancelLoading ? 'Отменяем...' : 'Отменить' }}</span>
             </button>
           </div>
 
