@@ -1,0 +1,3338 @@
+{
+    "variable": [
+        {
+            "id": "baseUrl",
+            "key": "baseUrl",
+            "type": "string",
+            "name": "string",
+            "value": "http:\/\/localhost:8080"
+        }
+    ],
+    "info": {
+        "name": "BedDrop API Documentation",
+        "_postman_id": "65ca1719-72cb-4b93-84fc-b80062e19afc",
+        "description": "REST API for Beddrop clients, restaurants, couriers and admin workflows.",
+        "schema": "https:\/\/schema.getpostman.com\/json\/collection\/v2.1.0\/collection.json",
+        "version": "1.0.0"
+    },
+    "item": [
+        {
+            "name": "Endpoints",
+            "description": "",
+            "item": [
+                {
+                    "name": "POST api\/v1\/auth\/register",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/auth\/register",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/auth\/register"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"email\":\"gbailey@example.net\",\"phone\":\"82256977571\",\"password\":\"|{+-0pBNvYgx\",\"name\":\"w\",\"client_type\":\"mobile\",\"device_name\":\"a\"}"
+                        },
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/auth\/login",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/auth\/login",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/auth\/login"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"email\":\"gbailey@example.net\",\"password\":\"|]|{+-\",\"client_type\":\"mobile\",\"device_name\":\"v\"}"
+                        },
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/auth\/refresh",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/auth\/refresh",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/auth\/refresh"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/auth\/logout",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/auth\/logout",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/auth\/logout"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/auth\/logout-all",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/auth\/logout-all",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/auth\/logout-all"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/me\/bootstrap",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/me\/bootstrap",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/me\/bootstrap"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/profile\/me",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/profile\/me",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/profile\/me"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/profile\/bootstrap",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/profile\/bootstrap",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/profile\/bootstrap"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "PUT api\/v1\/profile\/me",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/profile\/me",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/profile\/me"
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\":\"b\",\"email\":\"zbailey@example.net\",\"phone\":\"82256977571\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "PUT api\/v1\/profile\/password",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/profile\/password",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/profile\/password"
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"current_password\":\"architecto\",\"password\":\"]|{+-0pBNvYg\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/restaurants",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/restaurants",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/restaurants"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"category_id\":16}"
+                        },
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/restaurants\/my",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/restaurants\/my",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/restaurants\/my"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/restaurants",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/restaurants",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/restaurants"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\":\"b\",\"description\":\"Eius et animi quos velit et.\",\"slug\":\"v\",\"phone\":\"d\",\"is_active\":false,\"accepts_orders\":true,\"timezone\":\"Asia\\\/Barnaul\",\"opens_at\":\"10:23\",\"closes_at\":\"10:23\",\"closed_reason\":\"j\",\"prep_time_min\":52,\"prep_time_max\":8,\"logo_media_id\":16,\"address\":{\"label\":\"n\",\"value\":\"g\",\"unrestricted_value\":\"z\",\"line1\":\"m\",\"line2\":\"i\",\"city\":\"y\",\"postal_code\":\"v\",\"country\":\"d\",\"country_iso_code\":\"lj\",\"federal_district\":\"n\",\"region_fias_id\":\"i\",\"region_kladr_id\":\"k\",\"region_iso_code\":\"h\",\"region_with_type\":\"w\",\"region_type\":\"a\",\"region_type_full\":\"y\",\"region\":\"k\",\"area_fias_id\":\"c\",\"area_kladr_id\":\"m\",\"area_with_type\":\"y\",\"area_type\":\"u\",\"area_type_full\":\"w\",\"area\":\"p\",\"city_fias_id\":\"w\",\"city_kladr_id\":\"l\",\"city_with_type\":\"v\",\"city_type\":\"q\",\"city_type_full\":\"w\",\"settlement_fias_id\":\"r\",\"settlement_kladr_id\":\"s\",\"settlement_with_type\":\"i\",\"settlement_type\":\"t\",\"settlement_type_full\":\"c\",\"settlement\":\"p\",\"street_fias_id\":\"s\",\"street_kladr_id\":\"c\",\"street_with_type\":\"q\",\"street_type\":\"l\",\"street_type_full\":\"d\",\"street\":\"z\",\"house_fias_id\":\"s\",\"house_kladr_id\":\"n\",\"house_type\":\"r\",\"house_type_full\":\"w\",\"house\":\"t\",\"block_type\":\"u\",\"block_type_full\":\"j\",\"block\":\"w\",\"flat_type\":\"v\",\"flat_type_full\":\"l\",\"flat\":\"x\",\"entrance\":\"j\",\"floor\":\"k\",\"intercom\":\"l\",\"lat\":4326.41688,\"lng\":4326.41688,\"fias_id\":\"m\",\"kladr_id\":\"i\",\"qc_geo\":76,\"timezone\":\"America\\\/Caracas\",\"beltway_hit\":\"d\",\"beltway_distance\":4326.41688,\"geo_source\":\"m\"}}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "PUT api\/v1\/restaurants\/{restaurant_id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/restaurants\/:restaurant_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/restaurants\/:restaurant_id",
+                            "variable": [
+                                {
+                                    "id": "restaurant_id",
+                                    "key": "restaurant_id",
+                                    "value": "16",
+                                    "description": "The ID of the restaurant."
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\":\"b\",\"description\":\"Eius et animi quos velit et.\",\"slug\":\"v\",\"address_id\":16,\"phone\":\"n\",\"is_active\":true,\"accepts_orders\":true,\"timezone\":\"Antarctica\\\/Rothera\",\"opens_at\":\"10:23\",\"closes_at\":\"10:23\",\"closed_reason\":\"z\",\"prep_time_min\":77,\"prep_time_max\":8,\"logo_media_id\":16,\"address\":{\"label\":\"n\",\"value\":\"g\",\"unrestricted_value\":\"z\",\"line1\":\"m\",\"line2\":\"i\",\"city\":\"y\",\"postal_code\":\"v\",\"country\":\"d\",\"country_iso_code\":\"lj\",\"federal_district\":\"n\",\"region_fias_id\":\"i\",\"region_kladr_id\":\"k\",\"region_iso_code\":\"h\",\"region_with_type\":\"w\",\"region_type\":\"a\",\"region_type_full\":\"y\",\"region\":\"k\",\"area_fias_id\":\"c\",\"area_kladr_id\":\"m\",\"area_with_type\":\"y\",\"area_type\":\"u\",\"area_type_full\":\"w\",\"area\":\"p\",\"city_fias_id\":\"w\",\"city_kladr_id\":\"l\",\"city_with_type\":\"v\",\"city_type\":\"q\",\"city_type_full\":\"w\",\"settlement_fias_id\":\"r\",\"settlement_kladr_id\":\"s\",\"settlement_with_type\":\"i\",\"settlement_type\":\"t\",\"settlement_type_full\":\"c\",\"settlement\":\"p\",\"street_fias_id\":\"s\",\"street_kladr_id\":\"c\",\"street_with_type\":\"q\",\"street_type\":\"l\",\"street_type_full\":\"d\",\"street\":\"z\",\"house_fias_id\":\"s\",\"house_kladr_id\":\"n\",\"house_type\":\"r\",\"house_type_full\":\"w\",\"house\":\"t\",\"block_type\":\"u\",\"block_type_full\":\"j\",\"block\":\"w\",\"flat_type\":\"v\",\"flat_type_full\":\"l\",\"flat\":\"x\",\"entrance\":\"j\",\"floor\":\"k\",\"intercom\":\"l\",\"lat\":4326.41688,\"lng\":4326.41688,\"fias_id\":\"m\",\"kladr_id\":\"i\",\"qc_geo\":76,\"timezone\":\"America\\\/Caracas\",\"beltway_hit\":\"d\",\"beltway_distance\":4326.41688,\"geo_source\":\"m\"}}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "DELETE api\/v1\/restaurants\/{restaurant_id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/restaurants\/:restaurant_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/restaurants\/:restaurant_id",
+                            "variable": [
+                                {
+                                    "id": "restaurant_id",
+                                    "key": "restaurant_id",
+                                    "value": "16",
+                                    "description": "The ID of the restaurant."
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/restaurants\/{restaurant_slug}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/restaurants\/:restaurant_slug",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/restaurants\/:restaurant_slug",
+                            "variable": [
+                                {
+                                    "id": "restaurant_slug",
+                                    "key": "restaurant_slug",
+                                    "value": "16",
+                                    "description": "The slug of the restaurant."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/restaurants\/{restaurant_slug}\/users",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/restaurants\/:restaurant_slug\/users",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/restaurants\/:restaurant_slug\/users",
+                            "variable": [
+                                {
+                                    "id": "restaurant_slug",
+                                    "key": "restaurant_slug",
+                                    "value": "16",
+                                    "description": "The slug of the restaurant."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/restaurants\/{restaurant_slug}\/users",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/restaurants\/:restaurant_slug\/users",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/restaurants\/:restaurant_slug\/users",
+                            "variable": [
+                                {
+                                    "id": "restaurant_slug",
+                                    "key": "restaurant_slug",
+                                    "value": "16",
+                                    "description": "The slug of the restaurant."
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"user_id\":16,\"role\":\"STAFF\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "PUT api\/v1\/restaurants\/{restaurant_slug}\/users\/{user_id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/restaurants\/:restaurant_slug\/users\/:user_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/restaurants\/:restaurant_slug\/users\/:user_id",
+                            "variable": [
+                                {
+                                    "id": "restaurant_slug",
+                                    "key": "restaurant_slug",
+                                    "value": "16",
+                                    "description": "The slug of the restaurant."
+                                },
+                                {
+                                    "id": "user_id",
+                                    "key": "user_id",
+                                    "value": "16",
+                                    "description": "The ID of the user."
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"role\":\"MANAGER\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "DELETE api\/v1\/restaurants\/{restaurant_slug}\/users\/{user_id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/restaurants\/:restaurant_slug\/users\/:user_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/restaurants\/:restaurant_slug\/users\/:user_id",
+                            "variable": [
+                                {
+                                    "id": "restaurant_slug",
+                                    "key": "restaurant_slug",
+                                    "value": "16",
+                                    "description": "The slug of the restaurant."
+                                },
+                                {
+                                    "id": "user_id",
+                                    "key": "user_id",
+                                    "value": "16",
+                                    "description": "The ID of the user."
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/restaurants\/{restaurant_slug}\/staff-invites",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/restaurants\/:restaurant_slug\/staff-invites",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/restaurants\/:restaurant_slug\/staff-invites",
+                            "variable": [
+                                {
+                                    "id": "restaurant_slug",
+                                    "key": "restaurant_slug",
+                                    "value": "16",
+                                    "description": "The slug of the restaurant."
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"role\":\"STAFF\",\"expires_in_minutes\":15}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/restaurants\/{restaurant_slug}\/products",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/restaurants\/:restaurant_slug\/products",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/restaurants\/:restaurant_slug\/products",
+                            "variable": [
+                                {
+                                    "id": "restaurant_slug",
+                                    "key": "restaurant_slug",
+                                    "value": "16",
+                                    "description": "The slug of the restaurant."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/restaurants\/{restaurant_slug}\/products\/{product_id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/restaurants\/:restaurant_slug\/products\/:product_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/restaurants\/:restaurant_slug\/products\/:product_id",
+                            "variable": [
+                                {
+                                    "id": "restaurant_slug",
+                                    "key": "restaurant_slug",
+                                    "value": "16",
+                                    "description": "The slug of the restaurant."
+                                },
+                                {
+                                    "id": "product_id",
+                                    "key": "product_id",
+                                    "value": "16",
+                                    "description": "The ID of the product."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/restaurants\/{restaurant_slug}\/products",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/restaurants\/:restaurant_slug\/products",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/restaurants\/:restaurant_slug\/products",
+                            "variable": [
+                                {
+                                    "id": "restaurant_slug",
+                                    "key": "restaurant_slug",
+                                    "value": "16",
+                                    "description": "The slug of the restaurant."
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"category_id\":16,\"name\":\"n\",\"description\":\"Eius et animi quos velit et.\",\"price\":60,\"is_active\":true}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "PUT api\/v1\/restaurants\/{restaurant_slug}\/products\/{product_id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/restaurants\/:restaurant_slug\/products\/:product_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/restaurants\/:restaurant_slug\/products\/:product_id",
+                            "variable": [
+                                {
+                                    "id": "restaurant_slug",
+                                    "key": "restaurant_slug",
+                                    "value": "16",
+                                    "description": "The slug of the restaurant."
+                                },
+                                {
+                                    "id": "product_id",
+                                    "key": "product_id",
+                                    "value": "16",
+                                    "description": "The ID of the product."
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"category_id\":16,\"name\":\"n\",\"description\":\"Eius et animi quos velit et.\",\"price\":60,\"is_active\":false}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "DELETE api\/v1\/restaurants\/{restaurant_slug}\/products\/{product_id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/restaurants\/:restaurant_slug\/products\/:product_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/restaurants\/:restaurant_slug\/products\/:product_id",
+                            "variable": [
+                                {
+                                    "id": "restaurant_slug",
+                                    "key": "restaurant_slug",
+                                    "value": "16",
+                                    "description": "The slug of the restaurant."
+                                },
+                                {
+                                    "id": "product_id",
+                                    "key": "product_id",
+                                    "value": "16",
+                                    "description": "The ID of the product."
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/restaurants\/{restaurant_slug}\/products\/{product_id}\/images",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/restaurants\/:restaurant_slug\/products\/:product_id\/images",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/restaurants\/:restaurant_slug\/products\/:product_id\/images",
+                            "variable": [
+                                {
+                                    "id": "restaurant_slug",
+                                    "key": "restaurant_slug",
+                                    "value": "16",
+                                    "description": "The slug of the restaurant."
+                                },
+                                {
+                                    "id": "product_id",
+                                    "key": "product_id",
+                                    "value": "16",
+                                    "description": "The ID of the product."
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"media_id\":16,\"sort_order\":39,\"is_cover\":true}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "PUT api\/v1\/restaurants\/{restaurant_slug}\/products\/{product_id}\/images\/{image_id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/restaurants\/:restaurant_slug\/products\/:product_id\/images\/:image_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/restaurants\/:restaurant_slug\/products\/:product_id\/images\/:image_id",
+                            "variable": [
+                                {
+                                    "id": "restaurant_slug",
+                                    "key": "restaurant_slug",
+                                    "value": "16",
+                                    "description": "The slug of the restaurant."
+                                },
+                                {
+                                    "id": "product_id",
+                                    "key": "product_id",
+                                    "value": "16",
+                                    "description": "The ID of the product."
+                                },
+                                {
+                                    "id": "image_id",
+                                    "key": "image_id",
+                                    "value": "16",
+                                    "description": "The ID of the image."
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"sort_order\":27,\"is_cover\":false}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "DELETE api\/v1\/restaurants\/{restaurant_slug}\/products\/{product_id}\/images\/{image_id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/restaurants\/:restaurant_slug\/products\/:product_id\/images\/:image_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/restaurants\/:restaurant_slug\/products\/:product_id\/images\/:image_id",
+                            "variable": [
+                                {
+                                    "id": "restaurant_slug",
+                                    "key": "restaurant_slug",
+                                    "value": "16",
+                                    "description": "The slug of the restaurant."
+                                },
+                                {
+                                    "id": "product_id",
+                                    "key": "product_id",
+                                    "value": "16",
+                                    "description": "The ID of the product."
+                                },
+                                {
+                                    "id": "image_id",
+                                    "key": "image_id",
+                                    "value": "16",
+                                    "description": "The ID of the image."
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/restaurants\/{restaurant_slug}\/orders",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/restaurants\/:restaurant_slug\/orders",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/restaurants\/:restaurant_slug\/orders",
+                            "variable": [
+                                {
+                                    "id": "restaurant_slug",
+                                    "key": "restaurant_slug",
+                                    "value": "16",
+                                    "description": "The slug of the restaurant."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/restaurants\/{restaurant_slug}\/orders\/{order_id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/restaurants\/:restaurant_slug\/orders\/:order_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/restaurants\/:restaurant_slug\/orders\/:order_id",
+                            "variable": [
+                                {
+                                    "id": "restaurant_slug",
+                                    "key": "restaurant_slug",
+                                    "value": "16",
+                                    "description": "The slug of the restaurant."
+                                },
+                                {
+                                    "id": "order_id",
+                                    "key": "order_id",
+                                    "value": "16",
+                                    "description": "The ID of the order."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/restaurants\/{restaurant_slug}\/orders\/{order_id}\/accept",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/restaurants\/:restaurant_slug\/orders\/:order_id\/accept",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/restaurants\/:restaurant_slug\/orders\/:order_id\/accept",
+                            "variable": [
+                                {
+                                    "id": "restaurant_slug",
+                                    "key": "restaurant_slug",
+                                    "value": "16",
+                                    "description": "The slug of the restaurant."
+                                },
+                                {
+                                    "id": "order_id",
+                                    "key": "order_id",
+                                    "value": "16",
+                                    "description": "The ID of the order."
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/restaurants\/{restaurant_slug}\/orders\/{order_id}\/ready",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/restaurants\/:restaurant_slug\/orders\/:order_id\/ready",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/restaurants\/:restaurant_slug\/orders\/:order_id\/ready",
+                            "variable": [
+                                {
+                                    "id": "restaurant_slug",
+                                    "key": "restaurant_slug",
+                                    "value": "16",
+                                    "description": "The slug of the restaurant."
+                                },
+                                {
+                                    "id": "order_id",
+                                    "key": "order_id",
+                                    "value": "16",
+                                    "description": "The ID of the order."
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/restaurants\/{restaurant_slug}\/orders\/{order_id}\/cancel",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/restaurants\/:restaurant_slug\/orders\/:order_id\/cancel",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/restaurants\/:restaurant_slug\/orders\/:order_id\/cancel",
+                            "variable": [
+                                {
+                                    "id": "restaurant_slug",
+                                    "key": "restaurant_slug",
+                                    "value": "16",
+                                    "description": "The slug of the restaurant."
+                                },
+                                {
+                                    "id": "order_id",
+                                    "key": "order_id",
+                                    "value": "16",
+                                    "description": "The ID of the order."
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"reason\":\"b\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/staff-invites\/{token}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/staff-invites\/:token",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/staff-invites\/:token",
+                            "variable": [
+                                {
+                                    "id": "token",
+                                    "key": "token",
+                                    "value": "architecto",
+                                    "description": ""
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/staff-invites\/{token}\/accept",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/staff-invites\/:token\/accept",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/staff-invites\/:token\/accept",
+                            "variable": [
+                                {
+                                    "id": "token",
+                                    "key": "token",
+                                    "value": "architecto",
+                                    "description": ""
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/product-categories",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/product-categories",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/product-categories"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/product-categories",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/product-categories",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/product-categories"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"slug\":\"b\",\"name\":\"n\",\"sort_order\":16}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "PUT api\/v1\/product-categories\/{category_id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/product-categories\/:category_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/product-categories\/:category_id",
+                            "variable": [
+                                {
+                                    "id": "category_id",
+                                    "key": "category_id",
+                                    "value": "16",
+                                    "description": "The ID of the category."
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"slug\":\"b\",\"name\":\"n\",\"sort_order\":16}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "DELETE api\/v1\/product-categories\/{category_id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/product-categories\/:category_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/product-categories\/:category_id",
+                            "variable": [
+                                {
+                                    "id": "category_id",
+                                    "key": "category_id",
+                                    "value": "16",
+                                    "description": "The ID of the category."
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/cart",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/cart",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/cart"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/cart\/items",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/cart\/items",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/cart\/items"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"product_id\":16,\"quantity\":22}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "PUT api\/v1\/cart\/items\/{item_id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/cart\/items\/:item_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/cart\/items\/:item_id",
+                            "variable": [
+                                {
+                                    "id": "item_id",
+                                    "key": "item_id",
+                                    "value": "16",
+                                    "description": "The ID of the item."
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"quantity\":1}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "DELETE api\/v1\/cart\/items\/{item_id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/cart\/items\/:item_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/cart\/items\/:item_id",
+                            "variable": [
+                                {
+                                    "id": "item_id",
+                                    "key": "item_id",
+                                    "value": "16",
+                                    "description": "The ID of the item."
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "DELETE api\/v1\/cart",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/cart",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/cart"
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/payments\/yookassa\/webhook",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/payments\/yookassa\/webhook",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/payments\/yookassa\/webhook"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/orders",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/orders",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/orders"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/orders\/active",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/orders\/active",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/orders\/active"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/orders\/{order_id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/orders\/:order_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/orders\/:order_id",
+                            "variable": [
+                                {
+                                    "id": "order_id",
+                                    "key": "order_id",
+                                    "value": "16",
+                                    "description": "The ID of the order."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/orders",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/orders",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/orders"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"delivery_address_id\":16,\"comment\":\"n\",\"payment_method\":\"ONLINE\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/orders\/{order_id}\/payment",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/orders\/:order_id\/payment",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/orders\/:order_id\/payment",
+                            "variable": [
+                                {
+                                    "id": "order_id",
+                                    "key": "order_id",
+                                    "value": "16",
+                                    "description": "The ID of the order."
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/orders\/{order_id}\/payment\/status",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/orders\/:order_id\/payment\/status",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/orders\/:order_id\/payment\/status",
+                            "variable": [
+                                {
+                                    "id": "order_id",
+                                    "key": "order_id",
+                                    "value": "16",
+                                    "description": "The ID of the order."
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/orders\/{order_id}\/payment\/sync",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/orders\/:order_id\/payment\/sync",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/orders\/:order_id\/payment\/sync",
+                            "variable": [
+                                {
+                                    "id": "order_id",
+                                    "key": "order_id",
+                                    "value": "16",
+                                    "description": "The ID of the order."
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/orders\/{order_id}\/cancel",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/orders\/:order_id\/cancel",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/orders\/:order_id\/cancel",
+                            "variable": [
+                                {
+                                    "id": "order_id",
+                                    "key": "order_id",
+                                    "value": "16",
+                                    "description": "The ID of the order."
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/geo\/address-suggestions",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/geo\/address-suggestions",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/geo\/address-suggestions"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"q\":\"b\",\"count\":12}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/geo\/clean-address",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/geo\/clean-address",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/geo\/clean-address"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"address\":\"b\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/geo\/reverse-geocode",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/geo\/reverse-geocode",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/geo\/reverse-geocode"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"lat\":1,\"lng\":22}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/delivery\/quote",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/delivery\/quote",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/delivery\/quote"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"restaurant_id\":16,\"delivery_address_id\":16,\"mode\":\"auto\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/courier\/profile",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/courier\/profile",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/courier\/profile"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/courier\/profile",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/courier\/profile",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/courier\/profile"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"vehicle\":\"SCOOTER\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/courier\/shifts\/start",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/courier\/shifts\/start",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/courier\/shifts\/start"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/courier\/shifts\/end",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/courier\/shifts\/end",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/courier\/shifts\/end"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/courier\/shifts\/current",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/courier\/shifts\/current",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/courier\/shifts\/current"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/courier\/orders\/available",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/courier\/orders\/available",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/courier\/orders\/available"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/courier\/orders\/active",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/courier\/orders\/active",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/courier\/orders\/active"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/courier\/orders\/history",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/courier\/orders\/history",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/courier\/orders\/history"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/courier\/location",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/courier\/location",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/courier\/location"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"lat\":1,\"lng\":22,\"accuracy\":4326.41688,\"heading\":4326.41688,\"speed\":4326.41688,\"recorded_at\":\"2026-06-01T10:23:12\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/courier\/orders\/{order_id}\/assign",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/courier\/orders\/:order_id\/assign",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/courier\/orders\/:order_id\/assign",
+                            "variable": [
+                                {
+                                    "id": "order_id",
+                                    "key": "order_id",
+                                    "value": "16",
+                                    "description": "The ID of the order."
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/courier\/orders\/{order_id}\/picked-up",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/courier\/orders\/:order_id\/picked-up",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/courier\/orders\/:order_id\/picked-up",
+                            "variable": [
+                                {
+                                    "id": "order_id",
+                                    "key": "order_id",
+                                    "value": "16",
+                                    "description": "The ID of the order."
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/courier\/orders\/{order_id}\/delivered",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/courier\/orders\/:order_id\/delivered",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/courier\/orders\/:order_id\/delivered",
+                            "variable": [
+                                {
+                                    "id": "order_id",
+                                    "key": "order_id",
+                                    "value": "16",
+                                    "description": "The ID of the order."
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/addresses",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/addresses",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/addresses"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/addresses",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/addresses",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/addresses"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"label\":\"b\",\"value\":\"n\",\"unrestricted_value\":\"g\",\"line1\":\"z\",\"line2\":\"m\",\"city\":\"i\",\"postal_code\":\"y\",\"country\":\"v\",\"country_iso_code\":\"dl\",\"federal_district\":\"j\",\"region_fias_id\":\"n\",\"region_kladr_id\":\"i\",\"region_iso_code\":\"k\",\"region_with_type\":\"h\",\"region_type\":\"w\",\"region_type_full\":\"a\",\"region\":\"y\",\"area_fias_id\":\"k\",\"area_kladr_id\":\"c\",\"area_with_type\":\"m\",\"area_type\":\"y\",\"area_type_full\":\"u\",\"area\":\"w\",\"city_fias_id\":\"p\",\"city_kladr_id\":\"w\",\"city_with_type\":\"l\",\"city_type\":\"v\",\"city_type_full\":\"q\",\"settlement_fias_id\":\"w\",\"settlement_kladr_id\":\"r\",\"settlement_with_type\":\"s\",\"settlement_type\":\"i\",\"settlement_type_full\":\"t\",\"settlement\":\"c\",\"street_fias_id\":\"p\",\"street_kladr_id\":\"s\",\"street_with_type\":\"c\",\"street_type\":\"q\",\"street_type_full\":\"l\",\"street\":\"d\",\"house_fias_id\":\"z\",\"house_kladr_id\":\"s\",\"house_type\":\"n\",\"house_type_full\":\"r\",\"house\":\"w\",\"block_type\":\"t\",\"block_type_full\":\"u\",\"block\":\"j\",\"flat_type\":\"w\",\"flat_type_full\":\"v\",\"flat\":\"l\",\"entrance\":\"x\",\"floor\":\"j\",\"intercom\":\"k\",\"lat\":4326.41688,\"lng\":4326.41688,\"fias_id\":\"m\",\"kladr_id\":\"i\",\"qc_geo\":76,\"timezone\":\"America\\\/Caracas\",\"beltway_hit\":\"d\",\"beltway_distance\":4326.41688,\"geo_source\":\"m\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "PUT api\/v1\/addresses\/{address_id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/addresses\/:address_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/addresses\/:address_id",
+                            "variable": [
+                                {
+                                    "id": "address_id",
+                                    "key": "address_id",
+                                    "value": "16",
+                                    "description": "The ID of the address."
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"label\":\"b\",\"value\":\"n\",\"unrestricted_value\":\"g\",\"line1\":\"z\",\"line2\":\"q\",\"city\":\"w\",\"postal_code\":\"t\",\"country\":\"n\",\"country_iso_code\":\"nq\",\"federal_district\":\"l\",\"region_fias_id\":\"e\",\"region_kladr_id\":\"h\",\"region_iso_code\":\"u\",\"region_with_type\":\"a\",\"region_type\":\"h\",\"region_type_full\":\"p\",\"region\":\"u\",\"area_fias_id\":\"z\",\"area_kladr_id\":\"w\",\"area_with_type\":\"v\",\"area_type\":\"b\",\"area_type_full\":\"d\",\"area\":\"s\",\"city_fias_id\":\"c\",\"city_kladr_id\":\"n\",\"city_with_type\":\"q\",\"city_type\":\"a\",\"city_type_full\":\"t\",\"settlement_fias_id\":\"k\",\"settlement_kladr_id\":\"c\",\"settlement_with_type\":\"l\",\"settlement_type\":\"k\",\"settlement_type_full\":\"m\",\"settlement\":\"w\",\"street_fias_id\":\"u\",\"street_kladr_id\":\"j\",\"street_with_type\":\"i\",\"street_type\":\"h\",\"street_type_full\":\"q\",\"street\":\"a\",\"house_fias_id\":\"o\",\"house_kladr_id\":\"h\",\"house_type\":\"q\",\"house_type_full\":\"m\",\"house\":\"z\",\"block_type\":\"t\",\"block_type_full\":\"t\",\"block\":\"t\",\"flat_type\":\"o\",\"flat_type_full\":\"r\",\"flat\":\"n\",\"entrance\":\"b\",\"floor\":\"g\",\"intercom\":\"l\",\"lat\":4326.41688,\"lng\":4326.41688,\"fias_id\":\"m\",\"kladr_id\":\"i\",\"qc_geo\":76,\"timezone\":\"America\\\/Caracas\",\"beltway_hit\":\"d\",\"beltway_distance\":4326.41688,\"geo_source\":\"m\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "DELETE api\/v1\/addresses\/{address_id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/addresses\/:address_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/addresses\/:address_id",
+                            "variable": [
+                                {
+                                    "id": "address_id",
+                                    "key": "address_id",
+                                    "value": "16",
+                                    "description": "The ID of the address."
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/media",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/media",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/media"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "multipart\/form-data"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "file",
+                                    "src": [],
+                                    "type": "file"
+                                }
+                            ]
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "DELETE api\/v1\/media\/{media_id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/media\/:media_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/media\/:media_id",
+                            "variable": [
+                                {
+                                    "id": "media_id",
+                                    "key": "media_id",
+                                    "value": "16",
+                                    "description": "The ID of the media."
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/admin\/dashboard",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/dashboard",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/dashboard"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/admin\/users",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/users",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/users"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/admin\/users\/{user_id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/users\/:user_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/users\/:user_id",
+                            "variable": [
+                                {
+                                    "id": "user_id",
+                                    "key": "user_id",
+                                    "value": "16",
+                                    "description": "The ID of the user."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "PATCH api\/v1\/admin\/users\/{user_id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/users\/:user_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/users\/:user_id",
+                            "variable": [
+                                {
+                                    "id": "user_id",
+                                    "key": "user_id",
+                                    "value": "16",
+                                    "description": "The ID of the user."
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"is_admin\":false,\"is_banned\":true}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/admin\/restaurants",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/restaurants",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/restaurants"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/admin\/restaurants\/{restaurant_id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/restaurants\/:restaurant_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/restaurants\/:restaurant_id",
+                            "variable": [
+                                {
+                                    "id": "restaurant_id",
+                                    "key": "restaurant_id",
+                                    "value": "16",
+                                    "description": "The ID of the restaurant."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "PUT api\/v1\/admin\/restaurants\/{restaurant_id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/restaurants\/:restaurant_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/restaurants\/:restaurant_id",
+                            "variable": [
+                                {
+                                    "id": "restaurant_id",
+                                    "key": "restaurant_id",
+                                    "value": "16",
+                                    "description": "The ID of the restaurant."
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"name\":\"b\",\"description\":\"Eius et animi quos velit et.\",\"slug\":\"v\",\"address_id\":16,\"phone\":\"n\",\"is_active\":false,\"accepts_orders\":false,\"timezone\":\"Antarctica\\\/Rothera\",\"opens_at\":\"10:23\",\"closes_at\":\"10:23\",\"closed_reason\":\"z\",\"prep_time_min\":77,\"prep_time_max\":8,\"logo_media_id\":16,\"address\":{\"label\":\"n\",\"value\":\"g\",\"unrestricted_value\":\"z\",\"line1\":\"m\",\"line2\":\"i\",\"city\":\"y\",\"postal_code\":\"v\",\"country\":\"d\",\"country_iso_code\":\"lj\",\"federal_district\":\"n\",\"region_fias_id\":\"i\",\"region_kladr_id\":\"k\",\"region_iso_code\":\"h\",\"region_with_type\":\"w\",\"region_type\":\"a\",\"region_type_full\":\"y\",\"region\":\"k\",\"area_fias_id\":\"c\",\"area_kladr_id\":\"m\",\"area_with_type\":\"y\",\"area_type\":\"u\",\"area_type_full\":\"w\",\"area\":\"p\",\"city_fias_id\":\"w\",\"city_kladr_id\":\"l\",\"city_with_type\":\"v\",\"city_type\":\"q\",\"city_type_full\":\"w\",\"settlement_fias_id\":\"r\",\"settlement_kladr_id\":\"s\",\"settlement_with_type\":\"i\",\"settlement_type\":\"t\",\"settlement_type_full\":\"c\",\"settlement\":\"p\",\"street_fias_id\":\"s\",\"street_kladr_id\":\"c\",\"street_with_type\":\"q\",\"street_type\":\"l\",\"street_type_full\":\"d\",\"street\":\"z\",\"house_fias_id\":\"s\",\"house_kladr_id\":\"n\",\"house_type\":\"r\",\"house_type_full\":\"w\",\"house\":\"t\",\"block_type\":\"u\",\"block_type_full\":\"j\",\"block\":\"w\",\"flat_type\":\"v\",\"flat_type_full\":\"l\",\"flat\":\"x\",\"entrance\":\"j\",\"floor\":\"k\",\"intercom\":\"l\",\"lat\":4326.41688,\"lng\":4326.41688,\"fias_id\":\"m\",\"kladr_id\":\"i\",\"qc_geo\":76,\"timezone\":\"America\\\/Caracas\",\"beltway_hit\":\"d\",\"beltway_distance\":4326.41688,\"geo_source\":\"m\"}}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "PUT api\/v1\/admin\/restaurants\/{restaurant_id}\/staff\/{user_id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/restaurants\/:restaurant_id\/staff\/:user_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/restaurants\/:restaurant_id\/staff\/:user_id",
+                            "variable": [
+                                {
+                                    "id": "restaurant_id",
+                                    "key": "restaurant_id",
+                                    "value": "16",
+                                    "description": "The ID of the restaurant."
+                                },
+                                {
+                                    "id": "user_id",
+                                    "key": "user_id",
+                                    "value": "16",
+                                    "description": "The ID of the user."
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"role\":\"STAFF\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "DELETE api\/v1\/admin\/restaurants\/{restaurant_id}\/staff\/{user_id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/restaurants\/:restaurant_id\/staff\/:user_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/restaurants\/:restaurant_id\/staff\/:user_id",
+                            "variable": [
+                                {
+                                    "id": "restaurant_id",
+                                    "key": "restaurant_id",
+                                    "value": "16",
+                                    "description": "The ID of the restaurant."
+                                },
+                                {
+                                    "id": "user_id",
+                                    "key": "user_id",
+                                    "value": "16",
+                                    "description": "The ID of the user."
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/admin\/couriers",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/couriers",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/couriers"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/admin\/couriers",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/couriers",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/couriers"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"user_id\":16,\"status\":\"ACTIVE\",\"vehicle\":\"SCOOTER\",\"rating\":2}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/admin\/couriers\/{courier_user_id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/couriers\/:courier_user_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/couriers\/:courier_user_id",
+                            "variable": [
+                                {
+                                    "id": "courier_user_id",
+                                    "key": "courier_user_id",
+                                    "value": "16",
+                                    "description": "The ID of the courier user."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "PATCH api\/v1\/admin\/couriers\/{courier_user_id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/couriers\/:courier_user_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/couriers\/:courier_user_id",
+                            "variable": [
+                                {
+                                    "id": "courier_user_id",
+                                    "key": "courier_user_id",
+                                    "value": "16",
+                                    "description": "The ID of the courier user."
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"status\":\"SUSPENDED\",\"vehicle\":\"BIKE\",\"rating\":1}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/admin\/orders",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/orders",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/orders"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/admin\/orders\/{order_id}",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/orders\/:order_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/orders\/:order_id",
+                            "variable": [
+                                {
+                                    "id": "order_id",
+                                    "key": "order_id",
+                                    "value": "16",
+                                    "description": "The ID of the order."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/admin\/orders\/{order_id}\/accept",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/orders\/:order_id\/accept",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/orders\/:order_id\/accept",
+                            "variable": [
+                                {
+                                    "id": "order_id",
+                                    "key": "order_id",
+                                    "value": "16",
+                                    "description": "The ID of the order."
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/admin\/orders\/{order_id}\/ready",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/orders\/:order_id\/ready",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/orders\/:order_id\/ready",
+                            "variable": [
+                                {
+                                    "id": "order_id",
+                                    "key": "order_id",
+                                    "value": "16",
+                                    "description": "The ID of the order."
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/admin\/orders\/{order_id}\/cancel",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/orders\/:order_id\/cancel",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/orders\/:order_id\/cancel",
+                            "variable": [
+                                {
+                                    "id": "order_id",
+                                    "key": "order_id",
+                                    "value": "16",
+                                    "description": "The ID of the order."
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"reason\":\"b\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/admin\/orders\/{order_id}\/assign-courier",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/orders\/:order_id\/assign-courier",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/orders\/:order_id\/assign-courier",
+                            "variable": [
+                                {
+                                    "id": "order_id",
+                                    "key": "order_id",
+                                    "value": "16",
+                                    "description": "The ID of the order."
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"courier_user_id\":16}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/admin\/orders\/{order_id}\/unassign-courier",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/orders\/:order_id\/unassign-courier",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/orders\/:order_id\/unassign-courier",
+                            "variable": [
+                                {
+                                    "id": "order_id",
+                                    "key": "order_id",
+                                    "value": "16",
+                                    "description": "The ID of the order."
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/admin\/orders\/{order_id}\/picked-up",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/orders\/:order_id\/picked-up",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/orders\/:order_id\/picked-up",
+                            "variable": [
+                                {
+                                    "id": "order_id",
+                                    "key": "order_id",
+                                    "value": "16",
+                                    "description": "The ID of the order."
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/admin\/orders\/{order_id}\/delivered",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/orders\/:order_id\/delivered",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/orders\/:order_id\/delivered",
+                            "variable": [
+                                {
+                                    "id": "order_id",
+                                    "key": "order_id",
+                                    "value": "16",
+                                    "description": "The ID of the order."
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "PATCH api\/v1\/admin\/orders\/{order_id}\/payment",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/orders\/:order_id\/payment",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/orders\/:order_id\/payment",
+                            "variable": [
+                                {
+                                    "id": "order_id",
+                                    "key": "order_id",
+                                    "value": "16",
+                                    "description": "The ID of the order."
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"payment_status\":\"architecto\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/admin\/logistics\/settings",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/logistics\/settings",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/logistics\/settings"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "PUT api\/v1\/admin\/logistics\/settings",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/logistics\/settings",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/logistics\/settings"
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/admin\/logistics\/test-address",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/logistics\/test-address",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/logistics\/test-address"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"address\":\"b\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "POST api\/v1\/admin\/logistics\/test-route",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/logistics\/test-route",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/logistics\/test-route"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"from_address_id\":16,\"to_address_id\":16,\"from\":{\"lat\":22,\"lng\":7},\"to\":{\"lat\":16,\"lng\":17},\"mode\":\"auto\"}"
+                        },
+                        "description": ""
+                    },
+                    "response": []
+                },
+                {
+                    "name": "GET api\/v1\/admin\/orders\/{order_id}\/routes",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/admin\/orders\/:order_id\/routes",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/admin\/orders\/:order_id\/routes",
+                            "variable": [
+                                {
+                                    "id": "order_id",
+                                    "key": "order_id",
+                                    "value": "16",
+                                    "description": "The ID of the order."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": ""
+                    },
+                    "response": []
+                }
+            ]
+        }
+    ],
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "Authorization",
+                "type": "string"
+            }
+        ]
+    }
+}

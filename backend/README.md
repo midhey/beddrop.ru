@@ -147,6 +147,45 @@ GET /api/ping
 }
 ```
 
+## API-документация
+
+Документация API генерируется через Scribe из Laravel-маршрутов, контроллеров, валидации и PHPDoc/атрибутов.
+
+Сгенерировать HTML-документацию, Postman collection и OpenAPI spec:
+
+```bash
+composer docs
+```
+
+После генерации доступны:
+
+- HTML-документация: `/docs/api`
+- Postman collection: `/docs/api.postman`
+- OpenAPI spec: `/docs/api.openapi`
+
+Файл OpenAPI также сохраняется в:
+
+```text
+storage/app/private/scribe/openapi.yaml
+```
+
+Опциональные переменные окружения:
+
+```env
+SCRIBE_API_VERSION=1.0.0
+SCRIBE_AUTH_KEY=
+SCRIBE_DOCS_AUTH=false
+SCRIBE_RESPONSE_CALLS=false
+```
+
+`SCRIBE_AUTH_KEY` можно задать локально, чтобы Scribe использовал реальный JWT при генерации примеров ответов для защищенных GET-endpoint-ов. Если `SCRIBE_RESPONSE_CALLS=true`, Scribe будет выполнять GET-запросы к приложению для генерации реальных response examples, поэтому нужна доступная БД. Если `SCRIBE_DOCS_AUTH=true`, route документации будет закрыт middleware `auth:api` и `admin`.
+
+Для Docker-окружения генерацию с реальными response examples удобнее запускать внутри app-контейнера:
+
+```bash
+docker exec -e SCRIBE_RESPONSE_CALLS=true -e SCRIBE_AUTH_KEY="<jwt>" beddrop-app php artisan scribe:generate
+```
+
 ## Аутентификация
 
 API использует guard `api` с JWT-драйвером для access token и отдельные серверные refresh sessions:

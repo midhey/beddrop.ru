@@ -6,9 +6,10 @@
     "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {
-        "ext-gd": "*",
         "php": "^8.2",
+        "ext-gd": "*",
         "beyondcode/laravel-er-diagram-generator": "^5.0",
+        "knuckleswtf/scribe": "^5.10",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
         "tymon/jwt-auth": "^2.0"
@@ -50,6 +51,9 @@
         "test": [
             "@php artisan config:clear --ansi",
             "@php artisan test"
+        ],
+        "docs": [
+            "@php artisan scribe:generate"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
