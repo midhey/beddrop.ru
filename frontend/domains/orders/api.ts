@@ -2,7 +2,6 @@ import type {
     CreateOrderPayload,
     Order,
 } from '~/composables/useOrders';
-import { FINAL_ORDER_STATUSES } from '~/domains/orders/presentation';
 import type { LaravelPaginated } from '~/utils/api/pagination';
 import { mapLaravelPagination } from '~/utils/api/pagination';
 
@@ -98,11 +97,8 @@ export const cancelOrderRequest = async (id: number): Promise<Order> => {
 };
 
 export const getActiveOrder = async (): Promise<Order | null> => {
-    const response = await listOrders({ per_page: 20 });
+    const { $api } = useNuxtApp();
+    const { data } = await $api.get<{ order: Order | null }>('/orders/active');
 
-    return (
-        response.items.find(
-            (order) => !FINAL_ORDER_STATUSES.includes(order.status),
-        ) || null
-    );
+    return data.order;
 };
