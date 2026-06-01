@@ -3,8 +3,7 @@ import { useRouter } from '#app';
 import { useSeoMeta } from '#imports';
 import { useAddresses } from '~/composables/useAddresses';
 import { useFeedback } from '~/composables/useFeedback';
-import { useOrders, type CreateOrderPayload } from '~/composables/useOrders';
-import type { OrderRouteSegment } from '~/composables/useOrders';
+import { useOrders, type CreateOrderPayload, type OrderRouteSegment } from '~/composables/useOrders';
 import { useDeliveryQuote } from '~/composables/useDeliveryQuote';
 import { useCartStore } from '~/stores/cart';
 import { formatPrice } from '~/utils/formatting';
@@ -156,9 +155,9 @@ export function useCheckoutPage() {
                     delivery_address_id: selectedAddressId.value,
                 };
 
-                await createOrder(payload);
+                const order = await createOrder(payload);
                 await cartStore.clearCart();
-                await router.push('/orders');
+                await router.push(`/orders/${order.id}`);
             }, 'Оформляем заказ...');
         } finally {
             submitting.value = false;
