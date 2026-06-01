@@ -1,6 +1,5 @@
 import type { Order } from '~/composables/useOrders';
 import type { Restaurant } from '~/composables/useRestaurants';
-import { listRestaurants } from '~/domains/restaurants/api';
 import type { LaravelPaginated } from '~/utils/api/pagination';
 import { mapLaravelPagination } from '~/utils/api/pagination';
 
@@ -90,13 +89,7 @@ export const updateAdminUser = async (id: number, payload: Partial<Pick<AdminUse
 export const listAdminRestaurants = async (params: Record<string, any> = {}) => {
     const { $api } = useNuxtApp();
     const { data } = await $api.get<LaravelPaginated<Restaurant>>('/admin/restaurants', { params });
-    const response = normalizePaginated<Restaurant>(data);
-
-    if (response.items.length || Object.values(params).some((value) => value !== '' && value !== null && value !== undefined)) {
-        return response;
-    }
-
-    return listRestaurants();
+    return normalizePaginated<Restaurant>(data);
 };
 
 export const getAdminRestaurant = async (id: number) => {
