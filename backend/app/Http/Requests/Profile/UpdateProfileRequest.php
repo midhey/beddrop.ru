@@ -3,10 +3,10 @@
 namespace App\Http\Requests\Profile;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateProfileRequest extends FormRequest
 {
-
     public function authorize(): bool
     {
         return true;
@@ -23,7 +23,7 @@ class UpdateProfileRequest extends FormRequest
 
     public function rules(): array
     {
-        $userId = $this->user()->id;
+        $userId = $this->user()?->id;
 
         return [
             'name' => ['nullable', 'string', 'max:255'],
@@ -31,23 +31,24 @@ class UpdateProfileRequest extends FormRequest
                 'sometimes',
                 'email',
                 'max:255',
-                'unique:users,email,' . $userId
+                Rule::unique('users', 'email')->ignore($userId),
             ],
             'phone' => [
                 'sometimes',
                 'string',
                 'digits:11',
-                'unique:users,phone,' . $userId
-            ]
+                Rule::unique('users', 'phone')->ignore($userId),
+            ],
         ];
     }
 
-    public function messages(): array {
+    public function messages(): array
+    {
         return [
-            'email.email'    => 'Некорректный формат электронной почты',
-            'email.unique'   => 'Пользователь с такой почтой уже существует',
+            'email.email' => 'Некорректный формат электронной почты',
+            'email.unique' => 'Пользователь с такой почтой уже существует',
 
-            'phone.unique'   => 'Пользователь с таким телефоном уже существует',
+            'phone.unique' => 'Пользователь с таким телефоном уже существует',
         ];
     }
 }
