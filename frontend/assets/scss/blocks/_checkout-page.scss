@@ -21,6 +21,11 @@
     grid-template-columns: minmax(0, 2.5fr) minmax(0, 1fr);
     gap: rem(20);
     margin-top: rem(8);
+
+    @media (max-width: $tablet-l) {
+      display: flex;
+      flex-direction: column;
+    }
   }
 
   &__main {
@@ -101,6 +106,10 @@
   &__submit {
     width: 100%;
     margin-top: rem(12);
+  }
+
+  @media (max-width: $tablet-l) {
+    width: 100%;
   }
 }
 
@@ -205,7 +214,8 @@
         color: var(--color-primary);
       }
 
-      box-shadow: 0 4px 12px color-mix(in oklab, var(--color-primary) 10%, transparent);
+      box-shadow: 0 4px 12px
+        color-mix(in oklab, var(--color-primary) 10%, transparent);
     }
   }
 }
@@ -372,17 +382,6 @@
       color: var(--color-primary);
       font-family: var(--font-family-secondary);
     }
-  }
-}
-
-@media (max-width: rem(992)) {
-  .checkout-page__layout {
-    grid-template-columns: 1fr;
-    gap: rem(24);
-  }
-
-  .checkout-card--sticky {
-    position: static;
   }
 }
 
