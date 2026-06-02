@@ -33,7 +33,8 @@ EXPO_PUBLIC_API_BASE=https://api.beddrop.ru/api/v1 npm run start
    - `.release-please-manifest.json`
    - changelog, если Release Please его создаст
 4. Release Please создает tag вида `beddrop-courier-v<version>` и GitHub Release.
-5. Workflow `Mobile Android APK` автоматически запускается на опубликованный release, собирает APK и прикладывает файлы к этому же release.
+5. Workflow `Mobile Android APK Start` автоматически запускает EAS build и быстро завершается, не ожидая очередь Expo.
+6. Когда EAS build станет `Finished`, вручную запускается `Mobile Android APK Publish`, который скачивает APK и прикладывает файлы к GitHub Release.
 
 Required GitHub Repository Secrets:
 
@@ -61,10 +62,10 @@ EXPO_OWNER
 - `EXPO_PROJECT_ID` - UUID Expo/EAS проекта. Его можно взять в Expo dashboard в настройках проекта или из `mobile/courier/.expo/config.json` после `npx eas-cli@latest init`.
 - `EXPO_OWNER` - Expo account или organization slug, владелец проекта. Например `midhey`, если проект лежит в личном Expo аккаунте `midhey`.
 
-Ручная сборка APK без ожидания Release Please тоже доступна:
+Ручный старт APK build без ожидания Release Please тоже доступен:
 
 1. `Actions`
-2. `Mobile Android APK`
+2. `Mobile Android APK Start`
 3. `Run workflow`
 4. Указать `version`, например `1.0.1`
 
@@ -74,11 +75,33 @@ EXPO_OWNER
 gh workflow run mobile-android-apk.yml --repo midhey/beddrop.ru -f version=1.0.1
 ```
 
-`Mobile Android APK` делает:
+`Mobile Android APK Start` делает:
 
 - `npm ci`
 - `npm run typecheck`
-- `eas build --platform android --profile apk --wait`
+- `eas build --platform android --profile apk --no-wait`
+- пишет EAS build ID и ссылку в job summary
+- не ждет очередь Expo и не расходует GitHub Actions minutes на ожидание
+
+Когда build в Expo dashboard перешел в `Finished`, запустите `Mobile Android APK Publish`:
+
+1. `Actions`
+2. `Mobile Android APK Publish`
+3. `Run workflow`
+4. Указать:
+   - `eas_build_id` из job summary или Expo dashboard
+   - `version`, например `1.0.1`
+   - `release_tag`, если нужен нестандартный tag; обычно пусто
+
+Через GitHub CLI:
+
+```bash
+gh workflow run mobile-android-apk-publish.yml --repo midhey/beddrop.ru -f eas_build_id=<eas-build-id> -f version=1.0.1
+```
+
+`Mobile Android APK Publish` делает:
+
+- проверяет, что EAS build уже `FINISHED`
 - скачивает APK
 - сохраняет APK как workflow artifact
 - публикует APK в GHCR как OCI artifact: `ghcr.io/midhey/beddrop-courier-apk:<version>`
