@@ -28,6 +28,12 @@ const config: ExpoConfig = {
   userInterfaceStyle: "light",
   plugins: [
     [
+      "@maplibre/maplibre-react-native",
+      {
+        android: {},
+      },
+    ],
+    [
       "expo-location",
       {
         locationWhenInUsePermission:

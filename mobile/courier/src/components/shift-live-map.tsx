@@ -1,35 +1,99 @@
 import { useEffect, useMemo, useRef } from "react";
 import { Text, View } from "react-native";
-import MapView, { Marker, Polyline, type LatLng, type Region } from "react-native-maps";
+import { Camera, type CameraRef, GeoJSONSource, Layer, Map, Marker, type LngLat, type LngLatBounds } from "@maplibre/maplibre-react-native";
+import type { StyleSpecification } from "@maplibre/maplibre-gl-style-spec";
 import type * as Location from "expo-location";
-import polyline from "@mapbox/polyline";
 import { Bike, MapPin, Navigation, PackageCheck } from "lucide-react-native";
 import type { WorkdayMode } from "@/hooks/use-courier-workday";
 import type { CourierAddress, CourierOrder, RouteSegment } from "@/domain/courier/types";
 import { colors, iconSizes, iconStrokeWidth, radii } from "@/theme/tokens";
 
-const DEFAULT_REGION: Region = {
-  latitude: 58.521,
-  longitude: 31.275,
-  latitudeDelta: 0.045,
-  longitudeDelta: 0.045,
+const DEFAULT_CENTER: LngLat = [31.275, 58.521];
+const MAP_STYLE: StyleSpecification = {
+  version: 8,
+  sources: {
+    osm: {
+      type: "raster",
+      tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+      tileSize: 256,
+      attribution: "© OpenStreetMap contributors",
+    },
+  },
+  layers: [
+    {
+      id: "osm",
+      type: "raster",
+      source: "osm",
+    },
+  ],
 };
 
-const decodeShape = (shape?: string | null): LatLng[] => {
+const decodeShape = (shape?: string | null): LngLat[] => {
   if (!shape) return [];
+
   try {
-    return polyline.decode(shape, 6).map(([latitude, longitude]) => ({ latitude, longitude }));
+    let index = 0;
+    let lat = 0;
+    let lng = 0;
+    const coordinates: LngLat[] = [];
+    const factor = 1e6;
+
+    while (index < shape.length) {
+      let byte;
+      let shift = 0;
+      let result = 0;
+
+      do {
+        byte = shape.charCodeAt(index++) - 63;
+        result |= (byte & 0x1f) << shift;
+        shift += 5;
+      } while (byte >= 0x20);
+
+      lat += (result & 1) ? ~(result >> 1) : (result >> 1);
+      shift = 0;
+      result = 0;
+
+      do {
+        byte = shape.charCodeAt(index++) - 63;
+        result |= (byte & 0x1f) << shift;
+        shift += 5;
+      } while (byte >= 0x20);
+
+      lng += (result & 1) ? ~(result >> 1) : (result >> 1);
+      coordinates.push([lng / factor, lat / factor]);
+    }
+
+    return coordinates;
   } catch {
     return [];
   }
 };
 
-const coordinateFromAddress = (address?: CourierAddress | null): LatLng | null => {
+const coordinateFromAddress = (address?: CourierAddress | null): LngLat | null => {
   if (address?.lat == null || address.lng == null) return null;
   const latitude = Number(address.lat);
   const longitude = Number(address.lng);
   if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return null;
-  return { latitude, longitude };
+  return [longitude, latitude];
+};
+
+const boundsFromPoints = (points: LngLat[]): LngLatBounds | null => {
+  if (!points.length) return null;
+
+  const [firstLng, firstLat] = points[0];
+  let west = firstLng;
+  let east = firstLng;
+  let south = firstLat;
+  let north = firstLat;
+
+  for (const [lng, lat] of points) {
+    west = Math.min(west, lng);
+    east = Math.max(east, lng);
+    south = Math.min(south, lat);
+    north = Math.max(north, lat);
+  }
+
+  return [west, south, east, north];
 };
 
 const statusText = (active: boolean, status: string) => {
@@ -57,14 +121,11 @@ export function ShiftLiveMap({
   mode: WorkdayMode;
   routeSegments: RouteSegment[];
 }) {
-  const mapRef = useRef<MapView | null>(null);
+  const cameraRef = useRef<CameraRef | null>(null);
   const coordinate = useMemo(() => {
     if (!location) return null;
 
-    return {
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
-    };
+    return [location.coords.longitude, location.coords.latitude] satisfies LngLat;
   }, [location]);
   const restaurantCoordinate = useMemo(() => coordinateFromAddress(order?.restaurant?.address), [order?.restaurant?.address]);
   const deliveryCoordinate = useMemo(
@@ -83,10 +144,7 @@ export function ShiftLiveMap({
     [routeSegments],
   );
   const routePoints = useMemo(() => routeLines.flatMap((segment) => segment.coordinates), [routeLines]);
-
-  const region = coordinate
-    ? { ...coordinate, latitudeDelta: 0.018, longitudeDelta: 0.018 }
-    : DEFAULT_REGION;
+  const initialCenter = coordinate ?? restaurantCoordinate ?? DEFAULT_CENTER;
 
   useEffect(() => {
     const points = [
@@ -97,44 +155,60 @@ export function ShiftLiveMap({
     ];
 
     if (points.length > 1) {
-      mapRef.current?.fitToCoordinates(points, {
-        edgePadding: { top: 90, right: 46, bottom: 260, left: 46 },
-        animated: true,
-      });
+      const bounds = boundsFromPoints(points);
+      if (bounds) {
+        cameraRef.current?.fitBounds(bounds, { padding: { top: 90, right: 46, bottom: 260, left: 46 }, duration: 500 });
+      }
       return;
     }
 
     const focus = restaurantCoordinate ?? coordinate;
     if (!focus) return;
 
-    mapRef.current?.animateToRegion(
-      { ...focus, latitudeDelta: 0.018, longitudeDelta: 0.018 },
-      500,
-    );
+    cameraRef.current?.easeTo({ center: focus, zoom: 14, duration: 500 });
   }, [coordinate, deliveryCoordinate, restaurantCoordinate, routePoints]);
 
   return (
     <View style={{ height, overflow: "hidden", backgroundColor: colors.mapDark }}>
-      <MapView
-        ref={mapRef}
+      <Map
         style={{ height }}
-        initialRegion={region}
-        showsCompass={false}
-        showsMyLocationButton={false}
-        toolbarEnabled={false}
+        mapStyle={MAP_STYLE}
+        compass={false}
+        logo={false}
+        scaleBar={false}
+        attributionPosition={{ bottom: 8, left: 8 }}
       >
+        <Camera ref={cameraRef} initialViewState={{ center: initialCenter, zoom: 13 }} />
         {routeLines.map((segment) => (
-          <Polyline
+          <GeoJSONSource
             key={segment.id}
-            coordinates={segment.coordinates}
-            strokeWidth={5}
-            strokeColor={segment.type === "courier_to_restaurant" ? colors.secondary : colors.primary}
-            lineCap="round"
-            lineJoin="round"
-          />
+            id={`route-${segment.id}`}
+            data={{
+              type: "Feature",
+              geometry: {
+                type: "LineString",
+                coordinates: segment.coordinates,
+              },
+              properties: {},
+            }}
+          >
+            <Layer
+              id={`route-layer-${segment.id}`}
+              type="line"
+              paint={{
+                "line-color": segment.type === "courier_to_restaurant" ? colors.secondary : colors.primary,
+                "line-width": 5,
+                "line-opacity": 0.9,
+              }}
+              layout={{
+                "line-cap": "round",
+                "line-join": "round",
+              }}
+            />
+          </GeoJSONSource>
         ))}
         {restaurantCoordinate ? (
-          <Marker coordinate={restaurantCoordinate} title={order?.restaurant?.name ?? "Ресторан"}>
+          <Marker lngLat={restaurantCoordinate} id="restaurant">
             <View
               style={{
                 width: 34,
@@ -152,7 +226,7 @@ export function ShiftLiveMap({
           </Marker>
         ) : null}
         {deliveryCoordinate ? (
-          <Marker coordinate={deliveryCoordinate} title="Клиент">
+          <Marker lngLat={deliveryCoordinate} id="delivery">
             <View
               style={{
                 width: 34,
@@ -170,7 +244,7 @@ export function ShiftLiveMap({
           </Marker>
         ) : null}
         {coordinate ? (
-          <Marker coordinate={coordinate} title="Вы">
+          <Marker lngLat={coordinate} id="courier">
             <View
               style={{
                 width: 24,
@@ -187,7 +261,7 @@ export function ShiftLiveMap({
             </View>
           </Marker>
         ) : null}
-      </MapView>
+      </Map>
 
       <View style={{ position: "absolute", top: 14, left: 14, right: 14, gap: 8 }}>
         <View

@@ -6,7 +6,11 @@
       "component": "beddrop-web",
       "package-name": "beddrop-web",
       "release-type": "simple",
-      "exclude-paths": ["mobile/courier"],
+      "exclude-paths": [
+        "mobile/courier",
+        ".github/workflows/mobile-android-apk.yml",
+        ".github/workflows/mobile-android-apk-publish.yml"
+      ],
       "draft": false,
       "prerelease": false
     },
