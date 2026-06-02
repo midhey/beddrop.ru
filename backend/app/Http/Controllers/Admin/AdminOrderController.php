@@ -72,9 +72,6 @@ class AdminOrderController extends Controller
     public function accept(Request $request, Order $order, TransitionOrderStatus $transitionOrderStatus): OrderResource
     {
         $this->ensureStatus($order, [OrderStatus::CREATED]);
-        if ($order->payment_status !== PaymentStatus::PAID->value) {
-            abort(422, 'Заказ еще не оплачен.');
-        }
 
         return new OrderResource(DB::transaction(function () use ($request, $order, $transitionOrderStatus) {
             $transitionOrderStatus($order, OrderStatus::ACCEPTED_BY_RESTAURANT, $this->adminEventPayload($request));
@@ -85,8 +82,10 @@ class AdminOrderController extends Controller
 
     public function cancel(Request $request, Order $order, TransitionOrderStatus $transitionOrderStatus): OrderResource
     {
-        if ($this->isFinal($order)) {
-            abort(422, 'Завершенный заказ нельзя отменить.');
+        // Admins can cancel even if it's "final" if they really need to fix things, 
+        // but let's keep it reasonable for now.
+        if ($order->status === OrderStatus::CANCELED_BY_RESTAURANT->value || $order->status === OrderStatus::CANCELED_BY_USER->value) {
+            abort(422, 'Заказ уже отменен.');
         }
 
         $data = $request->validate([
@@ -108,7 +107,7 @@ class AdminOrderController extends Controller
 
     public function ready(Request $request, Order $order, TransitionOrderStatus $transitionOrderStatus): OrderResource
     {
-        $this->ensureStatus($order, [OrderStatus::ACCEPTED_BY_RESTAURANT]);
+        $this->ensureStatus($order, [OrderStatus::CREATED, OrderStatus::ACCEPTED_BY_RESTAURANT]);
 
         return new OrderResource(DB::transaction(function () use ($request, $order, $transitionOrderStatus) {
             $transitionOrderStatus($order, OrderStatus::READY_FOR_PICKUP, $this->adminEventPayload($request));
@@ -136,11 +135,12 @@ class AdminOrderController extends Controller
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            $this->ensureStatus($lockedOrder, [OrderStatus::READY_FOR_PICKUP]);
-
-            if ($lockedOrder->courier_id !== null) {
-                abort(422, 'У заказа уже назначен курьер.');
-            }
+            $this->ensureStatus($lockedOrder, [
+                OrderStatus::CREATED,
+                OrderStatus::ACCEPTED_BY_RESTAURANT,
+                OrderStatus::READY_FOR_PICKUP,
+                OrderStatus::COURIER_ASSIGNED,
+            ]);
 
             $transitionOrderStatus(
                 $lockedOrder,
@@ -160,7 +160,7 @@ class AdminOrderController extends Controller
 
     public function unassign(Request $request, Order $order, TransitionOrderStatus $transitionOrderStatus): OrderResource
     {
-        $this->ensureStatus($order, [OrderStatus::COURIER_ASSIGNED]);
+        $this->ensureStatus($order, [OrderStatus::COURIER_ASSIGNED, OrderStatus::PICKED_UP]);
 
         return new OrderResource(DB::transaction(function () use ($request, $order, $transitionOrderStatus) {
             $previousCourierId = $order->courier_id;
@@ -186,7 +186,13 @@ class AdminOrderController extends Controller
 
     public function pickedUp(Request $request, Order $order, TransitionOrderStatus $transitionOrderStatus): OrderResource
     {
-        $this->ensureStatus($order, [OrderStatus::COURIER_ASSIGNED]);
+        $this->ensureStatus($order, [
+            OrderStatus::CREATED,
+            OrderStatus::ACCEPTED_BY_RESTAURANT,
+            OrderStatus::READY_FOR_PICKUP,
+            OrderStatus::COURIER_ASSIGNED,
+        ]);
+        
         if ($order->courier_id === null) {
             abort(422, 'Перед выдачей нужно назначить курьера.');
         }
@@ -210,7 +216,14 @@ class AdminOrderController extends Controller
         CourierPayoutCalculator $payouts,
         TransitionOrderStatus $transitionOrderStatus,
     ): OrderResource {
-        $this->ensureStatus($order, [OrderStatus::PICKED_UP]);
+        $this->ensureStatus($order, [
+            OrderStatus::CREATED,
+            OrderStatus::ACCEPTED_BY_RESTAURANT,
+            OrderStatus::READY_FOR_PICKUP,
+            OrderStatus::COURIER_ASSIGNED,
+            OrderStatus::PICKED_UP,
+        ]);
+
         if ($order->courier_id === null) {
             abort(422, 'Перед доставкой нужно назначить курьера.');
         }

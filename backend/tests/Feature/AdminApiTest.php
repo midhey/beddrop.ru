@@ -366,7 +366,7 @@ class AdminApiTest extends TestCase
         }
     }
 
-    public function test_admin_default_accept_rejects_unpaid_order(): void
+    public function test_admin_can_accept_unpaid_order(): void
     {
         $admin = $this->createUser(['is_admin' => true]);
         $customer = $this->createUser();
@@ -379,13 +379,12 @@ class AdminApiTest extends TestCase
         $this
             ->actingAs($admin, 'api')
             ->postJson("/api/v1/admin/orders/{$order->id}/accept")
-            ->assertStatus(422)
-            ->assertJsonPath('message', 'Заказ еще не оплачен.');
+            ->assertOk()
+            ->assertJsonPath('data.status', OrderStatus::ACCEPTED_BY_RESTAURANT->value);
 
         $this->assertDatabaseHas('orders', [
             'id' => $order->id,
-            'status' => OrderStatus::CREATED->value,
-            'payment_status' => PaymentStatus::PENDING->value,
+            'status' => OrderStatus::ACCEPTED_BY_RESTAURANT->value,
         ]);
     }
 
