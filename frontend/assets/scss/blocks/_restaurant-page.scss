@@ -39,6 +39,13 @@
       padding: rem(24);
       gap: rem(20);
     }
+
+    @media (max-width: $mobile) {
+      padding: rem(20) rem(16);
+      gap: rem(16);
+      margin-bottom: rem(24);
+      border-radius: rem(20);
+    }
   }
 
   &__logo {
@@ -56,6 +63,12 @@
     @media (max-width: $tablet) {
       width: rem(100);
       height: rem(100);
+    }
+
+    @media (max-width: $mobile) {
+      width: rem(80);
+      height: rem(80);
+      border-radius: rem(16);
     }
   }
 
@@ -92,6 +105,11 @@
     @media (max-width: $tablet) {
       font-size: rem(24);
     }
+
+    @media (max-width: $mobile) {
+      font-size: rem(22);
+      margin-bottom: rem(4);
+    }
   }
 
   &__title-skeleton {
@@ -105,6 +123,11 @@
     font-size: rem(15);
     color: var(--color-text-muted);
     font-weight: 600;
+
+    @media (max-width: $mobile) {
+      font-size: rem(13);
+      margin-bottom: rem(8);
+    }
   }
 
   &__description {
@@ -113,6 +136,11 @@
     line-height: 1.6;
     color: var(--color-text-subtle);
     max-width: rem(720);
+
+    @media (max-width: $mobile) {
+      font-size: rem(13);
+      margin-bottom: rem(16);
+    }
   }
 
   &__address-skeleton {
@@ -129,6 +157,10 @@
     @media (max-width: $tablet) {
       justify-content: center;
     }
+
+    @media (max-width: $mobile) {
+      gap: rem(8);
+    }
   }
 
   &__meta-item {
@@ -144,6 +176,11 @@
     border: 1px solid var(--color-border-light);
     text-decoration: none;
     transition: all 0.2s ease;
+
+    @media (max-width: $mobile) {
+      padding: rem(5) rem(12);
+      font-size: rem(12);
+    }
 
     .ui-icon {
       color: var(--color-primary);
@@ -350,20 +387,12 @@
   /* адаптив */
 
   @media (max-width: 640px) {
-    &__header {
-      flex-direction: column;
-      align-items: center;
-    }
-
-    &__logo {
-      width: rem(100);
-      height: rem(100);
-    }
-
     &__products {
       grid-template-columns: 1fr;
     }
+  }
 
+  @media (max-width: $mobile) {
     &__title-skeleton {
       width: min(100%, rem(260));
       height: rem(30);
