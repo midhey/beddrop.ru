@@ -9,13 +9,13 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schedule;
 
 Artisan::command('orders:cancel-stale-restaurant-acceptance', function () {
-    $deadline = now()->subHours(2);
+    $ttlMinutes = max(1, (int) config('orders.restaurant_acceptance_ttl_minutes', 120));
+    $deadline = now()->subMinutes($ttlMinutes);
     $canceled = 0;
 
     Order::query()
         ->where('status', OrderStatus::CREATED->value)
-        ->where('payment_status', PaymentStatus::PAID->value)
-        ->where('updated_at', '<=', $deadline)
+        ->where('created_at', '<=', $deadline)
         ->orderBy('id')
         ->chunkById(100, function ($orders) use (&$canceled) {
             foreach ($orders as $staleOrder) {
@@ -27,8 +27,7 @@ Artisan::command('orders:cancel-stale-restaurant-acceptance', function () {
 
                     if (
                         ! $order ||
-                        $order->status !== OrderStatus::CREATED->value ||
-                        $order->payment_status !== PaymentStatus::PAID->value
+                        $order->status !== OrderStatus::CREATED->value
                     ) {
                         return false;
                     }
@@ -53,8 +52,8 @@ Artisan::command('orders:cancel-stale-restaurant-acceptance', function () {
             }
         });
 
-    $this->info("Canceled {$canceled} stale paid orders.");
-})->purpose('Cancel paid orders that were not accepted by restaurants within 2 hours');
+    $this->info("Canceled {$canceled} stale restaurant acceptance orders.");
+})->purpose('Cancel created orders that were not accepted by restaurants within the configured TTL');
 
 Schedule::command('orders:cancel-stale-restaurant-acceptance')
     ->everyFiveMinutes()

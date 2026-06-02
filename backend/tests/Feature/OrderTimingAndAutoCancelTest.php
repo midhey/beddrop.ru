@@ -46,52 +46,62 @@ class OrderTimingAndAutoCancelTest extends TestCase
         $this->assertSame('2026-05-14 12:50:00', $order->estimated_delivery_at?->format('Y-m-d H:i:s'));
     }
 
-    public function test_command_cancels_stale_paid_created_orders(): void
+    public function test_command_cancels_stale_created_orders_regardless_of_payment_status(): void
     {
+        config(['orders.restaurant_acceptance_ttl_minutes' => 120]);
+
         $customer = $this->createUser();
         $owner = $this->createUser();
         $restaurant = $this->createRestaurant($owner);
-        $staleOrder = $this->createAcceptedOrder($customer, $restaurant, null, [
+        $stalePaidOrder = $this->createAcceptedOrder($customer, $restaurant, null, [
             'status' => OrderStatus::CREATED->value,
             'payment_status' => PaymentStatus::PAID->value,
+        ]);
+        $stalePendingOrder = $this->createAcceptedOrder($customer, $restaurant, null, [
+            'status' => OrderStatus::CREATED->value,
+            'payment_status' => PaymentStatus::PENDING->value,
         ]);
         $recentOrder = $this->createAcceptedOrder($customer, $restaurant, null, [
             'status' => OrderStatus::CREATED->value,
             'payment_status' => PaymentStatus::PAID->value,
         ]);
-        $pendingOrder = $this->createAcceptedOrder($customer, $restaurant, null, [
-            'status' => OrderStatus::CREATED->value,
-            'payment_status' => PaymentStatus::PENDING->value,
-        ]);
 
         $this->travelTo('2026-05-14 12:00:00');
 
         DB::table('orders')
-            ->where('id', $staleOrder->id)
-            ->update(['updated_at' => now()->subHours(3)]);
+            ->whereIn('id', [$stalePaidOrder->id, $stalePendingOrder->id])
+            ->update([
+                'created_at' => now()->subHours(3),
+                'updated_at' => now()->subMinutes(5),
+            ]);
         DB::table('orders')
-            ->whereIn('id', [$recentOrder->id, $pendingOrder->id])
-            ->update(['updated_at' => now()->subHour()]);
+            ->where('id', $recentOrder->id)
+            ->update([
+                'created_at' => now()->subHour(),
+                'updated_at' => now()->subHour(),
+            ]);
 
         $this->artisan('orders:cancel-stale-restaurant-acceptance')
-            ->expectsOutput('Canceled 1 stale paid orders.')
+            ->expectsOutput('Canceled 2 stale restaurant acceptance orders.')
             ->assertExitCode(0);
 
         $this->assertDatabaseHas('orders', [
-            'id' => $staleOrder->id,
+            'id' => $stalePaidOrder->id,
             'status' => OrderStatus::CANCELED_BY_RESTAURANT->value,
+            'payment_status' => PaymentStatus::PAID->value,
+        ]);
+        $this->assertDatabaseHas('orders', [
+            'id' => $stalePendingOrder->id,
+            'status' => OrderStatus::CANCELED_BY_RESTAURANT->value,
+            'payment_status' => PaymentStatus::PENDING->value,
         ]);
         $this->assertDatabaseHas('orders', [
             'id' => $recentOrder->id,
             'status' => OrderStatus::CREATED->value,
         ]);
-        $this->assertDatabaseHas('orders', [
-            'id' => $pendingOrder->id,
-            'status' => OrderStatus::CREATED->value,
-        ]);
 
         $event = OrderEvent::query()
-            ->where('order_id', $staleOrder->id)
+            ->where('order_id', $stalePendingOrder->id)
             ->where('event', OrderStatus::CANCELED_BY_RESTAURANT->value)
             ->first();
 
