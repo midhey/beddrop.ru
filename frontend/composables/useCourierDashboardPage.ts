@@ -1,6 +1,5 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRouter } from '#app';
-import { useSeoMeta } from '#imports';
 import { useFeedback } from '~/composables/useFeedback';
 import { useCourier } from '~/composables/useCourier';
 import {
@@ -59,8 +58,10 @@ export function useCourierDashboardPage() {
     } = useCourier();
     const feedback = useFeedback();
 
-    useSeoMeta({
+    useAppSeoMeta({
         title: 'Курьерский кабинет — BedDrop',
+        description: 'Курьерский кабинет BedDrop для смен, доступных заказов, активных доставок и статуса выполнения маршрутов.',
+        robots: 'noindex,nofollow',
     });
 
     const pageLoading = computed(

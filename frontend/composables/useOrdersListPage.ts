@@ -1,5 +1,4 @@
 import { computed, onMounted } from 'vue';
-import { useSeoMeta } from '#imports';
 import { useOrders } from '~/composables/useOrders';
 import {
     getOrderStatusClass,
@@ -11,8 +10,10 @@ import { formatDateTime, formatPrice } from '~/utils/formatting';
 export function useOrdersListPage() {
     const { items, loading, errorMessage, fetchOrders } = useOrders();
 
-    useSeoMeta({
+    useAppSeoMeta({
         title: 'Мои заказы — BedDrop',
+        description: 'История и статусы ваших заказов в BedDrop: оплата, доставка, маршрут и события заказа.',
+        robots: 'noindex,nofollow',
     });
 
     const hasOrders = computed(() => items.value.length > 0);

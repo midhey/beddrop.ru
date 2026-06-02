@@ -1,6 +1,5 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from '#app';
-import { useSeoMeta } from '#imports';
 import { useAddresses } from '~/composables/useAddresses';
 import { useFeedback } from '~/composables/useFeedback';
 import { useOrders, type CreateOrderPayload, type OrderRouteSegment } from '~/composables/useOrders';
@@ -9,8 +8,10 @@ import { useCartStore } from '~/stores/cart';
 import { formatPrice } from '~/utils/formatting';
 
 export function useCheckoutPage() {
-    useSeoMeta({
+    useAppSeoMeta({
         title: 'Оформление заказа — BedDrop',
+        description: 'Проверьте корзину, выберите адрес доставки и оформите заказ еды в BedDrop.',
+        robots: 'noindex,nofollow',
     });
 
     const router = useRouter();

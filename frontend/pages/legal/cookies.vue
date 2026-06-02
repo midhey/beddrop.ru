@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { Info, ArrowLeft } from 'lucide-vue-next';
-useSeoMeta({ title: 'Использование Cookies — BedDrop' });
+
+useAppSeoMeta({
+  title: 'Использование Cookies — BedDrop',
+  description: 'Политика Cookies BedDrop: зачем сервис использует cookies для авторизации, корзины и стабильной работы интерфейса.',
+});
 </script>
 
 <template>

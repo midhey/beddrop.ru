@@ -1,6 +1,5 @@
 import { computed, onMounted } from 'vue';
 import { useRouter } from '#app';
-import { useSeoMeta } from '#imports';
 import { useRestaurants } from '~/composables/useRestaurants';
 import {
     formatRestaurantAddress,
@@ -13,8 +12,10 @@ export function useManageRestaurantsPage() {
     const router = useRouter();
     const { items, loading, errorMessage, fetchMyRestaurants } = useRestaurants();
 
-    useSeoMeta({
+    useAppSeoMeta({
         title: 'Мои рестораны — BedDrop',
+        description: 'Кабинет партнёра BedDrop: список ресторанов, активность, адреса и переход к управлению меню и заказами.',
+        robots: 'noindex,nofollow',
     });
 
     const hasRestaurants = computed(() => items.value.length > 0);

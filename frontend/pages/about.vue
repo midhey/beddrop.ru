@@ -1,6 +1,10 @@
 <script setup lang="ts">
-import { Info, ArrowLeft, Rocket, Cpu, Palette, Code2 } from 'lucide-vue-next';
-useSeoMeta({ title: 'О сервисе — BedDrop' });
+import { ArrowLeft, Rocket, Cpu, Palette, Code2 } from 'lucide-vue-next';
+
+useAppSeoMeta({
+  title: 'О сервисе — BedDrop',
+  description: 'BedDrop — демонстрационная FoodTech-платформа для заказа еды, управления ресторанами, курьерами и логистикой доставки.',
+});
 </script>
 
 <template>

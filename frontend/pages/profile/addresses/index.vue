@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { Pencil, Trash2, ArrowLeft, MapPin, PlusCircle, CheckCircle2 } from 'lucide-vue-next';
-import { useSeoMeta } from '#imports';
 import AddressPicker from '~/components/address/AddressPicker.vue';
 import { useAddresses, type Address, type AddressPayload } from '~/composables/useAddresses';
 import { useFeedback } from '~/composables/useFeedback';
@@ -17,8 +16,10 @@ const {
 } = useAddresses();
 const feedback = useFeedback();
 
-useSeoMeta({
+useAppSeoMeta({
   title: 'Мои адреса — BedDrop',
+  description: 'Адреса доставки в профиле BedDrop: добавление, редактирование и выбор точек для оформления заказов.',
+  robots: 'noindex,nofollow',
 });
 
 const formMode = ref<'create' | 'edit'>('create');

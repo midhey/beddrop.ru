@@ -18,6 +18,12 @@ const inviteLoading = ref(true);
 const acceptLoading = ref(false);
 const acceptAttempted = ref(false);
 
+useAppSeoMeta({
+  title: 'Приглашение в ресторан — BedDrop',
+  description: 'Страница принятия приглашения в команду ресторана BedDrop.',
+  robots: 'noindex,nofollow',
+});
+
 const {
   fetchInvite,
   acceptInvite,

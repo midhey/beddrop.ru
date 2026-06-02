@@ -23,7 +23,11 @@ import {
 } from '~/domains/orders/presentation';
 import { formatDateTime, formatPrice } from '~/utils/formatting';
 
-useSeoMeta({ title: 'Заказы — админка BedDrop' });
+useAppSeoMeta({
+  title: 'Заказы — админка BedDrop',
+  description: 'Административный список заказов BedDrop: фильтры, статусы, курьеры, оплата и управление жизненным циклом заказа.',
+  robots: 'noindex,nofollow',
+});
 
 const { items, loading, errorMessage, fetchItems } = useAdminOrders();
 const selected = ref<Order | null>(null);

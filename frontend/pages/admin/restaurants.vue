@@ -7,7 +7,11 @@ import type { Restaurant } from '~/composables/useRestaurants';
 import { getAdminRestaurant, updateAdminRestaurant } from '~/domains/admin/api';
 import { formatDateTime } from '~/utils/formatting';
 
-useSeoMeta({ title: 'Рестораны — админка BedDrop' });
+useAppSeoMeta({
+  title: 'Рестораны — админка BedDrop',
+  description: 'Административный раздел ресторанов BedDrop: поиск, статусы активности, приём заказов и настройки заведений.',
+  robots: 'noindex,nofollow',
+});
 
 const { items, loading, errorMessage, fetchItems } = useAdminRestaurants();
 const selected = ref<any | null>(null);

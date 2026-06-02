@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { Pencil, MapPin, ChevronRight, ShieldCheck } from 'lucide-vue-next';
 
+useAppSeoMeta({
+  title: 'Мой профиль — BedDrop',
+  description: 'Профиль пользователя BedDrop: личные данные, контакты, пароль и переход к адресам доставки.',
+  robots: 'noindex,nofollow',
+});
+
 const {
   user,
   isLoading,

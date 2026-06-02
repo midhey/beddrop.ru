@@ -19,6 +19,12 @@ const cartStore = useCartStore();
 const router = useRouter();
 const { $notify } = useNuxtApp();
 
+useAppSeoMeta({
+  title: 'Корзина — BedDrop',
+  description: 'Корзина BedDrop: состав заказа, количество товаров, итоговая стоимость и переход к оформлению доставки.',
+  robots: 'noindex,nofollow',
+});
+
 const loading = computed(
   () => cartStore.loading || !!cartStore.cart?.is_summary,
 );

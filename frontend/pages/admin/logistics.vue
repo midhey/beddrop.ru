@@ -8,8 +8,10 @@ import { useAdminLogistics } from '~/composables/useAdminLogistics';
 import { useFeedback } from '~/composables/useFeedback';
 import { listAdminCouriers, listAdminOrders } from '~/domains/admin/api';
 
-useSeoMeta({
+useAppSeoMeta({
   title: 'Логистика — админка BedDrop',
+  description: 'Административные настройки логистики BedDrop: тарифы, маршруты, проверка адресов и активные доставки.',
+  robots: 'noindex,nofollow',
 });
 
 const feedback = useFeedback();

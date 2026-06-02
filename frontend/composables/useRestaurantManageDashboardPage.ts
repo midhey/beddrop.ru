@@ -1,6 +1,5 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from '#app';
-import { useSeoMeta } from '#imports';
 import { useFeedback } from '~/composables/useFeedback';
 import type { AddressPayload } from '~/composables/useAddresses';
 import { useRestaurants, type Restaurant } from '~/composables/useRestaurants';
@@ -163,11 +162,15 @@ export function useRestaurantManageDashboardPage() {
             staffError.value,
     );
 
-    useSeoMeta(() => ({
-        title: restaurant.value
+    useAppSeoMeta({
+        title: computed(() => restaurant.value
             ? `Дашборд — ${restaurant.value.name}`
-            : 'Ресторан — дашборд',
-    }));
+            : 'Ресторан — дашборд'),
+        description: computed(() => restaurant.value
+            ? `Управление рестораном ${restaurant.value.name}: заказы, меню, сотрудники и настройки доступности.`
+            : 'Управление рестораном BedDrop: заказы, меню, сотрудники и настройки доступности.'),
+        robots: 'noindex,nofollow',
+    });
 
     const fullAddress = computed(() => formatRestaurantAddress(restaurant.value));
     const prepTimeText = computed(() => formatRestaurantPrepTime(restaurant.value));

@@ -4,7 +4,11 @@ import AdminShell from '~/components/admin/AdminShell.vue';
 import { useAdminDashboard } from '~/composables/useAdmin';
 import { formatPrice } from '~/utils/formatting';
 
-useSeoMeta({ title: 'Админка — BedDrop' });
+useAppSeoMeta({
+  title: 'Админка — BedDrop',
+  description: 'Административная панель BedDrop с операционными метриками, заказами, ресторанами, курьерами и пользователями.',
+  robots: 'noindex,nofollow',
+});
 
 const { dashboard, loading, errorMessage, fetchDashboard } = useAdminDashboard();
 

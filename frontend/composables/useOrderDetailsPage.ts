@@ -1,6 +1,5 @@
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from '#app';
-import { useSeoMeta } from '#imports';
 import { useFeedback } from '~/composables/useFeedback';
 import { useOrders } from '~/composables/useOrders';
 import { checkOrderPaymentStatusRequest } from '~/domains/orders/api';
@@ -35,11 +34,15 @@ export function useOrderDetailsPage() {
         return ['CREATED', 'ACCEPTED_BY_RESTAURANT'].includes(current.value.status);
     });
 
-    useSeoMeta(() => ({
-        title: current.value
+    useAppSeoMeta({
+        title: computed(() => current.value
             ? `Заказ #${current.value.id} — BedDrop`
-            : 'Заказ — BedDrop',
-    }));
+            : 'Заказ — BedDrop'),
+        description: computed(() => current.value
+            ? `Детали заказа #${current.value.id}: статус, оплата, маршрут доставки и история событий.`
+            : 'Детали заказа BedDrop: статус, оплата, маршрут доставки и история событий.'),
+        robots: 'noindex,nofollow',
+    });
 
     const sortedEvents = computed(() => sortOrderEvents(current.value?.events));
     const routeDistanceKm = computed(() => {

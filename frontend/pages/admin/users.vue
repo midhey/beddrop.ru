@@ -5,7 +5,11 @@ import { useAdminUsers } from '~/composables/useAdmin';
 import { updateAdminUser } from '~/domains/admin/api';
 import { formatDateTime } from '~/utils/formatting';
 
-useSeoMeta({ title: 'Пользователи — админка BedDrop' });
+useAppSeoMeta({
+  title: 'Пользователи — админка BedDrop',
+  description: 'Административный раздел пользователей BedDrop: поиск аккаунтов, роли, блокировки и управление доступом.',
+  robots: 'noindex,nofollow',
+});
 
 const { items, loading, errorMessage, fetchItems } = useAdminUsers();
 const filters = reactive({

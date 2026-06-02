@@ -12,6 +12,11 @@ const { $notify } = useNuxtApp();
 const { fetchCategories } = useProductCategories();
 const selectedCategoryId = ref<number | null>(null);
 
+useAppSeoMeta({
+  title: 'Рестораны рядом — BedDrop',
+  description: 'Выберите ресторан на BedDrop, посмотрите меню и оформите доставку еды с прозрачным статусом заказа.',
+});
+
 type CategoryFilterOption = {
   key: string;
   id: number | null;

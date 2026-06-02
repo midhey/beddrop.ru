@@ -47,7 +47,12 @@ const errorBadge = computed(() =>
 
 useHead(() => ({
   title: isNotFound.value ? "404 | Beddrop" : `${statusCode.value} | Beddrop`,
-  meta: [{ name: "robots", content: "noindex" }],
+  meta: [
+    { name: "description", content: description.value },
+    { property: "og:title", content: title.value },
+    { property: "og:description", content: description.value },
+    { name: "robots", content: "noindex,nofollow" },
+  ],
 }));
 
 const handleHome = async () => {

@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { Info, ArrowLeft } from 'lucide-vue-next';
-useSeoMeta({ title: 'Политика конфиденциальности — BedDrop' });
+
+useAppSeoMeta({
+  title: 'Политика конфиденциальности — BedDrop',
+  description: 'Политика конфиденциальности BedDrop: какие данные используются в демонстрационном сервисе и как они защищаются.',
+});
 </script>
 
 <template>

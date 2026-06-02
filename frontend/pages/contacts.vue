@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { Mail, Phone, MapPin, ArrowLeft } from 'lucide-vue-next';
-useSeoMeta({ title: 'Контакты — BedDrop' });
+
+useAppSeoMeta({
+  title: 'Контакты — BedDrop',
+  description: 'Контакты BedDrop: электронная почта, телефон и информация для обратной связи по работе сервиса доставки еды.',
+});
 </script>
 
 <template>

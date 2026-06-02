@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { Info, ArrowLeft } from 'lucide-vue-next';
-useSeoMeta({ title: 'Публичная оферта — BedDrop' });
+
+useAppSeoMeta({
+  title: 'Публичная оферта — BedDrop',
+  description: 'Публичная оферта BedDrop: условия использования демонстрационного сервиса доставки еды и тестового оформления заказов.',
+});
 </script>
 
 <template>

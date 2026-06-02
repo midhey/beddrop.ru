@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { Info, ArrowLeft, Bike } from 'lucide-vue-next';
-useSeoMeta({ title: 'Условия для курьеров — BedDrop' });
+
+useAppSeoMeta({
+  title: 'Условия для курьеров — BedDrop',
+  description: 'Условия для курьеров BedDrop: правила работы, смены, статусы заказов и демонстрационный формат курьерского кабинета.',
+});
 </script>
 
 <template>

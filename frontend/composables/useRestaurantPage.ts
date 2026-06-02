@@ -1,6 +1,6 @@
 import { computed, ref, watch, type Ref } from 'vue';
 import { useRouter } from '#app';
-import { useAsyncData, useSeoMeta } from '#imports';
+import { useAsyncData } from '#imports';
 import { getRestaurantBySlug } from '~/domains/restaurants/api';
 import { listRestaurantProducts } from '~/domains/restaurants/manage/api';
 import type { Product } from '~/composables/useRestaurantProducts';
@@ -41,14 +41,6 @@ const getErrorMessage = (error: any, fallback: string): string => {
 export async function useRestaurantPage(slugRef: Readonly<Ref<string>>) {
     const router = useRouter();
     const selectedCategorySlug = ref<string>('all');
-    const seoRestaurantName = ref<string | null>(null);
-
-    // SEO регистрируется до первого await, чтобы Nuxt-контекст не терялся.
-    useSeoMeta(() => ({
-        title: seoRestaurantName.value
-            ? `${seoRestaurantName.value} — BedDrop`
-            : 'Ресторан — BedDrop',
-    }));
 
     const {
         data: pageData,
@@ -109,6 +101,34 @@ export async function useRestaurantPage(slugRef: Readonly<Ref<string>>) {
         if (!isCurrentData.value) return null;
 
         return pageData.value?.productsError ?? null;
+    });
+
+    const seoTitle = computed(() => {
+        return restaurant.value
+            ? `${restaurant.value.name} — меню и доставка | BedDrop`
+            : 'Ресторан — меню и доставка | BedDrop';
+    });
+
+    const seoDescription = computed(() => {
+        const currentRestaurant = restaurant.value;
+
+        if (!currentRestaurant) {
+            return 'Откройте страницу ресторана на BedDrop, изучите меню и оформите доставку еды онлайн.';
+        }
+
+        const descriptionParts = [
+            currentRestaurant.description,
+            `Меню, цены и доставка из ресторана ${currentRestaurant.name} на BedDrop.`,
+            products.value.length ? `${products.value.length} позиций в меню.` : null,
+        ].filter(Boolean);
+
+        return descriptionParts.join(' ');
+    });
+
+    useAppSeoMeta({
+        title: seoTitle,
+        description: seoDescription,
+        image: computed(() => restaurant.value?.logo?.url || '/images/logo.webp'),
     });
 
     const loading = computed(() => {
@@ -221,14 +241,6 @@ export async function useRestaurantPage(slugRef: Readonly<Ref<string>>) {
     watch(error, (requestError) => {
         void redirectIfNotFound(requestError);
     });
-
-    watch(
-        restaurant,
-        (currentRestaurant) => {
-            seoRestaurantName.value = currentRestaurant?.name ?? null;
-        },
-        { immediate: true },
-    );
 
     return {
         // state

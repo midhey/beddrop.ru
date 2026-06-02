@@ -5,7 +5,11 @@ import { useAdminCouriers } from '~/composables/useAdmin';
 import { updateAdminCourier } from '~/domains/admin/api';
 import { formatDateTime } from '~/utils/formatting';
 
-useSeoMeta({ title: 'Курьеры — админка BedDrop' });
+useAppSeoMeta({
+  title: 'Курьеры — админка BedDrop',
+  description: 'Административный раздел курьеров BedDrop: профили, смены, транспорт, статусы и последние координаты.',
+  robots: 'noindex,nofollow',
+});
 
 const { items, loading, errorMessage, fetchItems } = useAdminCouriers();
 const filters = reactive({
