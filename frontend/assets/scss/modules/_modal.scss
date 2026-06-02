@@ -3,12 +3,20 @@
 .modal {
   background: $white;
   border-radius: $border-radius-main;
-  padding: rem(16) rem(16) rem(20);
-  min-width: rem(320);
-  max-width: rem(520);
+  padding: rem(24);
+  max-width: rem(560);
   width: 100%;
+  max-height: calc(100vh - rem(64));
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
   position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  @media (max-width: $mobile) {
+    padding: rem(16);
+    max-height: calc(100vh - rem(48));
+  }
 
   &__overlay {
     position: fixed;
@@ -17,14 +25,46 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 50;
-    padding: rem(16);
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    z-index: 1000;
+    padding: rem(32) rem(20);
+    backdrop-filter: blur(4px);
 
-    @media (max-width: $mobile) {
+    @media (max-width: $tablet) {
+      padding: rem(24) rem(12);
       align-items: flex-start;
-      padding-top: rem(60);
+    }
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: rem(20);
+    padding-right: rem(40);
+
+    h3 {
+      margin: 0;
+      font-size: rem(20);
+      font-weight: 700;
+      font-family: var(--font-family-secondary);
+    }
+  }
+
+  &__body {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: rem(4); // For scrollbar
+
+    &::-webkit-scrollbar {
+      width: rem(6);
+    }
+    &::-webkit-scrollbar-track {
+      background: var(--color-surface-soft);
+      border-radius: rem(10);
+    }
+    &::-webkit-scrollbar-thumb {
+      background: var(--color-border-neutral);
+      border-radius: rem(10);
     }
   }
 
@@ -32,23 +72,27 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background-color: transparent;
+    background-color: var(--color-surface-soft);
     cursor: pointer;
-    color: $black;
+    color: var(--color-text-subtle);
     position: absolute;
-    top: rem(16);
-    right: rem(16);
-    font-size: rem(16);
-    border: 1px solid transparent;
-    padding: rem(4);
-    transition: color .3s ease;
+    top: rem(20);
+    right: rem(20);
+    width: rem(32);
+    height: rem(32);
+    border-radius: 50%;
+    border: none;
+    transition: all 0.2s ease;
 
     &:hover {
-      color: lighten-color($black, 50%);
-    }
-
-    &:focus {
-      border: 1px dotted $black;
+      background-color: var(--color-border-neutral);
+      color: var(--color-text-strong);
+      transform: rotate(90deg);
     }
   }
+
+  /* Sizes */
+  &--small { max-width: rem(400); }
+  &--medium { max-width: rem(720); }
+  &--large { max-width: rem(1000); }
 }

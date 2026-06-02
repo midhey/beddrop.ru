@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
+import { ReceiptText } from 'lucide-vue-next';
 import AdminShell from '~/components/admin/AdminShell.vue';
 import RouteMap from '~/components/map/RouteMap.vue';
+import BaseModal from '~/components/ui/BaseModal.vue';
 import { useAdminOrders } from '~/composables/useAdmin';
 import type { Order } from '~/composables/useOrders';
 import {
@@ -31,6 +33,7 @@ useAppSeoMeta({
 
 const { items, loading, errorMessage, fetchItems } = useAdminOrders();
 const selected = ref<Order | null>(null);
+const isModalOpen = ref(false);
 const selectedLoading = ref(false);
 const actionLoading = ref(false);
 const courierUserId = ref('');
@@ -42,11 +45,33 @@ const filters = reactive({
   payment_status: '',
 });
 
-const fetchOrders = () => fetchItems({ ...filters });
+const fetchOrders = () => {
+  const params: Record<string, any> = {};
+  
+  if (filters.search?.trim()) {
+    params.search = filters.search.trim();
+  }
+  
+  if (filters.status !== '') {
+    params.status = filters.status;
+  }
+  
+  if (filters.payment_status !== '') {
+    params.payment_status = filters.payment_status;
+  }
+  
+  fetchItems(params);
+};
+
+// Auto-fetch when filters change (except search)
+watch(() => [filters.status, filters.payment_status], () => {
+  fetchOrders();
+});
 
 const openOrder = async (order: Order) => {
-  selectedLoading.value = true;
   selected.value = order;
+  isModalOpen.value = true;
+  selectedLoading.value = true;
   paymentStatus.value = order.payment_status;
   try {
     selected.value = await getAdminOrder(order.id);
@@ -67,6 +92,8 @@ const runAction = async (action: () => Promise<Order>) => {
     actionLoading.value = false;
   }
 };
+
+const getRestaurantInitial = (name?: string) => name ? name[0].toUpperCase() : 'R';
 
 const orderStatuses = [
   'CREATED',
@@ -93,36 +120,64 @@ onMounted(fetchOrders);
       </div>
     </div>
 
-    <form class="admin-filters" @submit.prevent="fetchOrders">
-      <input v-model="filters.search" class="field-input" placeholder="ID, клиент, ресторан">
-      <select v-model="filters.status" class="field-select">
-        <option value="">Все статусы</option>
-        <option v-for="status in orderStatuses" :key="status" :value="status">
-          {{ getOrderStatusLabel(status, 'restaurant') }}
-        </option>
-      </select>
-      <select v-model="filters.payment_status" class="field-select">
-        <option value="">Любая оплата</option>
-        <option v-for="status in paymentStatuses" :key="status" :value="status">
-          {{ getPaymentStatusLabel(status) }}
-        </option>
-      </select>
-      <button class="button" type="submit">Фильтровать</button>
-    </form>
+    <div class="admin-filters-wrap">
+      <form class="admin-filters" @submit.prevent="fetchOrders">
+        <div class="admin-filters__main">
+          <input 
+            v-model="filters.search" 
+            class="field-input" 
+            placeholder="ID, клиент или ресторан..."
+            @keyup.enter="fetchOrders"
+          >
+        </div>
+        <select v-model="filters.status" class="field-select">
+          <option value="">Все статусы</option>
+          <option v-for="status in orderStatuses" :key="status" :value="status">
+            {{ getOrderStatusLabel(status, 'restaurant') }}
+          </option>
+        </select>
+        <select v-model="filters.payment_status" class="field-select">
+          <option value="">Любая оплата</option>
+          <option v-for="status in paymentStatuses" :key="status" :value="status">
+            {{ getPaymentStatusLabel(status) }}
+          </option>
+        </select>
+        <button class="button" type="submit">Поиск</button>
+      </form>
+    </div>
 
     <p v-if="errorMessage" class="state-message state-message--error">{{ errorMessage }}</p>
 
-    <div class="admin__split">
-      <section class="admin__panel">
-        <div v-if="loading" class="state-message state-message--loading">Загружаем заказы...</div>
-        <table v-else class="admin-table">
+    <section class="admin__panel admin__panel--table">
+      <div class="section-head">
+        <div class="section-title-wrap">
+          <div class="section-icon">
+            <ReceiptText class="ui-icon" :size="18" />
+          </div>
+          <h2 class="section-title">Список заказов</h2>
+        </div>
+        <div v-if="pagination" class="section-meta">
+          Всего: <strong>{{ pagination.total }}</strong>
+        </div>
+      </div>
+
+      <div v-if="loading && !items.length" class="state-message state-message--loading">
+        Загружаем список заказов...
+      </div>
+
+      <div v-else-if="!items.length" class="state-message state-message--empty">
+        Заказы не найдены.
+      </div>
+
+      <div v-else class="admin-table-wrapper">
+        <table class="admin-table">
           <thead>
             <tr>
-              <th>ID</th>
+              <th class="w-10">ID</th>
               <th>Статус</th>
               <th>Ресторан</th>
               <th>Клиент</th>
-              <th>Сумма</th>
+              <th class="text-center">Сумма</th>
               <th>Создан</th>
             </tr>
           </thead>
@@ -133,77 +188,99 @@ onMounted(fetchOrders);
               :class="{ 'admin-table__row--active': selected?.id === order.id }"
               @click="openOrder(order)"
             >
-              <td>#{{ order.id }}</td>
-              <td><span class="order-status status-chip" :class="getOrderStatusClass(order.status)">{{ getOrderStatusLabel(order.status, 'restaurant') }}</span></td>
-              <td>{{ order.restaurant?.name || 'Ресторан' }}</td>
-              <td>{{ order.user?.email || `#${order.user_id}` }}</td>
-              <td>{{ formatPrice(order.total_price) }}</td>
-              <td>{{ formatDateTime(order.created_at) }}</td>
+              <td class="admin-table__id">#{{ order.id }}</td>
+              <td>
+                <span class="order-status status-chip" :class="getOrderStatusClass(order.status)">
+                  {{ getOrderStatusLabel(order.status, 'restaurant') }}
+                </span>
+              </td>
+              <td>
+                <div class="admin-table__user">
+                  <div class="admin-table__avatar">
+                    {{ getRestaurantInitial(order.restaurant?.name) }}
+                  </div>
+                  <div class="admin-table__user-info">
+                    <strong>{{ order.restaurant?.name || 'Ресторан' }}</strong>
+                    <span>{{ order.restaurant?.slug || '—' }}</span>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="admin-table__user-info">
+                  <strong>{{ order.user?.name || 'Клиент' }}</strong>
+                  <span>{{ order.user?.email || `#${order.user_id}` }}</span>
+                </div>
+              </td>
+              <td class="text-center">
+                <strong>{{ formatPrice(order.total_price) }}</strong>
+              </td>
+              <td class="admin-table__date">
+                {{ formatDateTime(order.created_at) }}
+              </td>
             </tr>
           </tbody>
         </table>
-      </section>
+      </div>
+    </section>
 
-      <aside class="admin__panel admin__details">
-        <div v-if="!selected" class="state-message state-message--empty">Выберите заказ из таблицы.</div>
-        <div v-else-if="selectedLoading" class="state-message state-message--loading">Открываем заказ...</div>
-        <template v-else>
-          <div class="section-head">
-            <h2 class="section-title">Заказ #{{ selected.id }}</h2>
-            <span class="order-status status-chip" :class="getOrderStatusClass(selected.status)">
-              {{ getOrderStatusLabel(selected.status, 'restaurant') }}
-            </span>
+    <BaseModal v-model="isModalOpen" :title="selected ? `Заказ #${selected.id}` : 'Детали заказа'" size="large">
+      <div v-if="selectedLoading" class="state-message state-message--loading">Открываем заказ...</div>
+      <div v-else-if="selected" class="admin__details">
+        <div class="section-head">
+          <h2 class="section-title">Основная информация</h2>
+          <span class="order-status status-chip" :class="getOrderStatusClass(selected.status)">
+            {{ getOrderStatusLabel(selected.status, 'restaurant') }}
+          </span>
+        </div>
+
+        <div class="admin__facts">
+          <span>Клиент: <strong>{{ selected.user?.email || `#${selected.user_id}` }}</strong></span>
+          <span>Курьер: <strong>{{ selected.courier?.user?.email || selected.courier_id || 'Не назначен' }}</strong></span>
+          <span>Оплата: <strong>{{ getPaymentStatusLabel(selected.payment_status) }}</strong></span>
+          <span>Сумма: <strong>{{ formatPrice(selected.total_price) }}</strong></span>
+        </div>
+
+        <div class="admin-actions">
+          <button class="button" :disabled="actionLoading || selected.status !== 'CREATED'" @click="runAction(() => adminAcceptOrder(selected!.id))">Принять</button>
+          <button class="button" :disabled="actionLoading || selected.status !== 'ACCEPTED_BY_RESTAURANT'" @click="runAction(() => adminMarkReady(selected!.id))">Готов к выдаче</button>
+          <button class="button" :disabled="actionLoading || selected.status !== 'COURIER_ASSIGNED'" @click="runAction(() => adminMarkPickedUp(selected!.id))">У курьера</button>
+          <button class="button" :disabled="actionLoading || selected.status !== 'PICKED_UP'" @click="runAction(() => adminMarkDelivered(selected!.id))">Доставлен</button>
+        </div>
+
+        <div class="admin-actions admin-actions--stack">
+          <input v-model="courierUserId" class="field-input" type="number" min="1" placeholder="ID курьера">
+          <button class="button" :disabled="actionLoading || !courierUserId || selected.status !== 'READY_FOR_PICKUP'" @click="runAction(() => adminAssignCourier(selected!.id, Number(courierUserId)))">Назначить</button>
+          <button class="button button--ghost" :disabled="actionLoading || selected.status !== 'COURIER_ASSIGNED'" @click="runAction(() => adminUnassignCourier(selected!.id))">Снять курьера</button>
+        </div>
+
+        <div class="admin-actions admin-actions--stack">
+          <input v-model="cancelReason" class="field-input" placeholder="Причина отмены">
+          <button class="button button--danger" :disabled="actionLoading || ['DELIVERED','CANCELED_BY_USER','CANCELED_BY_RESTAURANT'].includes(selected.status)" @click="runAction(() => adminCancelOrder(selected!.id, cancelReason))">Отменить</button>
+        </div>
+
+        <div class="admin-actions admin-actions--stack">
+          <select v-model="paymentStatus" class="field-select">
+            <option v-for="status in paymentStatuses" :key="status" :value="status">{{ getPaymentStatusLabel(status) }}</option>
+          </select>
+          <button class="button button--ghost" :disabled="actionLoading || paymentStatus === selected.payment_status" @click="runAction(() => adminUpdatePayment(selected!.id, paymentStatus))">Обновить оплату</button>
+        </div>
+
+        <RouteMap
+          v-if="selected.route_segments?.length"
+          :route-segments="selected.route_segments"
+          :restaurant-address="selected.restaurant?.address"
+          :delivery-address="selected.delivery_address"
+          :height="320"
+        />
+
+        <div class="admin__timeline">
+          <h3>События</h3>
+          <div v-for="event in sortOrderEvents(selected.events)" :key="event.id" class="admin__timeline-item">
+            <span>{{ formatDateTime(event.created_at) }}</span>
+            <strong>{{ getOrderStatusLabel(event.event, 'restaurant') }}</strong>
           </div>
-
-          <div class="admin__facts">
-            <span>Клиент: <strong>{{ selected.user?.email || `#${selected.user_id}` }}</strong></span>
-            <span>Курьер: <strong>{{ selected.courier?.user?.email || selected.courier_id || 'Не назначен' }}</strong></span>
-            <span>Оплата: <strong>{{ getPaymentStatusLabel(selected.payment_status) }}</strong></span>
-            <span>Сумма: <strong>{{ formatPrice(selected.total_price) }}</strong></span>
-          </div>
-
-          <div class="admin-actions">
-            <button class="button" :disabled="actionLoading || selected.status !== 'CREATED'" @click="runAction(() => adminAcceptOrder(selected!.id))">Принять</button>
-            <button class="button" :disabled="actionLoading || selected.status !== 'ACCEPTED_BY_RESTAURANT'" @click="runAction(() => adminMarkReady(selected!.id))">Готов к выдаче</button>
-            <button class="button" :disabled="actionLoading || selected.status !== 'COURIER_ASSIGNED'" @click="runAction(() => adminMarkPickedUp(selected!.id))">У курьера</button>
-            <button class="button" :disabled="actionLoading || selected.status !== 'PICKED_UP'" @click="runAction(() => adminMarkDelivered(selected!.id))">Доставлен</button>
-          </div>
-
-          <div class="admin-actions admin-actions--stack">
-            <input v-model="courierUserId" class="field-input" type="number" min="1" placeholder="ID курьера">
-            <button class="button" :disabled="actionLoading || !courierUserId || selected.status !== 'READY_FOR_PICKUP'" @click="runAction(() => adminAssignCourier(selected!.id, Number(courierUserId)))">Назначить</button>
-            <button class="button button--ghost" :disabled="actionLoading || selected.status !== 'COURIER_ASSIGNED'" @click="runAction(() => adminUnassignCourier(selected!.id))">Снять курьера</button>
-          </div>
-
-          <div class="admin-actions admin-actions--stack">
-            <input v-model="cancelReason" class="field-input" placeholder="Причина отмены">
-            <button class="button button--danger" :disabled="actionLoading || ['DELIVERED','CANCELED_BY_USER','CANCELED_BY_RESTAURANT'].includes(selected.status)" @click="runAction(() => adminCancelOrder(selected!.id, cancelReason))">Отменить</button>
-          </div>
-
-          <div class="admin-actions admin-actions--stack">
-            <select v-model="paymentStatus" class="field-select">
-              <option v-for="status in paymentStatuses" :key="status" :value="status">{{ getPaymentStatusLabel(status) }}</option>
-            </select>
-            <button class="button button--ghost" :disabled="actionLoading || paymentStatus === selected.payment_status" @click="runAction(() => adminUpdatePayment(selected!.id, paymentStatus))">Обновить оплату</button>
-          </div>
-
-          <RouteMap
-            v-if="selected.route_segments?.length"
-            :route-segments="selected.route_segments"
-            :restaurant-address="selected.restaurant?.address"
-            :delivery-address="selected.delivery_address"
-            :height="260"
-          />
-
-          <div class="admin__timeline">
-            <h3>События</h3>
-            <div v-for="event in sortOrderEvents(selected.events)" :key="event.id" class="admin__timeline-item">
-              <span>{{ formatDateTime(event.created_at) }}</span>
-              <strong>{{ getOrderStatusLabel(event.event, 'restaurant') }}</strong>
-            </div>
-          </div>
-        </template>
-      </aside>
-    </div>
+        </div>
+      </div>
+    </BaseModal>
   </AdminShell>
 </template>

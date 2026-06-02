@@ -6,6 +6,7 @@ import { lockScroll, unlockScroll } from '@/assets/utils/dom';
 const props = defineProps<{
   modelValue: boolean;
   title?: string;
+  size?: 'small' | 'medium' | 'large';
 }>();
 
 const emit = defineEmits<{
@@ -46,7 +47,7 @@ onBeforeUnmount(() => {
         @keydown="onKeyDown"
         tabindex="-1"
     >
-      <div class="modal">
+      <div class="modal" :class="[size ? `modal--${size}` : '']">
         <header class="modal__header">
           <h3 v-if="title">{{ title }}</h3>
           <button

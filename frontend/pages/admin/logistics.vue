@@ -115,11 +115,11 @@ onMounted(() => {
 <template>
   <AdminShell>
     <div class="admin-logistics">
-      <div class="page-head">
+      <div class="admin__head">
         <div>
           <h1 class="page-title">Логистика</h1>
           <p class="page-subtitle">
-            Настройки доставки, проверка DaData и Valhalla, просмотр маршрутов заказов.
+            Настройки доставки, проверка DaData и Valhalla, мониторинг маршрутов заказов.
           </p>
         </div>
       </div>
@@ -129,16 +129,21 @@ onMounted(() => {
       </p>
 
       <div class="admin-logistics__stack">
-        <section class="admin-logistics__panel surface-card">
+        <section class="admin__panel admin-logistics__panel">
           <div class="section-head">
-            <h2 class="section-title">
-              <Settings2 class="ui-icon" :size="19" :stroke-width="1.9" aria-hidden="true" />
-              Настройки доставки
-            </h2>
+            <div class="section-title-wrap">
+              <div class="section-icon">
+                <Settings2 class="ui-icon" :size="18" />
+              </div>
+              <h2 class="section-title">Настройки логистики</h2>
+            </div>
+            <div class="section-meta">
+              Параметры стоимости и времени
+            </div>
           </div>
 
           <div v-if="loading" class="state-message state-message--loading">
-            Загружаем настройки...
+            Загружаем системные настройки...
           </div>
 
           <div v-else class="admin-logistics__settings">
@@ -157,22 +162,20 @@ onMounted(() => {
                   :key="setting.key"
                   class="admin-logistics__field"
                 >
-                  <span class="admin-logistics__field-copy">
+                  <div class="admin-logistics__field-copy">
                     <span class="admin-logistics__field-label">{{ setting.label }}</span>
                     <small v-if="setting.description" class="admin-logistics__hint">
                       {{ setting.description }}
                     </small>
-                    <code>{{ setting.key }}</code>
-                  </span>
-                  <span class="admin-logistics__field-control">
+                    <code class="admin-logistics__field-key">{{ setting.key }}</code>
+                  </div>
+                  <div class="admin-logistics__field-control">
                     <BaseSwitch
                       v-if="setting.type === 'boolean'"
                       v-model="setting.value"
                       true-value="1"
                       false-value="0"
-                    >
-                      {{ setting.value === '1' ? 'Включено' : 'Отключено' }}
-                    </BaseSwitch>
+                    />
                     <input
                       v-else
                       v-model="setting.value"
@@ -180,42 +183,38 @@ onMounted(() => {
                       :step="inputStep(setting.type)"
                       class="field-input"
                     >
-                  </span>
+                  </div>
                 </label>
               </div>
             </div>
 
-            <button
-              type="button"
-              class="button"
-              :disabled="saving"
-              @click="doSaveSettings"
-            >
-              {{ saving ? 'Сохраняем...' : 'Сохранить настройки' }}
-            </button>
+            <div class="admin-logistics__actions">
+              <button
+                type="button"
+                class="button"
+                :disabled="saving"
+                @click="doSaveSettings"
+              >
+                {{ saving ? 'Сохраняем...' : 'Сохранить настройки' }}
+              </button>
+            </div>
           </div>
         </section>
 
-        <section class="admin-logistics__panel surface-card">
+        <section class="admin__panel admin-logistics__panel">
           <div class="section-head">
-            <h2 class="section-title">
-              <MapPinned class="ui-icon" :size="19" :stroke-width="1.9" aria-hidden="true" />
-              Операционная карта
-            </h2>
+            <div class="section-title-wrap">
+              <div class="section-icon">
+                <MapPinned class="ui-icon" :size="18" />
+              </div>
+              <h2 class="section-title">Операционная карта</h2>
+            </div>
+            <div v-if="activeCouriers.length" class="section-meta">
+              <strong>{{ activeCouriers.length }}</strong> курьеров онлайн
+            </div>
           </div>
 
-          <div class="admin-logistics__ops-grid">
-            <div class="admin-logistics__map-area">
-              <RouteMap
-                v-if="selectedCourierLocation"
-                :courier-location="selectedCourierLocation"
-                :height="320"
-              />
-              <div v-else class="state-message state-message--empty">
-                Нет активных курьеров с координатами.
-              </div>
-            </div>
-
+          <div class="admin-logistics__ops">
             <div class="admin-logistics__ops-side">
               <div class="admin-logistics__mini-section">
                 <h3>Активные курьеры</h3>
@@ -228,8 +227,11 @@ onMounted(() => {
                     :class="{ 'admin-logistics__mini-item--active': selectedCourier?.user_id === courier.user_id }"
                     @click="selectedCourier = courier"
                   >
-                    <strong>{{ courier.user?.name || courier.user?.email || `Курьер #${courier.user_id}` }}</strong>
-                    <span>{{ courier.latest_location ? `${courier.latest_location.lat}, ${courier.latest_location.lng}` : 'Координат нет' }}</span>
+                    <div class="admin-logistics__mini-item-head">
+                      <strong>{{ courier.user?.name || courier.user?.email || `Курьер #${courier.user_id}` }}</strong>
+                      <span v-if="courier.latest_location" class="status-dot status-dot--success"></span>
+                    </div>
+                    <span>{{ courier.latest_location ? `${courier.latest_location.lat.toFixed(5)}, ${courier.latest_location.lng.toFixed(5)}` : 'Координат нет' }}</span>
                   </button>
                   <div v-if="!activeCouriers.length" class="state-message state-message--empty">
                     Нет открытых смен.
@@ -240,25 +242,40 @@ onMounted(() => {
               <div class="admin-logistics__mini-section">
                 <h3>Активные заказы</h3>
                 <div class="admin-logistics__mini-list">
-                  <span v-for="order in activeOrders" :key="order.id" class="admin-logistics__mini-order">
-                    #{{ order.id }} · {{ order.restaurant?.name || 'Ресторан' }} · {{ order.status }}
-                  </span>
+                  <div v-for="order in activeOrders" :key="order.id" class="admin-logistics__mini-order">
+                    <strong>Заказ #{{ order.id }}</strong>
+                    <span>{{ order.restaurant?.name || 'Ресторан' }} · {{ order.status }}</span>
+                  </div>
                   <div v-if="!activeOrders.length" class="state-message state-message--empty">
                     Нет активных заказов.
                   </div>
                 </div>
               </div>
             </div>
+
+            <div class="admin-logistics__map-area">
+              <RouteMap
+                v-if="selectedCourierLocation"
+                :courier-location="selectedCourierLocation"
+                :height="400"
+              />
+              <div v-else class="admin-logistics__map-placeholder">
+                <MapPinned :size="32" class="ui-icon" />
+                <p>Выберите активного курьера для просмотра на карте</p>
+              </div>
+            </div>
           </div>
         </section>
 
-        <section class="admin-logistics__tools-grid">
-          <section class="admin-logistics__panel surface-card">
+        <div class="admin-logistics__tools-row">
+          <section class="admin__panel admin-logistics__panel">
             <div class="section-head">
-              <h2 class="section-title">
-                <Search class="ui-icon" :size="19" :stroke-width="1.9" aria-hidden="true" />
-                DaData
-              </h2>
+              <div class="section-title-wrap">
+                <div class="section-icon">
+                  <Search class="ui-icon" :size="18" />
+                </div>
+                <h2 class="section-title">DaData</h2>
+              </div>
             </div>
 
             <div class="admin-logistics__inline-form">
@@ -271,34 +288,40 @@ onMounted(() => {
             <pre v-if="addressDebugResult" class="admin-logistics__json">{{ JSON.stringify(addressDebugResult, null, 2) }}</pre>
           </section>
 
-          <section class="admin-logistics__panel surface-card">
+          <section class="admin__panel admin-logistics__panel">
             <div class="section-head">
-              <h2 class="section-title">
-                <Route class="ui-icon" :size="19" :stroke-width="1.9" aria-hidden="true" />
-                Valhalla
-              </h2>
+              <div class="section-title-wrap">
+                <div class="section-icon">
+                  <Route class="ui-icon" :size="18" />
+                </div>
+                <h2 class="section-title">Valhalla</h2>
+              </div>
             </div>
 
             <div class="admin-logistics__route-form">
-              <input v-model="routeForm.fromLat" type="number" step="0.000001" class="field-input" placeholder="От lat">
-              <input v-model="routeForm.fromLng" type="number" step="0.000001" class="field-input" placeholder="От lng">
-              <input v-model="routeForm.toLat" type="number" step="0.000001" class="field-input" placeholder="До lat">
-              <input v-model="routeForm.toLng" type="number" step="0.000001" class="field-input" placeholder="До lng">
-              <select v-model="routeForm.mode" class="field-select">
-                <option value="auto">auto</option>
-                <option value="bicycle">bicycle</option>
-                <option value="pedestrian">pedestrian</option>
-              </select>
-              <button type="button" class="button" :disabled="debugLoading" @click="doTestRoute">
-                Построить
-              </button>
+              <div class="admin-logistics__route-inputs">
+                <input v-model="routeForm.fromLat" type="number" step="0.000001" class="field-input" placeholder="От lat">
+                <input v-model="routeForm.fromLng" type="number" step="0.000001" class="field-input" placeholder="От lng">
+                <input v-model="routeForm.toLat" type="number" step="0.000001" class="field-input" placeholder="До lat">
+                <input v-model="routeForm.toLng" type="number" step="0.000001" class="field-input" placeholder="До lng">
+              </div>
+              <div class="admin-logistics__route-actions">
+                <select v-model="routeForm.mode" class="field-select">
+                  <option value="auto">auto</option>
+                  <option value="bicycle">bicycle</option>
+                  <option value="pedestrian">pedestrian</option>
+                </select>
+                <button type="button" class="button" :disabled="debugLoading" @click="doTestRoute">
+                  Построить
+                </button>
+              </div>
             </div>
 
             <div v-if="routeDebugResult" class="admin-logistics__route-result">
-              <p>
-                {{ (routeDebugResult.distance_meters / 1000).toFixed(2) }} км,
-                {{ Math.ceil(routeDebugResult.duration_seconds / 60) }} мин
-              </p>
+              <div class="admin-logistics__route-stats">
+                <strong>{{ (routeDebugResult.distance_meters / 1000).toFixed(2) }} км</strong>
+                <span>{{ Math.ceil(routeDebugResult.duration_seconds / 60) }} мин</span>
+              </div>
               <RouteMap
                 :route-segments="[{
                   id: 0,
@@ -313,29 +336,34 @@ onMounted(() => {
               />
             </div>
           </section>
-        </section>
+        </div>
 
-        <section class="admin-logistics__panel surface-card">
+        <section class="admin__panel admin-logistics__panel">
           <div class="section-head">
-            <h2 class="section-title">
-              <MapPinned class="ui-icon" :size="19" :stroke-width="1.9" aria-hidden="true" />
-              Маршруты заказа
-            </h2>
+            <div class="section-title-wrap">
+              <div class="section-icon">
+                <Route class="ui-icon" :size="18" />
+              </div>
+              <h2 class="section-title">Маршруты заказа</h2>
+            </div>
+            <div class="section-meta">Анализ сегментов доставки</div>
           </div>
 
           <div class="admin-logistics__inline-form admin-logistics__inline-form--wide">
             <input v-model="orderId" type="number" min="1" step="1" class="field-input" placeholder="ID заказа">
             <button type="button" class="button" :disabled="debugLoading" @click="doFetchOrderRoutes">
-              Открыть
+              Открыть маршрут
             </button>
           </div>
 
-          <RouteMap
-            v-if="orderRoutesResult?.route_segments?.length"
-            :route-segments="orderRoutesResult.route_segments"
-            :height="320"
-          />
-          <pre v-if="orderRoutesResult" class="admin-logistics__json">{{ JSON.stringify(orderRoutesResult, null, 2) }}</pre>
+          <div v-if="orderRoutesResult" class="admin-logistics__order-routes">
+            <RouteMap
+              v-if="orderRoutesResult.route_segments?.length"
+              :route-segments="orderRoutesResult.route_segments"
+              :height="400"
+            />
+            <pre class="admin-logistics__json">{{ JSON.stringify(orderRoutesResult, null, 2) }}</pre>
+          </div>
         </section>
       </div>
     </div>

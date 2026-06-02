@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
+import { Store } from 'lucide-vue-next';
 import AdminShell from '~/components/admin/AdminShell.vue';
 import BaseSwitch from '~/components/ui/BaseSwitch.vue';
+import BaseModal from '~/components/ui/BaseModal.vue';
 import { useAdminRestaurants } from '~/composables/useAdmin';
 import type { Restaurant } from '~/composables/useRestaurants';
 import { getAdminRestaurant, updateAdminRestaurant } from '~/domains/admin/api';
@@ -15,6 +17,7 @@ useAppSeoMeta({
 
 const { items, loading, errorMessage, fetchItems } = useAdminRestaurants();
 const selected = ref<any | null>(null);
+const isModalOpen = ref(false);
 const edit = reactive<Record<string, any>>({});
 const filters = reactive({
   search: '',
@@ -22,21 +25,28 @@ const filters = reactive({
   accepts_orders: '',
 });
 
-const fetchRestaurants = async () => {
-  const response = await fetchItems({ ...filters });
-
-  if (response.items.length && !selected.value) {
-    await openRestaurant(response.items[0]);
+const fetchRestaurants = () => {
+  const params: Record<string, any> = {};
+  
+  if (filters.search?.trim()) {
+    params.search = filters.search.trim();
   }
-
-  if (!response.items.length) {
-    selected.value = null;
+  
+  if (filters.is_active !== '') {
+    params.is_active = filters.is_active;
   }
+  
+  if (filters.accepts_orders !== '') {
+    params.accepts_orders = filters.accepts_orders;
+  }
+  
+  fetchItems(params);
 };
 
 const openRestaurant = async (restaurant: Restaurant) => {
   selected.value = await getAdminRestaurant(restaurant.id);
   Object.assign(edit, selected.value.restaurant);
+  isModalOpen.value = true;
 };
 
 const saveRestaurant = async () => {
@@ -55,8 +65,10 @@ const saveRestaurant = async () => {
     prep_time_max: edit.prep_time_max,
   });
   await fetchRestaurants();
-  selected.value = await getAdminRestaurant(selected.value.restaurant.id);
+  isModalOpen.value = false;
 };
+
+const getRestaurantInitial = (name: string) => name ? name[0].toUpperCase() : 'R';
 
 onMounted(fetchRestaurants);
 </script>
@@ -66,41 +78,66 @@ onMounted(fetchRestaurants);
     <div class="admin__head">
       <div>
         <h1 class="page-title">Рестораны</h1>
-        <p class="page-subtitle">Активность, прием заказов и операционные настройки.</p>
+        <p class="page-subtitle">Активность, прием заказов и операционные настройки заведений.</p>
       </div>
     </div>
 
-    <form class="admin-filters" @submit.prevent="fetchRestaurants">
-      <input v-model="filters.search" class="field-input" placeholder="Название, slug, телефон">
-      <select v-model="filters.is_active" class="field-select">
-        <option value="">Любая активность</option>
-        <option value="1">Активные</option>
-        <option value="0">Отключенные</option>
-      </select>
-      <select v-model="filters.accepts_orders" class="field-select">
-        <option value="">Любой прием</option>
-        <option value="1">Принимают заказы</option>
-        <option value="0">Не принимают</option>
-      </select>
-      <button class="button" type="submit">Фильтровать</button>
-    </form>
+    <div class="admin-filters-wrap">
+      <form class="admin-filters" @submit.prevent="fetchRestaurants">
+        <div class="admin-filters__main">
+          <input 
+            v-model="filters.search" 
+            class="field-input" 
+            placeholder="Название, slug или телефон..."
+            @keyup.enter="fetchRestaurants"
+          >
+        </div>
+        <select v-model="filters.is_active" class="field-select">
+          <option value="">Любая активность</option>
+          <option value="1">Активные</option>
+          <option value="0">Отключенные</option>
+        </select>
+        <select v-model="filters.accepts_orders" class="field-select">
+          <option value="">Любой прием</option>
+          <option value="1">Принимают заказы</option>
+          <option value="0">Не принимают</option>
+        </select>
+        <button class="button" type="submit">Поиск</button>
+      </form>
+    </div>
 
     <p v-if="errorMessage" class="state-message state-message--error">{{ errorMessage }}</p>
 
-    <div class="admin__split">
-      <section class="admin__panel">
-        <div v-if="loading" class="state-message state-message--loading">Загружаем рестораны...</div>
-        <div v-if="!loading && !items.length" class="state-message state-message--empty">
-          Рестораны не найдены. Проверьте фильтры или наличие данных в базе.
+    <section class="admin__panel admin__panel--table">
+      <div class="section-head">
+        <div class="section-title-wrap">
+          <div class="section-icon">
+            <Store class="ui-icon" :size="18" />
+          </div>
+          <h2 class="section-title">Список ресторанов</h2>
         </div>
-        <table v-else-if="!loading" class="admin-table admin-table--selectable">
+        <div v-if="pagination" class="section-meta">
+          Всего: <strong>{{ pagination.total }}</strong>
+        </div>
+      </div>
+
+      <div v-if="loading && !items.length" class="state-message state-message--loading">
+        Загружаем рестораны...
+      </div>
+      
+      <div v-else-if="!items.length" class="state-message state-message--empty">
+        Рестораны не найдены.
+      </div>
+
+      <div v-else class="admin-table-wrapper">
+        <table class="admin-table">
           <thead>
             <tr>
-              <th>ID</th>
+              <th class="w-10">ID</th>
               <th>Ресторан</th>
-              <th>Активен</th>
-              <th>Прием</th>
-              <th>Заказы</th>
+              <th class="text-center">Активен</th>
+              <th class="text-center">Прием</th>
+              <th class="text-center">Заказы</th>
               <th>Создан</th>
             </tr>
           </thead>
@@ -108,53 +145,85 @@ onMounted(fetchRestaurants);
             <tr
               v-for="restaurant in items"
               :key="restaurant.id"
-              :class="{ 'admin-table__row--active': selected?.restaurant?.id === restaurant.id }"
               @click="openRestaurant(restaurant)"
             >
-              <td>#{{ restaurant.id }}</td>
+              <td class="admin-table__id">#{{ restaurant.id }}</td>
               <td>
-                <strong>{{ restaurant.name }}</strong>
-                <span>{{ restaurant.slug }}</span>
+                <div class="admin-table__user">
+                  <div class="admin-table__avatar">
+                    {{ getRestaurantInitial(restaurant.name) }}
+                  </div>
+                  <div class="admin-table__user-info">
+                    <strong>{{ restaurant.name }}</strong>
+                    <span>{{ restaurant.slug }}</span>
+                  </div>
+                </div>
               </td>
-              <td>{{ restaurant.is_active ? 'Да' : 'Нет' }}</td>
-              <td>{{ restaurant.accepts_orders ? 'Да' : 'Нет' }}</td>
-              <td>{{ (restaurant as any).orders_count ?? 0 }}</td>
-              <td>{{ formatDateTime(restaurant.created_at) }}</td>
+              <td class="text-center">
+                <span 
+                  class="status-chip" 
+                  :class="restaurant.is_active ? 'status-chip--success' : 'status-chip--danger'"
+                >
+                  {{ restaurant.is_active ? 'Активен' : 'Отключен' }}
+                </span>
+              </td>
+              <td class="text-center">
+                <span 
+                  class="status-chip" 
+                  :class="restaurant.accepts_orders ? 'status-chip--success' : 'status-chip--muted'"
+                >
+                  {{ restaurant.accepts_orders ? 'Принимает' : 'Пауза' }}
+                </span>
+              </td>
+              <td class="text-center">
+                <span class="admin-table__count" :class="{ 'admin-table__count--zero': !(restaurant as any).orders_count }">
+                  {{ (restaurant as any).orders_count ?? 0 }}
+                </span>
+              </td>
+              <td class="admin-table__date">
+                {{ formatDateTime(restaurant.created_at) }}
+              </td>
             </tr>
           </tbody>
         </table>
-      </section>
+      </div>
+    </section>
 
-      <aside class="admin__panel admin__details">
-        <div v-if="!selected" class="state-message state-message--empty">Выберите ресторан из таблицы.</div>
-        <template v-else>
-          <div class="section-head">
-            <h2 class="section-title">{{ selected.restaurant.name }}</h2>
-          </div>
-          <div class="admin-form">
+    <BaseModal v-model="isModalOpen" :title="edit.name || 'Настройки ресторана'" size="medium">
+      <div class="admin__details">
+        <div class="admin-form">
+          <div class="admin__grid admin__grid--two">
             <label class="form-field"><span class="form-field__label">Название</span><input v-model="edit.name" class="field-input"></label>
             <label class="form-field"><span class="form-field__label">Slug</span><input v-model="edit.slug" class="field-input"></label>
+          </div>
+          
+          <div class="admin__grid admin__grid--two">
             <label class="form-field"><span class="form-field__label">Телефон</span><input v-model="edit.phone" class="field-input"></label>
             <label class="form-field"><span class="form-field__label">Часовой пояс</span><input v-model="edit.timezone" class="field-input"></label>
+          </div>
+
+          <div class="admin__grid admin__grid--two">
             <label class="form-field"><span class="form-field__label">Открытие</span><input v-model="edit.opens_at" class="field-input" type="time"></label>
             <label class="form-field"><span class="form-field__label">Закрытие</span><input v-model="edit.closes_at" class="field-input" type="time"></label>
-            <label class="form-field"><span class="form-field__label">Причина закрытия</span><input v-model="edit.closed_reason" class="field-input"></label>
-            <BaseSwitch
-              v-model="edit.is_active"
-              class="base-switch--boxed"
-            >
+          </div>
+          
+          <label class="form-field"><span class="form-field__label">Причина закрытия (если на паузе)</span><input v-model="edit.closed_reason" class="field-input"></label>
+          
+          <div class="admin__grid admin__grid--two">
+            <BaseSwitch v-model="edit.is_active" class="base-switch--boxed">
               Ресторан активен
             </BaseSwitch>
-            <BaseSwitch
-              v-model="edit.accepts_orders"
-              class="base-switch--boxed"
-            >
-              Принимает новые заказы
+            
+            <BaseSwitch v-model="edit.accepts_orders" class="base-switch--boxed">
+              Принимает заказы
             </BaseSwitch>
-            <button class="button" type="button" @click="saveRestaurant">Сохранить</button>
           </div>
-        </template>
-      </aside>
-    </div>
+          
+          <div class="form-actions">
+            <button class="button" type="button" @click="saveRestaurant">Сохранить изменения</button>
+          </div>
+        </div>
+      </div>
+    </BaseModal>
   </AdminShell>
 </template>
