@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.2.0](https://github.com/midhey/beddrop.ru/compare/beddrop-web-v1.1.0...beddrop-web-v1.2.0) (2026-06-02)
+
+
+### Features
+
+* **courier-mobile:** replace react-map to maplibre sdk ([c67089b](https://github.com/midhey/beddrop.ru/commit/c67089b6bbd0c8d949008486602c0b98e86beef3))
+* **web:** add `Show Password` action on fields ([faf0e01](https://github.com/midhey/beddrop.ru/commit/faf0e014673cbd5b5eb7a026d8499e3f90b2dea0))
+* **web:** add page metadata and social tags ([53c74a7](https://github.com/midhey/beddrop.ru/commit/53c74a76e21b026f83dcae0b373a90b3f24d7e9f))
+* **web:** update `admin` styles ([e7f4d06](https://github.com/midhey/beddrop.ru/commit/e7f4d068067c834bb2cca141c96e066bb2c0b63f))
+* **web:** update logo and favicon ([46a9bd6](https://github.com/midhey/beddrop.ru/commit/46a9bd670162b4481d7910d67f3a0a82a5621609))
+
+
+### Bug Fixes
+
+* **web:** changed admin permissions to edit order status ([2714666](https://github.com/midhey/beddrop.ru/commit/2714666491a62b76b87a3e0dd48a6b3b55d386e5))
+* **web:** remove `sheduler-lock` ([dd8336f](https://github.com/midhey/beddrop.ru/commit/dd8336fcb2f72b823e8cc7be5a86ff7de548d39b))
+
 ## [1.1.0](https://github.com/midhey/beddrop.ru/compare/beddrop-web-v1.0.0...beddrop-web-v1.1.0) (2026-06-02)
 
 
