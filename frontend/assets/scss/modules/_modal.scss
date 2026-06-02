@@ -19,6 +19,13 @@
     justify-content: center;
     z-index: 50;
     padding: rem(16);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+
+    @media (max-width: $mobile) {
+      align-items: flex-start;
+      padding-top: rem(60);
+    }
   }
 
   &__close-btn {
