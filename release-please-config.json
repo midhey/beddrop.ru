@@ -1,0 +1,12 @@
+{
+  "include-component-in-tag": true,
+  "packages": {
+    "mobile/courier": {
+      "component": "beddrop-courier",
+      "package-name": "beddrop-courier",
+      "release-type": "node",
+      "draft": false,
+      "prerelease": false
+    }
+  }
+}

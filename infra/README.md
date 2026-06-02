@@ -161,6 +161,213 @@ YOOKASSA_WEBHOOK_URL=https://your-ngrok-host.ngrok-free.app/api/v1/payments/yook
 docker compose -f infra/docker-compose.yml exec app php artisan config:clear
 ```
 
+## Production deploy
+
+Production-деплой описан в корневых файлах:
+
+- `docker-compose.prod.yml` - production Compose-схема для сервера
+- `backend/Dockerfile.prod` - backend image с PHP-FPM и Laravel
+- `frontend/Dockerfile.prod` - frontend image с Nuxt
+- `.github/workflows/deploy.yml` - ручной GitHub Actions workflow
+- `infra/nginx/production.conf` - Nginx-конфиг backend-прокси до PHP-FPM
+
+Workflow запускается только вручную через `workflow_dispatch`; push в `master` сам deploy не запускает.
+
+### Production-схема
+
+На сервере глобальный Caddy остается отдельным compose-проектом и проксирует домены:
+
+```caddyfile
+beddrop.ru {
+    encode gzip
+    reverse_proxy beddrop-frontend:3000
+}
+
+api.beddrop.ru {
+    encode gzip
+    reverse_proxy beddrop-nginx:80
+}
+```
+
+Beddrop поднимается отдельным compose-проектом в `DEPLOY_PATH`, сейчас это `/root/beddrop`.
+
+Production services:
+
+- `beddrop-frontend` - Nuxt server на `3000`
+- `beddrop-nginx` - Nginx backend gateway на `80`
+- `beddrop-app` - Laravel PHP-FPM
+- `beddrop-queue` - Laravel queue worker
+- `beddrop-scheduler` - Laravel scheduler
+- `beddrop-mysql` - internal MySQL 8.0
+- `beddrop-redis` - internal Redis 7
+
+Compose подключается к external Docker network `valhalla_web`, чтобы Caddy видел `beddrop-frontend` и `beddrop-nginx`, а backend мог обращаться к Valhalla по `http://valhalla:8002`.
+
+### GitHub Secrets
+
+Secrets хранятся в GitHub:
+
+`Settings -> Secrets and variables -> Actions -> Repository secrets`
+
+Required deploy secrets:
+
+```text
+SSH_HOST=89.223.64.100
+SSH_PORT=22
+SSH_USER=root
+SSH_PRIVATE_KEY=<private deploy key>
+DEPLOY_PATH=/root/beddrop
+GHCR_USERNAME=midhey
+GHCR_TOKEN=<token with packages read access, если GHCR package private>
+```
+
+Required backend secrets:
+
+```text
+APP_KEY
+JWT_SECRET
+MYSQL_DATABASE
+MYSQL_USER
+MYSQL_PASSWORD
+MYSQL_ROOT_PASSWORD
+DADATA_API_KEY
+DADATA_SECRET_KEY
+YOOKASSA_SHOP_ID
+YOOKASSA_SECRET_KEY
+```
+
+`SSH_PRIVATE_KEY` должен быть private key целиком, включая строки:
+
+```text
+-----BEGIN OPENSSH PRIVATE KEY-----
+...
+-----END OPENSSH PRIVATE KEY-----
+```
+
+Не вставляйте `.pub`-ключ в `SSH_PRIVATE_KEY`.
+
+### Ручной запуск deploy
+
+Через GitHub UI:
+
+1. Откройте `Actions`
+2. Выберите workflow `Deploy`
+3. Нажмите `Run workflow`
+
+Через GitHub CLI:
+
+```bash
+gh workflow run deploy.yml --repo midhey/beddrop.ru
+```
+
+Посмотреть последние запуски:
+
+```bash
+gh run list --repo midhey/beddrop.ru --workflow deploy.yml --limit 5
+```
+
+Перезапустить только упавшие jobs:
+
+```bash
+gh run rerun RUN_ID --repo midhey/beddrop.ru --failed
+```
+
+### Что делает workflow
+
+1. Запускает backend tests.
+2. Запускает frontend build.
+3. Собирает и пушит Docker images в GHCR:
+   - `ghcr.io/midhey/beddrop-backend:<github-sha>`
+   - `ghcr.io/midhey/beddrop-frontend:<github-sha>`
+   - также обновляет tag `latest`
+4. По SSH создает или обновляет `DEPLOY_PATH`.
+5. Копирует на сервер:
+   - `docker-compose.prod.yml`
+   - `infra/nginx/production.conf`
+   - `compose.env`
+   - `.env`
+6. Делает `docker compose pull`.
+7. Запускает `docker compose up -d --remove-orphans`.
+8. Перезапускает `beddrop-nginx`, чтобы Nginx заново зарезолвил IP `beddrop-app`.
+9. Выполняет:
+   - `php artisan migrate --force`
+   - `php artisan optimize:clear`
+   - `php artisan config:cache`
+   - `php artisan route:cache`
+10. Проверяет:
+    - `https://api.beddrop.ru/up`
+    - `https://api.beddrop.ru/api/ping`
+
+### Caddy после изменения доменов
+
+Если менялся `/root/valhalla/Caddyfile`, обычного reload может быть недостаточно, если файл был заменен и контейнер держит старый bind-mounted inode.
+
+Сначала можно попробовать reload:
+
+```bash
+cd /root/valhalla
+docker compose exec caddy caddy reload --config /etc/caddy/Caddyfile
+```
+
+Если Caddy внутри контейнера не видит новый файл, пересоздайте только Caddy:
+
+```bash
+cd /root/valhalla
+docker compose up -d --force-recreate caddy
+```
+
+Проверить Caddyfile внутри контейнера:
+
+```bash
+docker exec caddy sed -n '1,220p' /etc/caddy/Caddyfile
+```
+
+### Проверки на сервере
+
+Контейнеры:
+
+```bash
+docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Networks}}'
+```
+
+Логи backend gateway:
+
+```bash
+docker logs beddrop-nginx --tail=100
+```
+
+Логи Laravel PHP-FPM:
+
+```bash
+docker logs beddrop-app --tail=100
+```
+
+Публичные health checks:
+
+```bash
+curl -I https://beddrop.ru
+curl -i https://api.beddrop.ru/up
+curl -i https://api.beddrop.ru/api/ping
+```
+
+### Production DB commands
+
+Обычные миграции:
+
+```bash
+cd /root/beddrop
+docker compose --env-file compose.env -f docker-compose.prod.yml exec -T app php artisan migrate --force
+```
+
+Полный сброс production DB с seed:
+
+```bash
+cd /root/beddrop
+docker compose --env-file compose.env -f docker-compose.prod.yml exec -T app php artisan migrate:fresh --seed --force
+```
+
+`migrate:fresh` удаляет текущие production-таблицы. Используйте только осознанно.
+
 ## Полезные команды
 
 Войти в контейнер `app`:

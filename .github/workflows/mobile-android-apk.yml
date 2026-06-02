@@ -1,0 +1,216 @@
+name: Mobile Android APK
+
+on:
+  release:
+    types:
+      - published
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version, for example 1.0.1"
+        required: true
+        type: string
+      profile:
+        description: "EAS build profile"
+        required: true
+        default: "apk"
+        type: choice
+        options:
+          - apk
+          - preview
+      attach_to_release:
+        description: "Create/update GitHub Release assets"
+        required: true
+        default: true
+        type: boolean
+      publish_package:
+        description: "Publish APK as GHCR OCI artifact"
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: write
+  packages: write
+
+env:
+  MOBILE_DIR: mobile/courier
+  APK_PACKAGE: ghcr.io/${{ github.repository_owner }}/beddrop-courier-apk
+  EXPO_PUBLIC_API_BASE: https://api.beddrop.ru/api/v1
+  APP_ENV: production
+  EXPO_PROJECT_ID: ${{ secrets.EXPO_PROJECT_ID }}
+  EXPO_OWNER: ${{ secrets.EXPO_OWNER }}
+
+jobs:
+  build-apk:
+    name: Build courier APK
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || startsWith(github.event.release.tag_name, 'beddrop-courier-v') }}
+
+    steps:
+      - name: Resolve release metadata
+        id: meta
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          INPUT_VERSION: ${{ inputs.version }}
+          INPUT_PROFILE: ${{ inputs.profile }}
+          INPUT_ATTACH_TO_RELEASE: ${{ inputs.attach_to_release }}
+          INPUT_PUBLISH_PACKAGE: ${{ inputs.publish_package }}
+        run: |
+          if [ "$EVENT_NAME" = "release" ]; then
+            tag="$RELEASE_TAG"
+            version="${tag#beddrop-courier-v}"
+            profile="apk"
+            attach_to_release="true"
+            publish_package="true"
+          else
+            version="$INPUT_VERSION"
+            tag="beddrop-courier-v$version"
+            profile="${INPUT_PROFILE:-apk}"
+            attach_to_release="${INPUT_ATTACH_TO_RELEASE:-true}"
+            publish_package="${INPUT_PUBLISH_PACKAGE:-true}"
+          fi
+
+          case "$version" in
+            ""|"$tag")
+              echo "Could not resolve version from tag/input." >&2
+              exit 1
+              ;;
+          esac
+
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "profile=$profile" >> "$GITHUB_OUTPUT"
+          echo "attach_to_release=$attach_to_release" >> "$GITHUB_OUTPUT"
+          echo "publish_package=$publish_package" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate required secrets
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          test -n "$EXPO_TOKEN" || { echo "EXPO_TOKEN secret is required"; exit 1; }
+          test -n "$EXPO_PROJECT_ID" || { echo "EXPO_PROJECT_ID secret is required"; exit 1; }
+          test -n "$EXPO_OWNER" || { echo "EXPO_OWNER secret is required"; exit 1; }
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: mobile/courier/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ${{ env.MOBILE_DIR }}
+        run: npm ci
+
+      - name: Typecheck
+        working-directory: ${{ env.MOBILE_DIR }}
+        run: npm run typecheck
+
+      - name: Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Build APK with EAS
+        id: eas-build
+        working-directory: ${{ env.MOBILE_DIR }}
+        env:
+          EAS_BUILD_PROFILE: ${{ steps.meta.outputs.profile }}
+          APP_VERSION: ${{ steps.meta.outputs.version }}
+          ANDROID_VERSION_CODE: ${{ github.run_number }}
+        run: |
+          eas build \
+            --platform android \
+            --profile "$EAS_BUILD_PROFILE" \
+            --non-interactive \
+            --wait \
+            --json > eas-build.json
+
+          apk_url="$(node - <<'NODE'
+          const fs = require("fs");
+          const raw = fs.readFileSync("eas-build.json", "utf8");
+          const parsed = JSON.parse(raw);
+          const build = Array.isArray(parsed) ? parsed[0] : parsed;
+          const url = build?.artifacts?.buildUrl;
+          if (!url) {
+            console.error(raw);
+            throw new Error("EAS build artifact URL was not found.");
+          }
+          process.stdout.write(url);
+          NODE
+          )"
+
+          echo "apk_url=$apk_url" >> "$GITHUB_OUTPUT"
+
+      - name: Download APK
+        id: apk
+        run: |
+          mkdir -p dist
+          apk_name="beddrop-courier-${{ steps.meta.outputs.version }}.apk"
+          curl -fsSL "${{ steps.eas-build.outputs.apk_url }}" -o "dist/$apk_name"
+          sha256sum "dist/$apk_name" > "dist/$apk_name.sha256"
+          echo "apk_path=dist/$apk_name" >> "$GITHUB_OUTPUT"
+          echo "sha_path=dist/$apk_name.sha256" >> "$GITHUB_OUTPUT"
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: beddrop-courier-${{ steps.meta.outputs.version }}-apk
+          path: |
+            ${{ steps.apk.outputs.apk_path }}
+            ${{ steps.apk.outputs.sha_path }}
+          if-no-files-found: error
+
+      - name: Setup ORAS
+        if: ${{ steps.meta.outputs.publish_package == 'true' }}
+        uses: oras-project/setup-oras@v1
+
+      - name: Login to GHCR for APK package
+        if: ${{ steps.meta.outputs.publish_package == 'true' }}
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | oras login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Publish APK package to GHCR
+        if: ${{ steps.meta.outputs.publish_package == 'true' }}
+        run: |
+          oras push "${{ env.APK_PACKAGE }}:${{ steps.meta.outputs.version }}" \
+            "${{ steps.apk.outputs.apk_path }}:application/vnd.android.package-archive" \
+            "${{ steps.apk.outputs.sha_path }}:text/plain" \
+            --annotation "org.opencontainers.image.title=BedDrop Courier APK" \
+            --annotation "org.opencontainers.image.description=Android APK for the BedDrop courier mobile app" \
+            --annotation "org.opencontainers.image.version=${{ steps.meta.outputs.version }}" \
+            --annotation "org.opencontainers.image.source=https://github.com/${{ github.repository }}" \
+            --annotation "org.opencontainers.image.revision=${{ github.sha }}"
+
+      - name: Attach APK to GitHub Release
+        if: ${{ steps.meta.outputs.attach_to_release == 'true' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.meta.outputs.tag }}
+          APK_PATH: ${{ steps.apk.outputs.apk_path }}
+          SHA_PATH: ${{ steps.apk.outputs.sha_path }}
+        run: |
+          notes_file="$(mktemp)"
+          cat > "$notes_file" <<EOF
+          Courier Android APK build.
+
+          API base: $EXPO_PUBLIC_API_BASE
+          EAS profile: ${{ steps.meta.outputs.profile }}
+          APK package: ${{ env.APK_PACKAGE }}:${{ steps.meta.outputs.version }}
+          Commit: ${{ github.sha }}
+          Android versionCode: ${{ github.run_number }}
+          EOF
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "$APK_PATH" "$SHA_PATH" --clobber
+          else
+            gh release create "$TAG" "$APK_PATH" "$SHA_PATH" \
+              --target "${{ github.sha }}" \
+              --title "BedDrop Courier ${{ steps.meta.outputs.version }}" \
+              --notes-file "$notes_file"
+          fi
