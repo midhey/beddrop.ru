@@ -40,14 +40,24 @@ Required GitHub Repository Secrets:
 ```text
 RELEASE_PLEASE_TOKEN
 EXPO_TOKEN
+```
+
+Required GitHub Repository Variables:
+
+```text
 EXPO_PROJECT_ID
 EXPO_OWNER
 ```
 
-Что указывать:
+`EXPO_PROJECT_ID` и `EXPO_OWNER` не должны быть secrets. Expo CLI печатает ссылку на build вида `https://expo.dev/accounts/<owner>/projects/...`; если owner хранится в secrets, GitHub замаскирует его как `***`, и ссылка из Actions логов станет невалидной.
+
+Что указывать в secrets:
 
 - `RELEASE_PLEASE_TOKEN` - GitHub token для Release Please. Нужен не `GITHUB_TOKEN`, а отдельный fine-grained PAT или GitHub App token, чтобы созданный release запускал следующий workflow `Mobile Android APK`. Для fine-grained PAT дайте доступ только к репозиторию `midhey/beddrop.ru`: `Contents: Read and write`, `Pull requests: Read and write`, `Metadata: Read-only`, `Workflows: Read and write`.
 - `EXPO_TOKEN` - Expo access token. Создается в Expo dashboard: Account settings -> Access Tokens. Нужен token от аккаунта/организации, у которого есть доступ к проекту `beddrop-courier`.
+
+Что указывать в variables:
+
 - `EXPO_PROJECT_ID` - UUID Expo/EAS проекта. Его можно взять в Expo dashboard в настройках проекта или из `mobile/courier/.expo/config.json` после `npx eas-cli@latest init`.
 - `EXPO_OWNER` - Expo account или organization slug, владелец проекта. Например `midhey`, если проект лежит в личном Expo аккаунте `midhey`.
 

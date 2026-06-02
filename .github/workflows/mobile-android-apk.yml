@@ -38,13 +38,14 @@ env:
   APK_PACKAGE: ghcr.io/${{ github.repository_owner }}/beddrop-courier-apk
   EXPO_PUBLIC_API_BASE: https://api.beddrop.ru/api/v1
   APP_ENV: production
-  EXPO_PROJECT_ID: ${{ secrets.EXPO_PROJECT_ID }}
-  EXPO_OWNER: ${{ secrets.EXPO_OWNER }}
+  EXPO_PROJECT_ID: ${{ vars.EXPO_PROJECT_ID }}
+  EXPO_OWNER: ${{ vars.EXPO_OWNER }}
 
 jobs:
   build-apk:
     name: Build courier APK
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     if: ${{ github.event_name == 'workflow_dispatch' || startsWith(github.event.release.tag_name, 'beddrop-courier-v') }}
 
     steps:
@@ -93,8 +94,8 @@ jobs:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         run: |
           test -n "$EXPO_TOKEN" || { echo "EXPO_TOKEN secret is required"; exit 1; }
-          test -n "$EXPO_PROJECT_ID" || { echo "EXPO_PROJECT_ID secret is required"; exit 1; }
-          test -n "$EXPO_OWNER" || { echo "EXPO_OWNER secret is required"; exit 1; }
+          test -n "$EXPO_PROJECT_ID" || { echo "EXPO_PROJECT_ID repository variable is required"; exit 1; }
+          test -n "$EXPO_OWNER" || { echo "EXPO_OWNER repository variable is required"; exit 1; }
 
       - name: Setup Node
         uses: actions/setup-node@v4
