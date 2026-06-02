@@ -53,6 +53,15 @@
     position: sticky;
     top: rem(88);
     align-self: flex-start;
+
+    @media (max-width: $mobile) {
+      margin-left: rem(-15);
+      margin-right: rem(-15);
+      border-radius: 0;
+      border-left: none;
+      border-right: none;
+      box-shadow: none;
+    }
   }
 
   &__header {

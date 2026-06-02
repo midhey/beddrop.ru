@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Eye, EyeOff } from 'lucide-vue-next';
 import { useFeedback } from '~/composables/useFeedback';
 import {
   isCompletePhoneInput,
@@ -14,6 +15,8 @@ const phone = ref('');
 const password = ref('');
 const passwordConfirmation = ref('');
 const name = ref('');
+const showPassword = ref(false);
+const showPasswordConfirmation = ref(false);
 const isLoading = computed(() => authStore.loading);
 
 const emit = defineEmits<{
@@ -103,13 +106,22 @@ const onSubmit = async () => {
       <label class="form__label">
         <input
             v-model="password"
-            type="password"
+            :type="showPassword ? 'text' : 'password'"
             class="form__input"
             placeholder="Пароль"
             required
             autocomplete="new-password"
         >
         <span class="form__label-text">Пароль</span>
+        <button
+            type="button"
+            class="form__password-toggle"
+            @click="showPassword = !showPassword"
+            :aria-label="showPassword ? 'Скрыть пароль' : 'Показать пароль'"
+        >
+          <Eye v-if="!showPassword" class="ui-icon" />
+          <EyeOff v-else class="ui-icon" />
+        </button>
       </label>
     </div>
 
@@ -117,13 +129,22 @@ const onSubmit = async () => {
       <label class="form__label">
         <input
             v-model="passwordConfirmation"
-            type="password"
+            :type="showPasswordConfirmation ? 'text' : 'password'"
             class="form__input"
             placeholder="Подтверждение пароля"
             required
             autocomplete="new-password"
         >
         <span class="form__label-text">Повторите пароль</span>
+        <button
+            type="button"
+            class="form__password-toggle"
+            @click="showPasswordConfirmation = !showPasswordConfirmation"
+            :aria-label="showPasswordConfirmation ? 'Скрыть пароль' : 'Показать пароль'"
+        >
+          <Eye v-if="!showPasswordConfirmation" class="ui-icon" />
+          <EyeOff v-else class="ui-icon" />
+        </button>
       </label>
     </div>
 

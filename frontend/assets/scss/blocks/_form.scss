@@ -32,6 +32,7 @@
 
   &__input {
     border: 2px solid $gray;
+    padding-right: rem(48);
 
     &::placeholder {
       color: transparent;
@@ -46,6 +47,32 @@
     &:focus + .form__label-text {
       background-color: $white;
       transform: translateY(-150%);
+    }
+  }
+
+  &__password-toggle {
+    position: absolute;
+    right: rem(12);
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    padding: rem(8);
+    cursor: pointer;
+    color: $gray-dark;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+    z-index: 2;
+
+    &:hover {
+      color: $primary;
+    }
+
+    .ui-icon {
+      width: rem(20);
+      height: rem(20);
     }
   }
 

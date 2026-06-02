@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Eye, EyeOff } from 'lucide-vue-next';
 import { useFeedback } from '~/composables/useFeedback';
 
 const authStore = useAuthStore();
@@ -6,6 +7,7 @@ const feedback = useFeedback();
 
 const email = ref('');
 const password = ref('');
+const showPassword = ref(false);
 const isLoading = computed(() => authStore.loading);
 
 const emit = defineEmits<{
@@ -65,13 +67,22 @@ const onOpenRegister = () => {
       <label class="form__label">
         <input
             v-model="password"
-            type="password"
+            :type="showPassword ? 'text' : 'password'"
             class="form__input"
             placeholder="Пароль"
             required
             autocomplete="current-password"
         >
         <span class="form__label-text">Пароль</span>
+        <button
+            type="button"
+            class="form__password-toggle"
+            @click="showPassword = !showPassword"
+            :aria-label="showPassword ? 'Скрыть пароль' : 'Показать пароль'"
+        >
+          <Eye v-if="!showPassword" class="ui-icon" />
+          <EyeOff v-else class="ui-icon" />
+        </button>
       </label>
     </div>
 
