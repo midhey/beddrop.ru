@@ -56,8 +56,7 @@ Artisan::command('orders:cancel-stale-restaurant-acceptance', function () {
 })->purpose('Cancel created orders that were not accepted by restaurants within the configured TTL');
 
 Schedule::command('orders:cancel-stale-restaurant-acceptance')
-    ->everyFiveMinutes()
-    ->withoutOverlapping();
+    ->everyFiveMinutes();
 
 Artisan::command('orders:expire-stale-pending-payments', function () {
     $ttlMinutes = max(1, (int) config('orders.pending_payment_ttl_minutes', 30));
@@ -110,5 +109,4 @@ Artisan::command('orders:expire-stale-pending-payments', function () {
 })->purpose('Expire created orders that stayed pending payment past the payment TTL');
 
 Schedule::command('orders:expire-stale-pending-payments')
-    ->everyFiveMinutes()
-    ->withoutOverlapping();
+    ->everyFiveMinutes();

@@ -283,6 +283,7 @@ jobs:
             docker compose --env-file compose.env -f docker-compose.prod.yml restart nginx && \
             docker compose --env-file compose.env -f docker-compose.prod.yml exec -T app php artisan migrate --force && \
             docker compose --env-file compose.env -f docker-compose.prod.yml exec -T app php artisan optimize:clear && \
+            docker compose --env-file compose.env -f docker-compose.prod.yml exec -T app php artisan schedule:clear-cache && \
             docker compose --env-file compose.env -f docker-compose.prod.yml exec -T app php artisan config:cache && \
             docker compose --env-file compose.env -f docker-compose.prod.yml exec -T app php artisan route:cache"
 
