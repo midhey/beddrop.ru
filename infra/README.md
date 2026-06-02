@@ -171,7 +171,12 @@ Production-деплой описан в корневых файлах:
 - `.github/workflows/deploy.yml` - ручной GitHub Actions workflow
 - `infra/nginx/production.conf` - Nginx-конфиг backend-прокси до PHP-FPM
 
-Workflow запускается только вручную через `workflow_dispatch`; push в `master` сам deploy не запускает.
+Web/API версия управляется Release Please компонентом `beddrop-web`. Deploy можно запускать вручную, но основной production-flow такой:
+
+1. Коммиты с `fix(web): ...` или `feat(web): ...` попадают в `master`.
+2. Workflow `Release Please` создает release PR для `beddrop-web`.
+3. После merge release PR создается GitHub Release и tag `beddrop-web-v<version>`.
+4. Workflow `Deploy` автоматически собирает backend/frontend images с tag `<version>` и деплоит их на сервер.
 
 ### Production-схема
 
@@ -260,6 +265,22 @@ YOOKASSA_SECRET_KEY
 gh workflow run deploy.yml --repo midhey/beddrop.ru
 ```
 
+Можно указать конкретный image tag через input `image_tag`; если не указать, будет использован commit SHA текущего запуска.
+
+Автоматический deploy запускается только для GitHub Releases с tag `beddrop-web-v*`.
+
+### Управление web-версией
+
+Release Please смотрит conventional commits:
+
+```text
+fix(web): поправить CORS              -> patch release
+feat(web): добавить оплату            -> minor release
+feat(web)!: изменить API контракт     -> major release
+```
+
+Backend и frontend версионируются вместе как один компонент `beddrop-web`, потому что деплоятся одним production compose.
+
 Посмотреть последние запуски:
 
 ```bash
@@ -277,8 +298,8 @@ gh run rerun RUN_ID --repo midhey/beddrop.ru --failed
 1. Запускает backend tests.
 2. Запускает frontend build.
 3. Собирает и пушит Docker images в GHCR:
-   - `ghcr.io/midhey/beddrop-backend:<github-sha>`
-   - `ghcr.io/midhey/beddrop-frontend:<github-sha>`
+   - `ghcr.io/midhey/beddrop-backend:<version-or-github-sha>`
+   - `ghcr.io/midhey/beddrop-frontend:<version-or-github-sha>`
    - также обновляет tag `latest`
 4. По SSH создает или обновляет `DEPLOY_PATH`.
 5. Копирует на сервер:

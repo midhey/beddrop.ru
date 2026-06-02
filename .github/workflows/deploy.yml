@@ -1,7 +1,15 @@
 name: Deploy
 
 on:
+  release:
+    types:
+      - published
   workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Optional image tag to build/deploy. Defaults to commit SHA."
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -13,9 +21,37 @@ env:
   FRONTEND_IMAGE: ghcr.io/midhey/beddrop-frontend
 
 jobs:
+  meta:
+    name: Resolve deploy metadata
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || startsWith(github.event.release.tag_name, 'beddrop-web-v') }}
+    outputs:
+      image_tag: ${{ steps.meta.outputs.image_tag }}
+
+    steps:
+      - name: Resolve image tag
+        id: meta
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          INPUT_IMAGE_TAG: ${{ inputs.image_tag }}
+          SHA: ${{ github.sha }}
+        run: |
+          if [ "$EVENT_NAME" = "release" ]; then
+            image_tag="${RELEASE_TAG#beddrop-web-v}"
+          elif [ -n "$INPUT_IMAGE_TAG" ]; then
+            image_tag="$INPUT_IMAGE_TAG"
+          else
+            image_tag="$SHA"
+          fi
+
+          test -n "$image_tag" || { echo "Could not resolve image tag"; exit 1; }
+          echo "image_tag=$image_tag" >> "$GITHUB_OUTPUT"
+
   test:
     name: Test and build
     runs-on: ubuntu-latest
+    needs: meta
 
     steps:
       - name: Checkout
@@ -56,7 +92,9 @@ jobs:
   build:
     name: Build and push images
     runs-on: ubuntu-latest
-    needs: test
+    needs:
+      - meta
+      - test
 
     strategy:
       fail-fast: false
@@ -93,6 +131,7 @@ jobs:
           push: true
           tags: |
             ${{ matrix.image }}:${{ github.sha }}
+            ${{ matrix.image }}:${{ needs.meta.outputs.image_tag }}
             ${{ matrix.image }}:latest
           cache-from: type=gha,scope=${{ matrix.name }}
           cache-to: type=gha,mode=max,scope=${{ matrix.name }}
@@ -100,7 +139,9 @@ jobs:
   deploy:
     name: Deploy to server
     runs-on: ubuntu-latest
-    needs: build
+    needs:
+      - meta
+      - build
 
     steps:
       - name: Checkout
@@ -131,14 +172,14 @@ jobs:
       - name: Write production env
         run: |
           cat > compose.env <<'ENVEOF'
-          BACKEND_IMAGE=${{ env.BACKEND_IMAGE }}:${{ github.sha }}
-          FRONTEND_IMAGE=${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
+          BACKEND_IMAGE=${{ env.BACKEND_IMAGE }}:${{ needs.meta.outputs.image_tag }}
+          FRONTEND_IMAGE=${{ env.FRONTEND_IMAGE }}:${{ needs.meta.outputs.image_tag }}
           BEDDROP_ENV_FILE=.env
           ENVEOF
 
           cat > production.env <<'ENVEOF'
-          BACKEND_IMAGE=${{ env.BACKEND_IMAGE }}:${{ github.sha }}
-          FRONTEND_IMAGE=${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
+          BACKEND_IMAGE=${{ env.BACKEND_IMAGE }}:${{ needs.meta.outputs.image_tag }}
+          FRONTEND_IMAGE=${{ env.FRONTEND_IMAGE }}:${{ needs.meta.outputs.image_tag }}
 
           APP_NAME=Beddrop
           APP_ENV=production

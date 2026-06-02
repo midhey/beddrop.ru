@@ -18,7 +18,7 @@ EXPO_PUBLIC_API_BASE=https://api.beddrop.ru/api/v1 npm run start
 
 ## Android APK releases
 
-Версионирование мобильного приложения идет через Release Please.
+Версионирование мобильного приложения идет через Release Please компонент `beddrop-courier`. Web/API часть версионируется отдельно компонентом `beddrop-web`.
 
 Основной flow:
 

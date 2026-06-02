@@ -1,6 +1,14 @@
 {
   "include-component-in-tag": true,
   "packages": {
+    ".": {
+      "component": "beddrop-web",
+      "package-name": "beddrop-web",
+      "release-type": "simple",
+      "exclude-paths": ["mobile/courier"],
+      "draft": false,
+      "prerelease": false
+    },
     "mobile/courier": {
       "component": "beddrop-courier",
       "package-name": "beddrop-courier",
