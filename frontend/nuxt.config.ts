@@ -7,6 +7,13 @@ export default defineNuxtConfig({
       "@pinia/nuxt",
   ],
   css: ["~/assets/scss/main.scss"],
+  app: {
+    head: {
+      link: [
+        { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
+      ],
+    },
+  },
   runtimeConfig: {
     public: {
       apiBase:

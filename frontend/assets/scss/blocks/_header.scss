@@ -51,6 +51,13 @@
     cursor: pointer;
   }
 
+  &__logo-img {
+    display: block;
+    height: rem(60);
+    width: auto;
+    max-width: rem(200);
+  }
+
   &__menu {
     display: flex;
     align-items: center;
@@ -539,9 +546,10 @@
       gap: rem(12);
     }
 
-    &__logo svg {
-      width: rem(184);
-      height: auto;
+    &__logo-img {
+      height: rem(54);
+      width: auto;
+      max-width: rem(184);
     }
   }
 }
