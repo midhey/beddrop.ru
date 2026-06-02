@@ -11,6 +11,10 @@ mkdir -p \
     storage/framework/views \
     storage/logs
 
+if [ -d docker/seed-media/media ]; then
+    cp -a docker/seed-media/media/. storage/app/public/media/
+fi
+
 chown -R www-data:www-data bootstrap/cache storage public
 
 if [ ! -L public/storage ]; then

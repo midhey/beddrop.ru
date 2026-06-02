@@ -40,11 +40,13 @@ RUN composer dump-autoload --optimize \
     && php artisan package:discover --ansi \
     && mkdir -p \
         bootstrap/cache \
+        docker/seed-media \
         storage/app/public \
         storage/framework/cache/data \
         storage/framework/sessions \
         storage/framework/views \
         storage/logs \
+    && if [ -d storage/app/public/media ]; then cp -a storage/app/public/media docker/seed-media/media; fi \
     && chown -R www-data:www-data bootstrap/cache storage public
 
 COPY --chmod=755 docker/php/entrypoint.prod.sh /usr/local/bin/beddrop-entrypoint

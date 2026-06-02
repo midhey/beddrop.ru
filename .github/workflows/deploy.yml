@@ -133,6 +133,12 @@ jobs:
 
       - name: Write production env
         run: |
+          cat > compose.env <<'ENVEOF'
+          BACKEND_IMAGE=${{ env.BACKEND_IMAGE }}:${{ github.sha }}
+          FRONTEND_IMAGE=${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
+          BEDDROP_ENV_FILE=.env
+          ENVEOF
+
           cat > production.env <<'ENVEOF'
           BACKEND_IMAGE=${{ env.BACKEND_IMAGE }}:${{ github.sha }}
           FRONTEND_IMAGE=${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
@@ -220,6 +226,7 @@ jobs:
           NUXT_PUBLIC_MAP_TILE_URL=https://tile.openstreetmap.org/{z}/{x}/{y}.png
           NUXT_PUBLIC_MAP_TILE_ATTRIBUTION="© OpenStreetMap contributors"
           ENVEOF
+          scp -i ~/.ssh/deploy_key -P "${{ secrets.SSH_PORT }}" compose.env "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/compose.env"
           scp -i ~/.ssh/deploy_key -P "${{ secrets.SSH_PORT }}" production.env "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/.env"
 
       - name: Pull and restart services
@@ -233,12 +240,13 @@ jobs:
         run: |
           ssh -i ~/.ssh/deploy_key -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "cd '$DEPLOY_PATH' && \
             printf '%s\n' '$GHCR_TOKEN' | docker login ghcr.io -u '$GHCR_USERNAME' --password-stdin && \
-            docker compose --env-file .env -f docker-compose.prod.yml pull && \
-            docker compose --env-file .env -f docker-compose.prod.yml up -d --remove-orphans && \
-            docker compose --env-file .env -f docker-compose.prod.yml exec -T app php artisan migrate --force && \
-            docker compose --env-file .env -f docker-compose.prod.yml exec -T app php artisan optimize:clear && \
-            docker compose --env-file .env -f docker-compose.prod.yml exec -T app php artisan config:cache && \
-            docker compose --env-file .env -f docker-compose.prod.yml exec -T app php artisan route:cache"
+            docker compose --env-file compose.env -f docker-compose.prod.yml pull && \
+            docker compose --env-file compose.env -f docker-compose.prod.yml up -d --remove-orphans && \
+            docker compose --env-file compose.env -f docker-compose.prod.yml restart nginx && \
+            docker compose --env-file compose.env -f docker-compose.prod.yml exec -T app php artisan migrate --force && \
+            docker compose --env-file compose.env -f docker-compose.prod.yml exec -T app php artisan optimize:clear && \
+            docker compose --env-file compose.env -f docker-compose.prod.yml exec -T app php artisan config:cache && \
+            docker compose --env-file compose.env -f docker-compose.prod.yml exec -T app php artisan route:cache"
 
       - name: Verify deployment
         run: |
