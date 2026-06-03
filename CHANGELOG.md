@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.3.0](https://github.com/midhey/beddrop.ru/compare/beddrop-web-v1.2.0...beddrop-web-v1.3.0) (2026-06-03)
+
+
+### Features
+
+* **web:** rebuild filters to new `Tab Component` ([1b8de24](https://github.com/midhey/beddrop.ru/commit/1b8de2486cb17a1ca0abf6e4ba46f1ca2142b9c0))
+* **web:** update `restraunt-meta` ([f305800](https://github.com/midhey/beddrop.ru/commit/f3058000da4b1d6d64da29cfab8b62eabf36d552))
+
+
+### Bug Fixes
+
+* **web:** fixed some typeerrors ([a0d9281](https://github.com/midhey/beddrop.ru/commit/a0d9281afc6e8d7307b9d006bea0197f0bbb68b4))
+
 ## [1.2.0](https://github.com/midhey/beddrop.ru/compare/beddrop-web-v1.1.0...beddrop-web-v1.2.0) (2026-06-02)
 
 
