@@ -258,50 +258,7 @@
 
   /* табы категорий */
   &__tabs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: rem(8);
     margin-bottom: rem(24);
-  }
-
-  &__tab {
-    border-radius: rem(12);
-    border: 1px solid var(--color-border-neutral);
-    background: $white;
-    padding: rem(8) rem(16);
-    font-size: rem(14);
-    font-weight: 700;
-    cursor: pointer;
-    color: var(--color-text-subtle);
-    transition: all 0.2s ease;
-
-    &:hover:not(&--active) {
-      background: var(--color-surface-soft);
-      border-color: var(--color-border-light);
-    }
-  }
-
-  &__tab--active {
-    border-color: var(--color-primary);
-    background: var(--color-primary);
-    color: $white;
-    box-shadow: 0 4px 12px rgba(122, 59, 255, 0.2);
-  }
-
-  &__tabs--skeleton {
-    flex-wrap: nowrap;
-    overflow: hidden;
-  }
-
-  &__tab-skeleton {
-    flex: 0 0 auto;
-    width: rem(112);
-    height: rem(38);
-    border-radius: rem(12);
-  }
-
-  &__tab-skeleton--short {
-    width: rem(66);
   }
 
   &__loading,

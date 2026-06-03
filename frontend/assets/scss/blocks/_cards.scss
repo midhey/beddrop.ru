@@ -42,52 +42,8 @@
   &__filters-wrap {
     display: flex;
     flex-direction: column;
-    gap: rem(8);
-  }
-
-  &__filters {
-    display: flex;
-    gap: rem(10);
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    padding-bottom: rem(4);
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    scroll-snap-type: x proximity;
-    touch-action: pan-x;
-  }
-
-  &__filters::-webkit-scrollbar {
-    display: none;
-  }
-
-  &__filter {
-    flex: 0 0 auto;
-    scroll-snap-align: start;
-    border-radius: 999px;
-    border: 1px solid var(--color-border-neutral);
-    background: $white;
-    padding: rem(8) rem(14);
-    font-size: rem(13);
-    line-height: 1.2;
-    color: var(--color-text-subtle);
-    cursor: pointer;
-    white-space: nowrap;
-    transition:
-      border-color 0.2s ease,
-      background-color 0.2s ease,
-      color 0.2s ease;
-  }
-
-  &__filter:hover {
-    border-color: var(--color-border-light);
-    color: var(--color-text-strong);
-  }
-
-  &__filter--active {
-    border-color: var(--color-primary, #00bcf0);
-    background: rgba(0, 188, 240, 0.08);
-    color: var(--color-primary, #00bcf0);
+    gap: rem(16);
+    margin-bottom: rem(20);
   }
 
   &__filters-message {

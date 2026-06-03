@@ -42,12 +42,7 @@ export async function useRestaurantPage(slugRef: Readonly<Ref<string>>) {
     const router = useRouter();
     const selectedCategorySlug = ref<string>('all');
 
-    const {
-        data: pageData,
-        pending,
-        error,
-        refresh,
-    } = await useAsyncData<RestaurantPageData>(
+    const asyncData = useAsyncData<RestaurantPageData>(
         'restaurant-page',
         async () => {
             const slug = slugRef.value;
@@ -82,6 +77,13 @@ export async function useRestaurantPage(slugRef: Readonly<Ref<string>>) {
             watch: [slugRef],
         },
     );
+
+    const {
+        data: pageData,
+        pending,
+        error,
+        refresh,
+    } = asyncData;
 
     const isCurrentData = computed(() => pageData.value?.slug === slugRef.value);
 
@@ -234,13 +236,15 @@ export async function useRestaurantPage(slugRef: Readonly<Ref<string>>) {
         }
     };
 
-    if (import.meta.client) {
-        await redirectIfNotFound(error.value);
-    }
-
     watch(error, (requestError) => {
         void redirectIfNotFound(requestError);
     });
+
+    await asyncData;
+
+    if (import.meta.client) {
+        await redirectIfNotFound(error.value);
+    }
 
     return {
         // state

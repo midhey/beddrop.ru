@@ -4,6 +4,7 @@ import { ArrowLeft, Clock3, Phone } from "lucide-vue-next";
 import { useRoute } from "#app";
 import { useRestaurantPage } from "~/composables/useRestaurantPage";
 import ProductCard from "~/components/product/ProductCard.vue";
+import BaseScrollableTabs from "~/components/ui/BaseScrollableTabs.vue";
 import { useCartStore } from "~/stores/cart";
 
 const route = useRoute();
@@ -148,44 +149,13 @@ onMounted(async () => {
           </span>
         </div>
 
-        <div
-          v-if="loading && !categories.length"
-          class="restaurant-page__tabs restaurant-page__tabs--skeleton"
-          aria-hidden="true"
-        >
-          <span
-            v-for="index in 5"
-            :key="`category-skeleton-${index}`"
-            class="restaurant-page__tab-skeleton skeleton"
-            :class="{ 'restaurant-page__tab-skeleton--short': index === 1 }"
-          />
-        </div>
-
-        <div v-else-if="categories.length" class="restaurant-page__tabs">
-          <button
-            type="button"
-            class="restaurant-page__tab"
-            :class="{
-              'restaurant-page__tab--active': selectedCategorySlug === 'all',
-            }"
-            @click="selectedCategorySlug = 'all'"
-          >
-            Все
-          </button>
-
-          <button
-            v-for="cat in categories"
-            :key="cat.id"
-            type="button"
-            class="restaurant-page__tab"
-            :class="{
-              'restaurant-page__tab--active': selectedCategorySlug === cat.slug,
-            }"
-            @click="selectedCategorySlug = cat.slug"
-          >
-            {{ cat.name }}
-          </button>
-        </div>
+        <BaseScrollableTabs
+          class="restaurant-page__tabs"
+          v-if="categories.length || loading"
+          v-model="selectedCategorySlug"
+          :items="[{ id: 'all', label: 'Все' }, ...categories.map(c => ({ id: c.slug, label: c.name }))]"
+          :skeleton="loading && !categories.length"
+        />
 
         <div v-if="productsError && !loading" class="restaurant-page__error">
           {{ productsError }}

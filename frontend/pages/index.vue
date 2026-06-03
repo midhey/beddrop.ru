@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import CardsLayout from '~/components/ui/CardsLayout.vue';
+import BaseScrollableTabs from '~/components/ui/BaseScrollableTabs.vue';
 import RestaurantCard from '~/components/restaurants/RestaurantCard.vue';
 import {
   useProductCategories,
@@ -94,12 +95,12 @@ const restaurantsEmptyMessage = computed(() => {
   return `В категории «${activeCategoryName.value}» пока нет доступных ресторанов`;
 });
 
-const selectCategory = async (categoryId: number | null) => {
+const selectCategory = async (categoryId: string | number | null) => {
   if (selectedCategoryId.value === categoryId) {
     return;
   }
 
-  selectedCategoryId.value = categoryId;
+  selectedCategoryId.value = typeof categoryId === 'string' ? Number(categoryId) : categoryId;
 
   try {
     await refreshRestaurants();
@@ -147,32 +148,15 @@ const goToRestaurant = async (slug: string) => {
       >
         <template #before-content>
           <div class="cards__filters-wrap">
-            <nav
-                class="cards__filters"
-                aria-label="Категории товаров"
-            >
-              <button
-                  v-for="category in categoryFilters"
-                  :key="category.key"
-                  type="button"
-                  class="cards__filter"
-                  :class="{ 'cards__filter--active': selectedCategoryId === category.id }"
-                  :aria-pressed="selectedCategoryId === category.id"
-                  @click="selectCategory(category.id)"
-              >
-                {{ category.name }}
-              </button>
-            </nav>
+            <BaseScrollableTabs
+                :model-value="selectedCategoryId"
+                :items="categoryFilters.map(c => ({ id: c.id, label: c.name }))"
+                :skeleton="categoriesPending"
+                @update:model-value="selectCategory"
+            />
 
             <div
-                v-if="categoriesPending"
-                class="state-message state-message--loading cards__filters-message"
-            >
-              Загружаем категории...
-            </div>
-
-            <div
-                v-else-if="categoriesErrorMessage"
+                v-if="categoriesErrorMessage"
                 class="state-message state-message--error cards__filters-message"
             >
               {{ categoriesErrorMessage }}
