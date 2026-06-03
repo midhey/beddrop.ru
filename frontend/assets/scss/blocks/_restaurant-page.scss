@@ -180,6 +180,8 @@
     @media (max-width: $mobile) {
       padding: rem(5) rem(12);
       font-size: rem(12);
+      flex-grow: 1;
+      justify-content: center;
     }
 
     .ui-icon {
