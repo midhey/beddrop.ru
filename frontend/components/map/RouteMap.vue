@@ -3,6 +3,11 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { Address } from '~/composables/useAddresses';
 import type { OrderRouteSegment } from '~/composables/useOrders';
 
+type MappablePoint = Omit<Partial<Address>, 'lat' | 'lng'> & {
+  lat?: number | string | null;
+  lng?: number | string | null;
+};
+
 declare global {
   interface Window {
     maplibregl?: any;
@@ -12,9 +17,9 @@ declare global {
 const props = withDefaults(
   defineProps<{
     routeSegments?: OrderRouteSegment[] | null;
-    restaurantAddress?: Partial<Address> | null;
-    deliveryAddress?: Partial<Address> | null;
-    courierLocation?: { lat: number | string | null; lng: number | string | null } | null;
+    restaurantAddress?: MappablePoint | null;
+    deliveryAddress?: MappablePoint | null;
+    courierLocation?: MappablePoint | null;
     height?: number;
   }>(),
   {
@@ -166,7 +171,7 @@ const clearMarkers = () => {
   markers = [];
 };
 
-const drawMarker = (address: Partial<Address> | null | undefined, color: string) => {
+const drawMarker = (address: MappablePoint | null | undefined, color: string) => {
   if (!map || !window.maplibregl || address?.lat == null || address?.lng == null) return;
 
   markers.push(

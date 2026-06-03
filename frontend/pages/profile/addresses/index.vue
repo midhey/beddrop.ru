@@ -78,9 +78,10 @@ const submit = async () => {
       await createAddress(payload);
       resetForm();
     }, 'Сохраняем адрес...');
-  } else if (formMode.value === 'edit' && editingId.value) {
+  } else if (formMode.value === 'edit' && editingId.value !== null) {
+    const addressId = editingId.value;
     await feedback.withBlock('.addresses-page__form-card', async () => {
-      await updateAddress(editingId.value, payload);
+      await updateAddress(addressId, payload);
     }, 'Обновляем адрес...');
   }
 };

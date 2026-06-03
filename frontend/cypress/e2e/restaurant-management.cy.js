@@ -86,6 +86,17 @@ const product = {
         size_bytes: 128,
       },
     },
+    {
+      id: 802,
+      sort_order: 1,
+      is_cover: false,
+      media: {
+        id: 702,
+        url: "/placeholder.png",
+        mime: "image/png",
+        size_bytes: 128,
+      },
+    },
   ],
 };
 
@@ -330,7 +341,7 @@ describe("restaurant management dashboard", () => {
       .click();
 
     cy.contains(".restaurant-dashboard__product-edit", "Фото блюда").should("be.visible");
-    cy.contains(".restaurant-dashboard__product-gallery-count", "1 / 5").should("be.visible");
+    cy.contains(".restaurant-dashboard__product-gallery-count", "2 / 5").should("be.visible");
     cy.contains(".restaurant-dashboard__product-edit .restaurant-dashboard__form-label", "Название")
       .parent()
       .find("input")
@@ -364,6 +375,45 @@ describe("restaurant management dashboard", () => {
     });
     cy.contains("Блюдо обновлено").should("be.visible");
     cy.contains(".restaurant-dashboard__product-name", "Маргарита XL").should("be.visible");
+  });
+
+  it("promotes the next image when deleting the current cover", () => {
+    visitDashboard();
+
+    cy.contains("button", "Меню").click();
+    cy.contains(".restaurant-dashboard__product", "Маргарита")
+      .contains("button", "Редактировать")
+      .click();
+
+    cy.contains(".restaurant-dashboard__product-gallery-count", "2 / 5").should("be.visible");
+    cy.get(".restaurant-dashboard__product-gallery-cover").should("have.length", 1);
+
+    cy.intercept("DELETE", `${apiBaseUrl()}/restaurants/${restaurantSlug()}/products/${product.id}/images/801`, {
+      statusCode: 204,
+      body: {},
+    }).as("deleteCover");
+
+    cy.intercept("PUT", `${apiBaseUrl()}/restaurants/${restaurantSlug()}/products/${product.id}/images/802`, (req) => {
+      req.reply({
+        data: {
+          ...product.images[1],
+          is_cover: req.body.is_cover,
+        },
+      });
+    }).as("promoteCover");
+
+    cy.get(".restaurant-dashboard__product-gallery-item")
+      .first()
+      .contains("button", "Удалить")
+      .click();
+
+    cy.wait("@deleteCover");
+    cy.wait("@promoteCover").its("request.body").should("deep.equal", {
+      is_cover: true,
+    });
+
+    cy.contains(".restaurant-dashboard__product-gallery-count", "1 / 5").should("be.visible");
+    cy.get(".restaurant-dashboard__product-gallery-cover").should("have.length", 1);
   });
 
   it("initializes the settings map when the restaurant already has coordinates", () => {
@@ -405,7 +455,7 @@ describe("restaurant management dashboard", () => {
   it("does not offer owner as an editable staff role or mutate before update succeeds", () => {
     visitDashboard();
 
-    cy.contains("button", "Сотрудники").click();
+    cy.contains("button", "Персонал").click();
 
     cy.contains(".restaurant-dashboard__staff-item", manager.email)
       .find(".restaurant-dashboard__staff-role")

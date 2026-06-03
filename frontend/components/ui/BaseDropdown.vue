@@ -73,7 +73,11 @@ const setOpen = (value: boolean) => {
   }
 
   emit('update:modelValue', value);
-  emit(value ? 'open' : 'close');
+  if (value) {
+    emit('open');
+  } else {
+    emit('close');
+  }
 };
 
 const toggle = () => {
@@ -123,7 +127,7 @@ const handleMouseLeave = () => {
 };
 
 const triggerAttrs = computed(() => ({
-  type: 'button',
+  type: 'button' as const,
   'aria-expanded': isOpen.value,
   'aria-controls': panelId,
   'aria-disabled': props.disabled || isExpandedLayout.value,

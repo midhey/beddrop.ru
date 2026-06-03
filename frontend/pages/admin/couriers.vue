@@ -12,7 +12,7 @@ useAppSeoMeta({
   robots: 'noindex,nofollow',
 });
 
-const { items, loading, errorMessage, fetchItems } = useAdminCouriers();
+const { items, pagination, loading, errorMessage, fetchItems } = useAdminCouriers();
 const filters = reactive({
   search: '',
   status: '',

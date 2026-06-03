@@ -65,6 +65,60 @@ const mockCourierDashboard = () => {
   }).as("earnings");
 };
 
+const activeOrder = {
+  id: 501,
+  status: "COURIER_ASSIGNED",
+  payment_status: "PAID",
+  payment_method: "ONLINE",
+  total_price: "1400.00",
+  courier_fee: "300.00",
+  comment: null,
+  delivery_address_id: 301,
+  delivery_lat: 58.522,
+  delivery_lng: 31.277,
+  delivery_price_snapshot: "250.00",
+  delivery_distance_meters: 1200,
+  delivery_duration_seconds: 600,
+  courier_estimated_fee: "300.00",
+  restaurant: {
+    id: 11,
+    name: "Новгородский дворик",
+    address: {
+      id: 21,
+      line1: "Великий Новгород, Кремль, 3",
+      city: "Великий Новгород",
+      line2: null,
+      postal_code: null,
+      lat: "58.521475",
+      lng: "31.275475",
+    },
+  },
+  delivery_address: {
+    id: 301,
+    value: "Великий Новгород, Софийская площадь, 1",
+    line1: "Великий Новгород, Софийская площадь, 1",
+    city: "Великий Новгород",
+    line2: null,
+    postal_code: null,
+    lat: "58.522",
+    lng: "31.277",
+  },
+  items_count: 1,
+  route_segments: [
+    {
+      id: 71,
+      order_id: 501,
+      segment_type: "courier_to_restaurant",
+      mode: "auto",
+      distance_meters: 900,
+      duration_seconds: 420,
+      encoded_shape: "_p~iF~ps|U_ulLnnqC_mqNvxq`@",
+    },
+  ],
+  created_at: "2026-05-11T09:00:00.000000Z",
+  updated_at: "2026-05-11T09:00:00.000000Z",
+};
+
 describe("courier dashboard", () => {
   beforeEach(() => {
     cy.clearAllCookies();
@@ -85,5 +139,81 @@ describe("courier dashboard", () => {
 
     cy.contains("button", "Вывести деньги").click();
     cy.contains("Пока не работает").should("be.visible");
+  });
+
+  it("renders an active order map with string coordinates from API payloads", () => {
+    cy.intercept("GET", `${apiBaseUrl()}/courier/shifts/current`, {
+      shift: {
+        id: 33,
+        courier_user_id: courier.id,
+        status: "OPEN",
+        started_at: "2026-05-11T08:00:00.000000Z",
+        ended_at: null,
+      },
+    }).as("openShift");
+
+    cy.intercept("GET", `${apiBaseUrl()}/courier/orders/available`, paginated([])).as("availableOpen");
+    cy.intercept("GET", `${apiBaseUrl()}/courier/orders/active`, paginated([activeOrder])).as("activeWithRoute");
+
+    cy.visit("/courier", {
+      onBeforeLoad(win) {
+        win.__mapConstructed = 0;
+        win.maplibregl = {
+          Map: class {
+            constructor() {
+              win.__mapConstructed += 1;
+            }
+
+            on(event, callback) {
+              if (event === "load") callback();
+            }
+
+            getLayer() {
+              return false;
+            }
+
+            getSource() {
+              return false;
+            }
+
+            addSource() {}
+            addLayer() {}
+            removeLayer() {}
+            removeSource() {}
+            fitBounds() {}
+            remove() {}
+          },
+          Marker: class {
+            setLngLat() {
+              return this;
+            }
+
+            addTo() {
+              return this;
+            }
+
+            remove() {}
+          },
+          LngLatBounds: class {
+            constructor() {
+              this.empty = true;
+            }
+
+            extend() {
+              this.empty = false;
+            }
+
+            isEmpty() {
+              return this.empty;
+            }
+          },
+        };
+      },
+    });
+
+    cy.wait(["@refresh", "@bootstrap", "@profile", "@openShift", "@availableOpen", "@activeWithRoute"]);
+    cy.contains(".courier-order", "Заказ #501").should("be.visible");
+    cy.get(".route-map").should("be.visible");
+    cy.window().its("__mapConstructed").should("be.greaterThan", 0);
   });
 });

@@ -13,7 +13,7 @@ useAppSeoMeta({
   robots: 'noindex,nofollow',
 });
 
-const { items, loading, errorMessage, fetchItems } = useAdminUsers();
+const { items, pagination, loading, errorMessage, fetchItems } = useAdminUsers();
 const filters = reactive({
   search: '',
   is_admin: '',

@@ -17,6 +17,7 @@ const invite = ref<RestaurantStaffInvite | null>(null);
 const inviteLoading = ref(true);
 const acceptLoading = ref(false);
 const acceptAttempted = ref(false);
+type InviteStatus = 'missing' | 'accepted' | 'expired' | 'active';
 
 useAppSeoMeta({
   title: 'Приглашение в ресторан — BedDrop',
@@ -35,7 +36,7 @@ const roleLabels = {
   STAFF: 'Сотрудник',
 } as const;
 
-const inviteStatus = computed(() => {
+const inviteStatus = computed<InviteStatus>(() => {
   if (!invite.value) {
     return 'missing';
   }
@@ -185,6 +186,13 @@ if (authStore.isAuthenticated) {
           >
             <CheckCircle2 class="ui-icon" :size="20" :stroke-width="1.9" aria-hidden="true" />
             <span>Приглашение уже использовано. Доступ к ресторану должен появиться в кабинете.</span>
+            <button
+                type="button"
+                class="button button--ghost"
+                @click="router.push(`/restaurants/manage/${invite.restaurant.slug}`)"
+            >
+              Перейти в кабинет
+            </button>
           </div>
 
           <div
@@ -198,15 +206,6 @@ if (authStore.isAuthenticated) {
                 @click="acceptCurrentInvite"
             >
               {{ acceptLoading ? 'Подключаем...' : inviteStatus === 'active' ? 'Принять приглашение' : 'Приглашение недоступно' }}
-            </button>
-
-            <button
-                v-if="inviteStatus === 'accepted'"
-                type="button"
-                class="button button--ghost"
-                @click="router.push(`/restaurants/manage/${invite.restaurant.slug}`)"
-            >
-              Перейти в кабинет
             </button>
           </div>
 

@@ -150,7 +150,7 @@ export function getSibling<T extends Element>(
 export function isBackgroundBright(el: HTMLElement): boolean {
     const val = getComputedStyle(el).getPropertyValue('background-color');
     const nums = val.match(/[\d.]+/g)?.map(Number) ?? [255, 255, 255, 1];
-    const [r, g, b] = nums;
+    const [r = 255, g = 255, b = 255] = nums;
     return 0.299 * r + 0.587 * g + 0.114 * b > 127.5;
 }
 

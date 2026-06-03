@@ -13,6 +13,18 @@ import type { Address } from '~/composables/useAddresses';
 import type { Product } from '~/composables/useRestaurantProducts';
 import type { PaginationMeta } from '~/utils/api/pagination';
 
+export interface OrderUser {
+    id: number;
+    email: string;
+    phone?: string | null;
+    name?: string | null;
+}
+
+export interface OrderCourier {
+    user_id?: number;
+    user?: OrderUser | null;
+}
+
 export interface OrderItem {
     id: number;
     product_id: number;
@@ -70,6 +82,8 @@ export interface Order {
     courier_fee?: string | null;
     comment: string | null;
     delivery_address_id: number | null;
+    user_id?: number | null;
+    courier_id?: number | null;
     delivery_lat: number | null;
     delivery_lng: number | null;
     delivery_distance_meters?: number | null;
@@ -80,6 +94,8 @@ export interface Order {
     logistics_snapshot?: OrderLogisticsSnapshot | null;
     courier_approach_distance_meters?: number | null;
     delivery_address?: Address | null;
+    user?: OrderUser | null;
+    courier?: OrderCourier | null;
 
     restaurant?: Restaurant | null;
     items?: OrderItem[];

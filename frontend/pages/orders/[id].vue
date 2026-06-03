@@ -29,6 +29,13 @@ const {
   refreshPayment,
   cancelOrder,
 } = useOrderDetailsPage();
+
+const formatDeliveryTime = (iso: string) => {
+  const formatted = formatDateTime(iso);
+  const [, timePart] = formatted.split(",");
+
+  return timePart?.trim() || formatted;
+};
 </script>
 
 <template>
@@ -286,7 +293,7 @@ const {
                   {{ isDelayed ? 'Опаздываем' : 'Ожидаемое время доставки' }}
                 </span>
                 <strong v-if="current.estimated_delivery_at" class="order-page__delivery-time">
-                  {{ formatDateTime(current.estimated_delivery_at).split(',')[1].trim() }}
+                  {{ formatDeliveryTime(current.estimated_delivery_at) }}
                 </strong>
                 <strong v-else class="order-page__delivery-time">Считаем...</strong>
               </div>
@@ -330,7 +337,7 @@ const {
               <div class="order-item__image-wrapper">
                 <img
                   v-if="item.product?.images && item.product.images.length"
-                  :src="item.product.images[0].media.url"
+                  :src="item.product.images[0]?.media.url"
                   :alt="item.name_snapshot"
                   class="order-item__image"
                   loading="lazy"

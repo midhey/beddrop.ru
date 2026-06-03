@@ -15,7 +15,6 @@ export default defineNuxtPlugin(() => {
         fontSize: '16px',
         width: '320px',
         distance: '16px',
-        notifyPadding: '20px',
         showOnlyTheLastOne: false,
         warning: { background: '#FFB800' }, // --color-secondary
         failure: { background: '#E74C3C' }, // --color-error
@@ -58,13 +57,13 @@ export default defineNuxtPlugin(() => {
     const block = (target: FeedbackTarget, message = 'Подождите...') => {
         if (!target) return;
         if (!canResolveTarget(target)) return;
-        Notiflix.Block.circle(target, message);
+        Notiflix.Block.circle(typeof target === 'string' ? target : [target], message);
     };
 
     const unblock = (target: FeedbackTarget) => {
         if (!target) return;
         if (!canResolveTarget(target)) return;
-        Notiflix.Block.remove(target);
+        Notiflix.Block.remove(typeof target === 'string' ? target : [target]);
     };
 
     const withBlock: FeedbackApi['withBlock'] = async (target, task, message) => {

@@ -98,7 +98,7 @@ const runAction = async (action: () => Promise<Order>) => {
   }
 };
 
-const getRestaurantInitial = (name?: string) => name ? name[0].toUpperCase() : 'R';
+const getRestaurantInitial = (name?: string) => name ? name.charAt(0).toUpperCase() : 'R';
 
 const orderStatuses = [
   'CREATED',

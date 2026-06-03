@@ -1,3 +1,4 @@
+import type { Address } from '~/composables/useAddresses';
 import type { Order } from '~/composables/useOrders';
 
 export type CourierProfileStatus = 'ACTIVE' | 'SUSPENDED';
@@ -22,22 +23,15 @@ export interface CourierShift {
     updated_at?: string;
 }
 
-export interface CourierAddress {
-    id?: number;
-    value?: string | null;
-    unrestricted_value?: string | null;
-    line1?: string | null;
-    line2: string | null;
-    city: string | null;
-    postal_code: string | null;
-    flat?: string | null;
-    entrance?: string | null;
-    floor?: string | null;
+export type CourierAddress = Omit<Partial<Address>, 'lat' | 'lng'> & {
+    line2?: string | null;
+    city?: string | null;
+    postal_code?: string | null;
     lat?: number | string | null;
     lng?: number | string | null;
-}
+};
 
-export interface CourierOrder extends Order {
+export interface CourierOrder extends Omit<Order, 'delivery_address'> {
     delivery_address?: CourierAddress | null;
     courier_estimated_fee?: string | null;
 }

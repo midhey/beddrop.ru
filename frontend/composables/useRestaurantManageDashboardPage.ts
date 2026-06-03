@@ -631,9 +631,10 @@ export function useRestaurantManageDashboardPage() {
         try {
             await deleteProductImage(slug.value, product.id, image.id);
             let nextImages = (product.images ?? []).filter((item) => item.id !== image.id);
+            const nextImage = nextImages[0];
 
-            if (image.is_cover && nextImages.length) {
-                const nextCover = await updateProductImage(slug.value, product.id, nextImages[0].id, {
+            if (image.is_cover && nextImage) {
+                const nextCover = await updateProductImage(slug.value, product.id, nextImage.id, {
                     is_cover: true,
                 });
                 nextImages = nextImages.map((item) =>
@@ -851,8 +852,9 @@ export function useRestaurantManageDashboardPage() {
             }
         }
 
-        if (availableTabs.value.length && !availableTabs.value.includes(activeTab.value)) {
-            activeTab.value = availableTabs.value[0];
+        const firstAvailableTab = availableTabs.value[0];
+        if (firstAvailableTab && !availableTabs.value.includes(activeTab.value)) {
+            activeTab.value = firstAvailableTab;
         }
     };
 

@@ -168,8 +168,9 @@ export function useCheckoutPage() {
     const init = async () => {
         await Promise.all([cartStore.fetchCart(), fetchAddresses()]);
 
-        if (addresses.value.length) {
-            selectedAddressId.value = addresses.value[0].id;
+        const firstAddress = addresses.value[0];
+        if (firstAddress) {
+            selectedAddressId.value = firstAddress.id;
         }
 
         await refreshDeliveryQuote();

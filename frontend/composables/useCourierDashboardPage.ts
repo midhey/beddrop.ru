@@ -342,7 +342,7 @@ export function useCourierDashboardPage() {
     };
 
     const handleLocationError = (error?: GeolocationPositionError) => {
-        if (error?.code === error.PERMISSION_DENIED) {
+        if (error?.code === GeolocationPositionError.PERMISSION_DENIED) {
             locationStatus.value = 'denied';
             locationError.value = 'Разрешите доступ к геолокации, чтобы заказы сортировались по расстоянию.';
             return;

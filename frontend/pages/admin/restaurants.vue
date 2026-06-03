@@ -15,7 +15,7 @@ useAppSeoMeta({
   robots: 'noindex,nofollow',
 });
 
-const { items, loading, errorMessage, fetchItems } = useAdminRestaurants();
+const { items, pagination, loading, errorMessage, fetchItems } = useAdminRestaurants();
 const selected = ref<any | null>(null);
 const isModalOpen = ref(false);
 const edit = reactive<Record<string, any>>({});
@@ -68,7 +68,7 @@ const saveRestaurant = async () => {
   isModalOpen.value = false;
 };
 
-const getRestaurantInitial = (name: string) => name ? name[0].toUpperCase() : 'R';
+const getRestaurantInitial = (name?: string | null) => name ? name.charAt(0).toUpperCase() : 'R';
 
 onMounted(fetchRestaurants);
 </script>
