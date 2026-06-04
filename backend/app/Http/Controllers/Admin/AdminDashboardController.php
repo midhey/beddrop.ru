@@ -8,9 +8,11 @@ use App\Models\CourierProfile;
 use App\Models\Order;
 use App\Models\Restaurant;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class AdminDashboardController extends Controller
@@ -19,33 +21,25 @@ class AdminDashboardController extends Controller
     {
         [$from, $to] = $this->period($request);
 
-        $orders = Order::query()
-            ->whereBetween('created_at', [$from, $to]);
-
-        $deliveredOrders = (clone $orders)
-            ->where('status', OrderStatus::DELIVERED->value);
-
         $cancelledStatuses = [
             OrderStatus::CANCELED_BY_USER->value,
             OrderStatus::CANCELED_BY_RESTAURANT->value,
         ];
-        $periodOrders = (clone $orders)
+
+        $periodOrders = $this->ordersForPeriod($from, $to);
+        $deliveredOrders = $this->deliveredOrdersForPeriod($from, $to);
+        $deliveredOrderModels = (clone $deliveredOrders)
             ->get(['id', 'delivery_price_snapshot', 'courier_fee', 'logistics_snapshot_json']);
-        $serviceFeeRevenue = $periodOrders->sum(fn (Order $order) => (float) ($order->logistics_snapshot_json['price']['service'] ?? 0));
-        $serviceCommissionRevenue = $periodOrders->sum(function (Order $order) {
-            $deliveryPrice = (float) ($order->delivery_price_snapshot ?? 0);
-            $commissionPercent = (float) ($order->logistics_snapshot_json['settings']['delivery.service_commission_percent'] ?? 0);
 
-            return round($deliveryPrice * $commissionPercent / 100, 2);
-        });
-        $deliveryRevenue = (float) $periodOrders->sum(fn (Order $order) => (float) ($order->delivery_price_snapshot ?? 0));
-        $courierPayouts = (float) $periodOrders->sum(fn (Order $order) => (float) ($order->courier_fee ?? 0));
+        $deliveryRevenue = $this->deliveryRevenue($deliveredOrderModels);
+        $courierPayouts = $this->courierPayouts($deliveredOrderModels);
+        $serviceFeeRevenue = $this->serviceFeeRevenue($deliveredOrderModels);
+        $serviceCommissionRevenue = $this->serviceCommissionRevenue($deliveredOrderModels);
 
-        $daily = Order::query()
+        $daily = $this->deliveredOrdersForPeriod($from, $to)
             ->selectRaw('DATE(created_at) as day')
             ->selectRaw('COUNT(*) as orders_count')
             ->selectRaw('COALESCE(SUM(total_price), 0) as revenue')
-            ->whereBetween('created_at', [$from, $to])
             ->groupBy('day')
             ->orderBy('day')
             ->get()
@@ -62,18 +56,18 @@ class AdminDashboardController extends Controller
                 'to' => $to->toDateString(),
             ],
             'metrics' => [
-                'orders_total' => (clone $orders)->count(),
+                'orders_total' => (clone $periodOrders)->count(),
                 'orders_delivered' => $deliveredOrders->count(),
-                'orders_cancelled' => (clone $orders)->whereIn('status', $cancelledStatuses)->count(),
-                'gmv' => (float) (clone $orders)->sum('total_price'),
+                'orders_cancelled' => (clone $periodOrders)->whereIn('status', $cancelledStatuses)->count(),
+                'gmv' => (float) (clone $deliveredOrders)->sum('total_price'),
                 'delivery_revenue' => $deliveryRevenue,
                 'courier_payouts' => $courierPayouts,
                 'service_fee_revenue' => $serviceFeeRevenue,
                 'service_commission_revenue' => $serviceCommissionRevenue,
                 'delivery_margin' => round($deliveryRevenue - $courierPayouts, 2),
                 'service_revenue_total' => round($serviceFeeRevenue + $serviceCommissionRevenue, 2),
-                'average_check' => (float) (clone $orders)->avg('total_price'),
-                'average_delivery_minutes' => (float) ((clone $orders)->whereNotNull('delivery_duration_seconds')->avg('delivery_duration_seconds') ?? 0) / 60,
+                'average_check' => (float) (clone $deliveredOrders)->avg('total_price'),
+                'average_delivery_minutes' => (float) ((clone $deliveredOrders)->whereNotNull('delivery_duration_seconds')->avg('delivery_duration_seconds') ?? 0) / 60,
                 'active_restaurants' => Restaurant::query()->where('is_active', true)->count(),
                 'active_couriers' => CourierProfile::query()->where('status', 'ACTIVE')->count(),
                 'users_total' => User::query()->count(),
@@ -96,13 +90,24 @@ class AdminDashboardController extends Controller
         return [$from, $to];
     }
 
-    private function topRestaurants(Carbon $from, Carbon $to): array
+    private function ordersForPeriod(Carbon $from, Carbon $to): Builder
     {
         return Order::query()
+            ->whereBetween('created_at', [$from, $to]);
+    }
+
+    private function deliveredOrdersForPeriod(Carbon $from, Carbon $to): Builder
+    {
+        return $this->ordersForPeriod($from, $to)
+            ->where('status', OrderStatus::DELIVERED->value);
+    }
+
+    private function topRestaurants(Carbon $from, Carbon $to): array
+    {
+        return $this->deliveredOrdersForPeriod($from, $to)
             ->select('restaurant_id')
             ->selectRaw('COUNT(*) as orders_count')
             ->selectRaw('COALESCE(SUM(total_price), 0) as revenue')
-            ->whereBetween('created_at', [$from, $to])
             ->with('restaurant:id,name,slug')
             ->groupBy('restaurant_id')
             ->orderByDesc('revenue')
@@ -118,11 +123,10 @@ class AdminDashboardController extends Controller
 
     private function topCouriers(Carbon $from, Carbon $to): array
     {
-        return Order::query()
+        return $this->deliveredOrdersForPeriod($from, $to)
             ->select('courier_id')
             ->selectRaw('COUNT(*) as orders_count')
             ->selectRaw('COALESCE(SUM(courier_fee), 0) as payouts')
-            ->whereBetween('created_at', [$from, $to])
             ->whereNotNull('courier_id')
             ->with('courier.user:id,name,email,phone')
             ->groupBy('courier_id')
@@ -139,9 +143,8 @@ class AdminDashboardController extends Controller
 
     private function cancellations(Carbon $from, Carbon $to, array $statuses): array
     {
-        return Order::query()
+        return $this->ordersForPeriod($from, $to)
             ->select('status', DB::raw('COUNT(*) as count'))
-            ->whereBetween('created_at', [$from, $to])
             ->whereIn('status', $statuses)
             ->groupBy('status')
             ->get()
@@ -150,5 +153,30 @@ class AdminDashboardController extends Controller
                 'count' => (int) $row->count,
             ])
             ->all();
+    }
+
+    private function deliveryRevenue(Collection $orders): float
+    {
+        return (float) $orders->sum(fn (Order $order) => (float) ($order->delivery_price_snapshot ?? 0));
+    }
+
+    private function courierPayouts(Collection $orders): float
+    {
+        return (float) $orders->sum(fn (Order $order) => (float) ($order->courier_fee ?? 0));
+    }
+
+    private function serviceFeeRevenue(Collection $orders): float
+    {
+        return (float) $orders->sum(fn (Order $order) => (float) ($order->logistics_snapshot_json['price']['service'] ?? 0));
+    }
+
+    private function serviceCommissionRevenue(Collection $orders): float
+    {
+        return (float) $orders->sum(function (Order $order) {
+            $deliveryPrice = (float) ($order->delivery_price_snapshot ?? 0);
+            $commissionPercent = (float) ($order->logistics_snapshot_json['settings']['delivery.service_commission_percent'] ?? 0);
+
+            return round($deliveryPrice * $commissionPercent / 100, 2);
+        });
     }
 }

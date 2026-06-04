@@ -397,13 +397,32 @@ class AdminApiTest extends TestCase
         $this->createAcceptedOrder($customer, $restaurant, null, [
             'status' => OrderStatus::DELIVERED->value,
             'total_price' => 800,
+            'courier_fee' => 70,
             'delivery_price_snapshot' => 120,
             'delivery_duration_seconds' => 600,
+            'logistics_snapshot_json' => [
+                'price' => [
+                    'service' => 35,
+                ],
+                'settings' => [
+                    'delivery.service_commission_percent' => 10,
+                ],
+            ],
         ]);
         $this->createAcceptedOrder($customer, $restaurant, null, [
             'status' => OrderStatus::CANCELED_BY_RESTAURANT->value,
             'total_price' => 500,
+            'courier_fee' => 40,
             'delivery_price_snapshot' => 100,
+            'delivery_duration_seconds' => 1200,
+            'logistics_snapshot_json' => [
+                'price' => [
+                    'service' => 25,
+                ],
+                'settings' => [
+                    'delivery.service_commission_percent' => 10,
+                ],
+            ],
         ]);
 
         $this
@@ -413,6 +432,18 @@ class AdminApiTest extends TestCase
             ->assertJsonPath('metrics.orders_total', 2)
             ->assertJsonPath('metrics.orders_delivered', 1)
             ->assertJsonPath('metrics.orders_cancelled', 1)
-            ->assertJsonPath('metrics.gmv', 1300);
+            ->assertJsonPath('metrics.gmv', 800)
+            ->assertJsonPath('metrics.delivery_revenue', 120)
+            ->assertJsonPath('metrics.courier_payouts', 70)
+            ->assertJsonPath('metrics.service_fee_revenue', 35)
+            ->assertJsonPath('metrics.service_commission_revenue', 12)
+            ->assertJsonPath('metrics.delivery_margin', 50)
+            ->assertJsonPath('metrics.service_revenue_total', 47)
+            ->assertJsonPath('metrics.average_check', 800)
+            ->assertJsonPath('metrics.average_delivery_minutes', 10)
+            ->assertJsonPath('daily.0.orders_count', 1)
+            ->assertJsonPath('daily.0.revenue', 800)
+            ->assertJsonPath('top_restaurants.0.orders_count', 1)
+            ->assertJsonPath('top_restaurants.0.revenue', 800);
     }
 }

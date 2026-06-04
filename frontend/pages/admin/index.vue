@@ -29,7 +29,7 @@ const metricCards = computed(() => {
   const metrics = dashboard.value?.metrics ?? {};
   return [
     { label: 'Заказы', value: metrics.orders_total ?? 0, icon: ShoppingBag, color: 'indigo' },
-    { label: 'Доставлено', value: metrics.orders_delivered ?? 0, icon: CheckCircle2, color: 'success' },
+    { label: 'Доставленные заказы', value: metrics.orders_delivered ?? 0, icon: CheckCircle2, color: 'success' },
     { label: 'Отменено', value: metrics.orders_cancelled ?? 0, icon: XCircle, color: 'error' },
     { label: 'GMV', value: formatPrice(metrics.gmv ?? 0), icon: CircleDollarSign, color: 'blue' },
     { label: 'Доставка', value: formatPrice(metrics.delivery_revenue ?? 0), icon: Truck, color: 'sky' },
