@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/midhey/beddrop.ru/compare/beddrop-web-v1.3.0...beddrop-web-v1.3.1) (2026-06-04)
+
+
+### Bug Fixes
+
+* **web:** rebuild admin dashboard ([6e7193b](https://github.com/midhey/beddrop.ru/commit/6e7193b97affaab54d93b6c9169910ffc1b54203))
+
 ## [1.3.0](https://github.com/midhey/beddrop.ru/compare/beddrop-web-v1.2.0...beddrop-web-v1.3.0) (2026-06-03)
 
 
